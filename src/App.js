@@ -9,6 +9,10 @@ import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import CardActions from '@mui/material/CardActions';
 import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+
 
 class BLEManager extends React.Component {
   constructor(props) {
@@ -17,6 +21,7 @@ class BLEManager extends React.Component {
       device: null,
       service_uuid: "D6F33618-597E-4998-B4A2-33F2BA265706".toLowerCase(),
       characteristic_uuids: [],
+      log_message: "console log message will be appear",
     }
 
     this.searchDevice = this.searchDevice.bind(this);
@@ -26,6 +31,7 @@ class BLEManager extends React.Component {
   async searchDevice(e) {
     e.preventDefault();
     console.log(this.state.service_uuid);
+    this.setState({ log_message: `service uuid = ${this.state.service_uuid}` })
     try {
       const device = await navigator.bluetooth.requestDevice({
         filters: [{ services: [this.state.service_uuid] }]
@@ -45,6 +51,7 @@ class BLEManager extends React.Component {
 
     } catch (error) {
       console.log(`Argh! ${error}`);
+      this.setState({ log_message: `Argh! ${error}` })
     }
 
   }
@@ -52,28 +59,82 @@ class BLEManager extends React.Component {
   render() {
     return (
       <div>
+        {/* logger */}
         <Card variant="outlined">
+          <CardContent>
+            <Typography variant="h5" component="div">Console Log</Typography>
+            <Typography sx={{ mb: 1.5 }} color="text.secondary">
+              {this.state.log_message}
+            </Typography>
+          </CardContent>
+        </Card>
 
+        {/* device */}
+        <Card variant="outlined">
           <CardContent>
             <Typography variant="h5" component="div">
               Service
             </Typography>
             <TextField
               required
+              fullWidth
               id="outlined-required"
               label="Service UUID"
               defaultValue={this.state.service_uuid}
             />
             <CardActions>
-              <Button variant="contained" onClick={this.searchDevice}>Search</Button>
+              <Button variant="contained" onClick={this.searchDevice}>Search for Device</Button>
             </CardActions>
           </CardContent>
-        </Card></div>
+        </Card>
+
+        {/* Characteristics */}
+        <Card>
+          <CardContent>
+            <Typography variant="h5" component="div">
+              Characteristics
+            </Typography>
+            <Box sx={{ flexGrow: 1 }}>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <CharacteristicCard name="test" uuid="0x1234" type="int" value={3} />
+                </Grid>
+                <Grid item>
+                  <CharacteristicCard name="test2" uuid="0x5678" type="char" value={"a"} />
+                </Grid>
+              </Grid>
+            </Box>
+          </CardContent>
+        </Card>
+
+
+      </div>
+
 
     )
   }
 }
 
+
+
+function CharacteristicCard(props) {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h5" component="div">{props.name}</Typography>
+
+        <Stack direction="row" spacing={1}>
+          <Chip label={props.type} />
+          <Chip label={props.uuid} variant="outlined" />
+        </Stack>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+          {props.value}
+        </Typography>
+
+      </CardContent>
+    </Card>
+  )
+}
 
 function App() {
 
@@ -81,22 +142,8 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
       <Container>
-        <h2>BLE console</h2>
+        <h1>BLE console</h1>
         <BLEManager ></BLEManager>
       </Container>
 

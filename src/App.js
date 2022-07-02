@@ -20,13 +20,28 @@ import NumbersIcon from '@mui/icons-material/Numbers';
 import AbcIcon from '@mui/icons-material/Abc';
 
 
+const arduino_imu = {
+  service_uuid: "ABF0E000-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(),
+  characteristic_uuids: [
+    "ABF0E001-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // acc x
+    "ABF0E002-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // acc y
+    "ABF0E003-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // acc z
+    "ABF0E004-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // gyro x
+    "ABF0E005-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // gyro y
+    "ABF0E006-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // gyro z
+    "ABF0E007-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // temperature
+  ]
+}
+
+
+
 class BLEManager extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      device: null,
-      service_uuid: "D6F33618-597E-4998-B4A2-33F2BA265706".toLowerCase(),
-      characteristic_uuids: [],
+      device: null,// Promise<BluetoothDevice>
+      service_uuid: arduino_imu.service_uuid,
+      characteristic_uuids: arduino_imu.characteristic_uuids,
       log_message: "console log message will be appear",
     }
 
@@ -42,18 +57,27 @@ class BLEManager extends React.Component {
       const device = await navigator.bluetooth.requestDevice({
         filters: [{ services: [this.state.service_uuid] }]
       });
-      this.setState({ device: device })
+
+      // https://ja.reactjs.org/docs/state-and-lifecycle.html#using-state-correctly
+      this.setState((state, device) => ({ device: device }));// this process may be still async
+
+      console.log(`device name: ${device.name}`);
+      // console.log(`state.device name: ${this.device.name}`); // null access error
 
       console.log('Connecting to GATT Server...');
-      const server = await this.state.device.gatt.connect();
+      const server = await device.gatt.connect();
 
       console.log('Getting Service...');
       const service = await server.getPrimaryService(this.state.service_uuid);
+
+      // get the all characteristic uuids
 
       console.log('Getting Characteristic...');
       const characteristic = await service.getCharacteristic(this.state.characteristic_uuids[0]);
 
       console.log(`Characteristic UUID:  ${characteristic.uuid}`);
+
+      // get value
 
     } catch (error) {
       console.log(`Argh! ${error}`);

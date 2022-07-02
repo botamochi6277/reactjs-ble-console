@@ -12,6 +12,12 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
+
+import BluetoothIcon from '@mui/icons-material/Bluetooth';
+import SearchIcon from '@mui/icons-material/Search';
+import NumbersIcon from '@mui/icons-material/Numbers';
+import AbcIcon from '@mui/icons-material/Abc';
 
 
 class BLEManager extends React.Component {
@@ -75,16 +81,20 @@ class BLEManager extends React.Component {
             <Typography variant="h5" component="div">
               Service
             </Typography>
-            <TextField
-              required
-              fullWidth
-              id="outlined-required"
-              label="Service UUID"
-              defaultValue={this.state.service_uuid}
-            />
-            <CardActions>
-              <Button variant="contained" onClick={this.searchDevice}>Search for Device</Button>
-            </CardActions>
+            <Stack direction="row" spacing={1}>
+              {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
+              <TextField
+                required
+                style={{ width: 400 }}
+                id="outlined-required"
+                label="Service UUID"
+                defaultValue={this.state.service_uuid}
+              />
+              <CardActions>
+                <Button variant="contained" onClick={this.searchDevice} startIcon={<SearchIcon />}>Search for Device</Button>
+              </CardActions>
+            </Stack>
+
           </CardContent>
         </Card>
 
@@ -97,10 +107,10 @@ class BLEManager extends React.Component {
             <Box sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <Grid item>
-                  <CharacteristicCard name="test" uuid="0x1234" type="int" value={3} />
+                  <CharacteristicCard name="test" uuid="0x1234" type="int" avatar={<Avatar> <NumbersIcon />  </Avatar>} value={3} />
                 </Grid>
                 <Grid item>
-                  <CharacteristicCard name="test2" uuid="0x5678" type="char" value={"a"} />
+                  <CharacteristicCard name="test2" uuid="0x5678" type="char" avatar={<Avatar> <AbcIcon />  </Avatar>} value={"a"} />
                 </Grid>
               </Grid>
             </Box>
@@ -124,7 +134,7 @@ function CharacteristicCard(props) {
         <Typography variant="h5" component="div">{props.name}</Typography>
 
         <Stack direction="row" spacing={1}>
-          <Chip label={props.type} />
+          <Chip label={props.type} avatar={props.avatar} />
           <Chip label={props.uuid} variant="outlined" />
         </Stack>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
@@ -143,7 +153,7 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <h1>BLE console</h1>
+        <h1> <BluetoothIcon />  BLE console</h1>
         <BLEManager ></BLEManager>
       </Container>
 

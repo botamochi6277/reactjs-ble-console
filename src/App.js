@@ -1,13 +1,18 @@
-import logo from './logo.svg';
 import './App.css';
 import React from 'react';
+
+import CharacteristicCard from './CharacteristicCard';
+
+
 import { Card } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
-import CardActions from '@mui/material/CardActions';
+
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
@@ -53,6 +58,26 @@ const arduino_imu = {
   ]
 }
 
+function CharacteristicGridCards(props) {
+  var cards = [];
+
+  if (props.characteristics.length == 0) {
+    return (
+      <Grid item>
+        <Chip label="Characteristics will appear after connecting device"></Chip>
+      </Grid>
+    )
+  }
+
+  for (let index = 0; index < props.characteristics.length; index++) {
+    const element = props.characteristics[index];
+    cards.push(
+      <Grid item>
+        <CharacteristicCard name="test" type="int" characteristic={element} avatar={<Avatar> <NumbersIcon />  </Avatar>} />
+      </Grid>);
+  }
+  return cards;
+}
 
 
 class BLEManager extends React.Component {
@@ -167,45 +192,17 @@ class BLEManager extends React.Component {
             </Typography>
             <Box sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>
-                <Grid item>
-                  <CharacteristicCard name="test" uuid="0x1234" type="int" avatar={<Avatar> <NumbersIcon />  </Avatar>} value={3} />
-                </Grid>
-                <Grid item>
-                  <CharacteristicCard name="test2" uuid="0x5678" type="char" avatar={<Avatar> <AbcIcon />  </Avatar>} value={"a"} />
-                </Grid>
+                <CharacteristicGridCards characteristics={this.state.characteristics}  ></CharacteristicGridCards>
               </Grid>
             </Box>
           </CardContent>
         </Card>
 
-
-      </div >
-
-
+      </div>
     )
   }
 }
 
-
-
-function CharacteristicCard(props) {
-  return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" component="div">{props.name}</Typography>
-
-        <Stack direction="row" spacing={1}>
-          <Chip label={props.type} avatar={props.avatar} />
-          <Chip label={props.uuid} variant="outlined" />
-        </Stack>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          {props.value}
-        </Typography>
-
-      </CardContent>
-    </Card>
-  )
-}
 
 function App() {
 

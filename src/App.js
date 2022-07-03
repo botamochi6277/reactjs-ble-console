@@ -20,6 +20,26 @@ import NumbersIcon from '@mui/icons-material/Numbers';
 import AbcIcon from '@mui/icons-material/Abc';
 
 
+class BLEServiceModel {
+  constructor(props) {
+    this.srv_uuid = props.service_uuid;
+
+  }
+
+}
+
+function DeviceNameClip(props) {
+  const device = props.device;
+  if (device == null) {
+    return <Chip avatar={<Avatar>N</Avatar>} label={"No connected device"} />
+  } else {
+    return <Chip avatar={<Avatar>C</Avatar>} label={device.name} />
+  }
+
+
+}
+
+
 const arduino_imu = {
   service_uuid: "ABF0E000-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(),
   characteristic_uuids: [
@@ -40,6 +60,7 @@ class BLEManager extends React.Component {
     super(props);
     this.state = {
       device: null,// Promise<BluetoothDevice>
+      characteristics: [],
       service_uuid: arduino_imu.service_uuid,
       characteristic_uuids: arduino_imu.characteristic_uuids,
       log_message: "console log message will be appear",
@@ -54,29 +75,33 @@ class BLEManager extends React.Component {
     console.log(this.state.service_uuid);
     this.setState({ log_message: `service uuid = ${this.state.service_uuid}` })
     try {
-      const device = await navigator.bluetooth.requestDevice({
+      const ble_device = await navigator.bluetooth.requestDevice({
         filters: [{ services: [this.state.service_uuid] }]
       });
 
       // https://ja.reactjs.org/docs/state-and-lifecycle.html#using-state-correctly
-      this.setState((state, device) => ({ device: device }));// this process may be still async
+      this.setState({ device: ble_device });// this process may be still async
 
-      console.log(`device name: ${device.name}`);
+      console.log(`device name: ${ble_device.name}`);
       // console.log(`state.device name: ${this.device.name}`); // null access error
 
       console.log('Connecting to GATT Server...');
-      const server = await device.gatt.connect();
+      const server = await ble_device.gatt.connect();
 
       console.log('Getting Service...');
       const service = await server.getPrimaryService(this.state.service_uuid);
 
       // get the all characteristic uuids
 
-      console.log('Getting Characteristic...');
-      const characteristic = await service.getCharacteristic(this.state.characteristic_uuids[0]);
-
-      console.log(`Characteristic UUID:  ${characteristic.uuid}`);
-
+      console.log('Getting Characteristics...');
+      let characteristics = [];
+      for (let index = 0; index < this.state.characteristic_uuids.length; index++) {
+        const uuid = this.state.characteristic_uuids[index];
+        const characteristic = await service.getCharacteristic(uuid);
+        console.log(`Characteristic UUID:  ${characteristic.uuid}`);
+        characteristics.push(characteristic);
+      }
+      this.setState({ characteristics: characteristics });
       // get value
 
     } catch (error) {
@@ -99,7 +124,7 @@ class BLEManager extends React.Component {
           </CardContent>
         </Card>
 
-        {/* device */}
+        {/* service */}
         <Card variant="outlined">
           <CardContent>
             <Typography variant="h5" component="div">
@@ -122,6 +147,18 @@ class BLEManager extends React.Component {
           </CardContent>
         </Card>
 
+        {/* device */}
+        <Card variant="outlined">
+          <CardContent>
+            <Typography variant="h5" component="div">
+              Device
+            </Typography>
+
+            <DeviceNameClip device={this.state.device} />
+          </CardContent>
+        </Card>
+
+
         {/* Characteristics */}
         <Card>
           <CardContent>
@@ -142,7 +179,7 @@ class BLEManager extends React.Component {
         </Card>
 
 
-      </div>
+      </div >
 
 
     )

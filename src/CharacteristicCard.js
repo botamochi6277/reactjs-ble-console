@@ -37,10 +37,14 @@ class CharacteristicCard extends React.Component {
             characteristic: props.characteristic,
             type: "na",
             avatar: props.avatar,
-            name: "test"
+            name: "test",
+            desp: []
         }
+
+        this.is_reading_desp = false;
         // this.searchDevice = this.searchDevice.bind(this);
         this.readValue = this.readValue.bind(this);
+        this.readDescriptors = this.readDescriptors.bind(this);
     }
     // https://developer.mozilla.org/en-US/docs/Web/API/BluetoothRemoteGATTCharacteristic
 
@@ -56,7 +60,38 @@ class CharacteristicCard extends React.Component {
         this.setState({ value: v.getUint8(0) });
     }
 
+    async readDescriptors() {
+        this.is_reading_desp = true;
+        // https://googlechrome.github.io/samples/web-bluetooth/read-descriptors-async-await.html
+        if (this.state.characteristic === null) {
+            return;
+        }
+        let decoder = new TextDecoder('utf-8')
+
+        const descriptors = await this.state.characteristic.getDescriptors();
+        const desps = descriptors.map((d) => d.value);
+
+        this.setState({ desp: desps });
+
+
+        for (let index = 0; index < descriptors.length; index++) {
+            const element = descriptors[index];
+            let v = await element.readValue();
+            console.log(`descriptor uuid: ${element.uuid}`)
+            console.log(`${decoder.decode(v)}`)
+        }
+
+        this.is_reading_desp = false;
+    }
+
     render() {
+
+        if (this.state.desp.length === 0) {
+            if (this.is_reading_desp === false) {
+                this.readDescriptors();
+            }
+        }
+
         const uuid = this.state.characteristic.uuid;
         // BluetoothCharacteristicProperties
         const properties = this.state.characteristic.properties;

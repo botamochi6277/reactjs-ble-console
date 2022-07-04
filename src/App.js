@@ -60,7 +60,7 @@ const arduino_imu = {
 
 function CharacteristicGridCards(props) {
   const characteristics = props.characteristics;
-  if (characteristics.length == 0) {
+  if (characteristics.length === 0) {
     return (
       <Grid item>
         <Chip label="Characteristics will appear after connecting device"></Chip>
@@ -70,7 +70,7 @@ function CharacteristicGridCards(props) {
 
   const cards = characteristics.map(
     (chars) =>
-      <Grid item key={chars.uuid}>
+      <Grid item key={chars.uuid} xs={6}>
         <CharacteristicCard name="test" type="int" characteristic={chars} avatar={<Avatar> <NumbersIcon />  </Avatar>} />
       </Grid>
   );

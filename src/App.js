@@ -19,8 +19,16 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 
+
+// icons
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import SearchIcon from '@mui/icons-material/Search';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import TabletAndroidIcon from '@mui/icons-material/TabletAndroid';
+import EmojiSymbolsIcon from '@mui/icons-material/EmojiSymbols';
+import TerminalIcon from '@mui/icons-material/Terminal';
+import ErrorIcon from '@mui/icons-material/Error';
+
 import NumbersIcon from '@mui/icons-material/Numbers';
 import AbcIcon from '@mui/icons-material/Abc';
 
@@ -36,9 +44,9 @@ class BLEServiceModel {
 function DeviceNameClip(props) {
   const device = props.device;
   if (device == null) {
-    return <Chip avatar={<Avatar>N</Avatar>} label={"No connected device"} />
+    return <Chip color="warning" icon={<ErrorIcon />} label={"No connected device"} />
   } else {
-    return <Chip avatar={<Avatar>C</Avatar>} label={device.name} />
+    return <Chip color="success" icon={<BluetoothIcon />} label={device.name} />
   }
 
 
@@ -141,7 +149,7 @@ class BLEManager extends React.Component {
         {/* logger */}
         <Card variant="outlined">
           <CardContent>
-            <Typography variant="h5" component="div">Console Log</Typography>
+            <Typography variant="h5" component="div"> <TerminalIcon />  Console Log</Typography>
             <Typography sx={{ mb: 1.5 }} color="text.secondary">
               {this.state.log_message}
             </Typography>
@@ -152,7 +160,7 @@ class BLEManager extends React.Component {
         <Card variant="outlined">
           <CardContent>
             <Typography variant="h5" component="div">
-              Service
+              <FunctionsIcon /> Service
             </Typography>
             <Stack direction="row" spacing={1}>
               {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
@@ -175,7 +183,7 @@ class BLEManager extends React.Component {
         <Card variant="outlined">
           <CardContent>
             <Typography variant="h5" component="div">
-              Device
+              <TabletAndroidIcon /> Device
             </Typography>
 
             <DeviceNameClip device={this.state.device} />
@@ -187,7 +195,7 @@ class BLEManager extends React.Component {
         <Card>
           <CardContent>
             <Typography variant="h5" component="div">
-              Characteristics
+              <EmojiSymbolsIcon /> Characteristics
             </Typography>
             <Box sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>

@@ -78,7 +78,7 @@ function CharacteristicGridCards(props) {
 
   const cards = characteristics.map(
     (chars) =>
-      <Grid item key={chars.uuid} xs={6}>
+      <Grid item key={chars.uuid} xs={12} md={6} lg={4}>
         <CharacteristicCard name="test" type="int" characteristic={chars} avatar={<Avatar> <NumbersIcon />  </Avatar>} />
       </Grid>
   );

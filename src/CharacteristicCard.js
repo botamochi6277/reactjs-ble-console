@@ -25,7 +25,11 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PodcastsIcon from '@mui/icons-material/Podcasts';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import NumbersIcon from '@mui/icons-material/Numbers';
+
+
 const utf8_decoder = new TextDecoder('utf-8')
+
+
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView
 const ble_types = [
     { name: 'int8', decoder: (v, o) => v.getInt8(o) },
@@ -34,7 +38,7 @@ const ble_types = [
     { name: 'uint16', decoder: (v, o) => v.getUint16(o) },
     { name: 'int32', decoder: (v, o) => v.getInt32(o) },
     { name: 'uint32', decoder: (v, o) => v.getUint32(o) },
-    { name: 'float32', decoder: (v, o) => v.getFloat32(o) },
+    { name: 'float32', decoder: (v, o) => `${v.getFloat32(o).toFixed(4)}` },
     { name: 'float64', decoder: (v, o) => v.getFloat64(o) },
     { name: 'string', decoder: (v, o) => utf8_decoder.decode(v) },
 ]
@@ -53,14 +57,18 @@ function BLETypeSelect(props) {
     return (
         <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth size="small">
-                <InputLabel id="ble-data-type-select-label" htmlFor="ble-data-type-select">Type</InputLabel>
+                <InputLabel id="ble-data-type-select-label" htmlFor="ble-data-type-native-select">Type</InputLabel>
                 <NativeSelect
-                    labelId="ble-data-type-select-label"
-                    id="ble-data-type-select"
+                    // labelId="ble-data-type-select-label"
+                    // id="ble-data-type-select"
                     defaultValue={'int8'}
-                    value={ble_type}
-                    label="Type"
+                    // value={ble_type}
+                    // label="Type"
                     onChange={handleChange}
+                    inputProps={{
+                        name: 'Type',
+                        id: 'ble-data-type-native-select',
+                    }}
                 >
                     {menus}
                 </NativeSelect>
@@ -217,9 +225,10 @@ class CharacteristicCard extends React.Component {
         event.stopPropagation();
         event.preventDefault();
         console.log(`reading value of ${this.state.characteristic.uuid}`);
-        const dw = await this.state.characteristic.readValue();//dataview
-        const v = this.state.decoder(dw, 0);
-        console.log(`dwalue = ${v}`);
+        const dv = await this.state.characteristic.readValue();//dataview
+        const v = this.state.decoder(dv, 0);
+        console.log(`value = ${v}, byte_length = ${dv.buffer.byteLength}`);
+
         this.setState({ value: v });
     }
 

@@ -1,4 +1,48 @@
-# Getting Started with Create React App
+## Data type
+
+- bool
+- int8 (char)
+- uint8 (uchar)
+- int16 (short)
+- uint16 (ushort)
+- int32
+- uint32
+- int64 (long)
+- uint64 (ulong)
+- string
+- float16
+- float32
+
+```cpp
+BLEBoolCharacteristic(uuid, properties)
+BLEBooleanCharacteristic(uuid, properties)
+BLECharCharacteristic(uuid, properties)
+BLEUnsignedCharCharacteristic(uuid, properties)
+BLEByteCharacteristic(uuid, properties)
+BLEShortCharacteristic(uuid, properties)
+BLEUnsignedShortCharacteristic(uuid, properties)
+BLEWordCharacteristic(uuid, properties)
+BLEIntCharacteristic(uuid, properties)
+BLEUnsignedIntCharacteristic(uuid, properties)
+BLELongCharacteristic(uuid, properties)
+BLEUnsignedLongCharacteristic(uuid, properties)
+BLEFloatCharacteristic(uuid, properties)
+BLEDoubleCharacteristic(uuid, properties)
+```
+
+### Stack
+
+|  1   |   0   |
+| :--: | :---: |
+| int8 | uint8 |
+|  0B  |  FA   |
+
+## References
+
+- https://googlechrome.github.io/samples/web-bluetooth/index.html
+- https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

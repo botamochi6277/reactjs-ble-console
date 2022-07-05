@@ -9,6 +9,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
+import TextField from '@mui/material/TextField';
+import NativeSelect from '@mui/material/NativeSelect';
 
 import { Button, Card } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
@@ -22,7 +24,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PodcastsIcon from '@mui/icons-material/Podcasts';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
-
+import NumbersIcon from '@mui/icons-material/Numbers';
 const utf8_decoder = new TextDecoder('utf-8')
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView
 const ble_types = [
@@ -46,21 +48,22 @@ function BLETypeSelect(props) {
             props.onChange(event.target.value);
         }
     };
-    const menus = ble_types.map((b) => <MenuItem value={b.name} key={b.name}>{b.name}</MenuItem>)
+    const menus = ble_types.map((b) => <option value={b.name} key={b.name}>{b.name}</option>)
 
     return (
         <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth size="small">
-                <InputLabel id="ble-data-type-select-label">Type</InputLabel>
-                <Select
+                <InputLabel id="ble-data-type-select-label" htmlFor="ble-data-type-select">Type</InputLabel>
+                <NativeSelect
                     labelId="ble-data-type-select-label"
                     id="ble-data-type-select"
+                    defaultValue={'int8'}
                     value={ble_type}
                     label="Type"
                     onChange={handleChange}
                 >
                     {menus}
-                </Select>
+                </NativeSelect>
             </FormControl>
         </Box>);
 }
@@ -150,6 +153,28 @@ function DescriptorsChips(props) {
     }
 }
 
+function ValueField(props) {
+    const v = props.value;
+
+    const readonly = props.readonly;
+
+    let btn = <p />;
+
+    if (readonly) {
+        btn = <Button>Write</Button>;
+    }
+
+    return (
+        <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+            <NumbersIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+            <TextField id="input-with-sx" label="value" variant="standard" InputProps={{
+                readOnly: readonly,
+            }} value={v} />
+            {btn}
+        </Box>
+    );
+}
+
 class CharacteristicCard extends React.Component {
 
     constructor(props) {
@@ -159,14 +184,30 @@ class CharacteristicCard extends React.Component {
             type: "na",
             avatar: props.avatar,
             name: "test",
-            descriptors: []
+            value: 0,
+            descriptors: [],
+            decoder: (v, o) => v.getInt8(o)
         }
 
         this.is_reading_dscp = false;
         // this.searchDevice = this.searchDevice.bind(this);
         this.readValue = this.readValue.bind(this);
         this.readDescriptors = this.readDescriptors.bind(this);
+        this.changeBleType = this.changeBleType.bind(this);
     }
+
+    changeBleType(v) {
+        // v is string of new type name
+        const t = ble_types.find(element => element.name === v)
+        this.setState(
+            {
+                type: t.name,
+                decoder: t.decoder
+            }
+        );
+    }
+
+
     // https://developer.mozilla.org/en-US/docs/Web/API/BluetoothRemoteGATTCharacteristic
 
     async readValue(event) {
@@ -176,9 +217,10 @@ class CharacteristicCard extends React.Component {
         event.stopPropagation();
         event.preventDefault();
         console.log(`reading value of ${this.state.characteristic.uuid}`);
-        const v = await this.state.characteristic.readValue();
-        console.log(`value = ${v.getUint8(0)}`);
-        this.setState({ value: v.getUint8(0) });
+        const dw = await this.state.characteristic.readValue();//dataview
+        const v = this.state.decoder(dw, 0);
+        console.log(`dwalue = ${v}`);
+        this.setState({ value: v });
     }
 
     async readDescriptors() {
@@ -239,6 +281,8 @@ class CharacteristicCard extends React.Component {
         // const value = this.state.characteristic.value;
         const value = this.state.value;
 
+        let readonly = !properties.write;
+
         if (this.state.characteristic == null) {
             return (
                 <Card>
@@ -255,17 +299,14 @@ class CharacteristicCard extends React.Component {
                     <Typography variant="h5" component="div">{this.state.name}</Typography>
                     {/* <DescriptorsChips descriptors={this.state.descriptors} /> */}
 
-                    <PropertiesChip properties={properties} />
+                    <PropertiesChip properties={properties} readonly={readonly} />
                     <Chip label={uuid} variant="outlined" avatar={<Avatar>uuid</Avatar>} />
 
-                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                        {value}
-                    </Typography>
                     <CardActions>
-                        <BLETypeSelect />
+                        <BLETypeSelect onChange={this.changeBleType} />
                         <Button variant="contained" onClick={this.readValue}>Read Value</Button>
                     </CardActions>
-
+                    <ValueField value={value} />
                 </CardContent>
             </Card>
         )

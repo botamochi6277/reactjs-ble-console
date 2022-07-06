@@ -1,12 +1,9 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
 
 import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
@@ -32,14 +29,14 @@ const utf8_decoder = new TextDecoder('utf-8')
 
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView
 const ble_types = [
-    { name: 'int8', decoder: (v, o) => v.getInt8(o) },
-    { name: 'uint8', decoder: (v, o) => v.getUint8(o) },
-    { name: 'int16', decoder: (v, o) => v.getInt16(o) },
-    { name: 'uint16', decoder: (v, o) => v.getUint16(o) },
-    { name: 'int32', decoder: (v, o) => v.getInt32(o) },
-    { name: 'uint32', decoder: (v, o) => v.getUint32(o) },
-    { name: 'float32', decoder: (v, o) => `${v.getFloat32(o).toFixed(4)}` },
-    { name: 'float64', decoder: (v, o) => v.getFloat64(o) },
+    { name: 'int8', decoder: (v, o) => v.getInt8(o, true) },
+    { name: 'uint8', decoder: (v, o) => v.getUint8(o, true) },
+    { name: 'int16', decoder: (v, o) => v.getInt16(o, true) },
+    { name: 'uint16', decoder: (v, o) => v.getUint16(o, true) },
+    { name: 'int32', decoder: (v, o) => v.getInt32(o, true) },
+    { name: 'uint32', decoder: (v, o) => v.getUint32(o, true) },
+    { name: 'float32', decoder: (v, o) => `${v.getFloat32(o, true).toFixed(4)}` },
+    { name: 'float64', decoder: (v, o) => `${v.getFloat64(o, true).toFixed(4)}` },
     { name: 'string', decoder: (v, o) => utf8_decoder.decode(v) },
 ]
 
@@ -56,8 +53,8 @@ function BLETypeSelect(props) {
 
     return (
         <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth size="small">
-                <InputLabel id="ble-data-type-select-label" htmlFor="ble-data-type-native-select">Type</InputLabel>
+            <FormControl size="small">
+                <InputLabel variant="standard" id="ble-data-type-select-label" htmlFor="ble-data-type-native-select">Type</InputLabel>
                 <NativeSelect
                     // labelId="ble-data-type-select-label"
                     // id="ble-data-type-select"
@@ -65,6 +62,7 @@ function BLETypeSelect(props) {
                     // value={ble_type}
                     // label="Type"
                     onChange={handleChange}
+                    variant="outlined"
                     inputProps={{
                         name: 'Type',
                         id: 'ble-data-type-native-select',
@@ -196,12 +194,14 @@ class CharacteristicCard extends React.Component {
             descriptors: [],
             decoder: (v, o) => v.getInt8(o)
         }
-
+        // private params
         this.is_reading_dscp = false;
+        this.is_notifying = false;
         // this.searchDevice = this.searchDevice.bind(this);
         this.readValue = this.readValue.bind(this);
         this.readDescriptors = this.readDescriptors.bind(this);
         this.changeBleType = this.changeBleType.bind(this);
+        this.handleNotifications = this.handleNotifications.bind(this);
     }
 
     changeBleType(v) {
@@ -276,6 +276,13 @@ class CharacteristicCard extends React.Component {
         this.is_reading_dscp = false;
     }
 
+
+    handleNotifications(event) {
+        let value = event.target.value;
+        const v = this.state.decoder(value, 0);
+        this.setState({ value: v });
+    }
+
     render() {
 
         if (this.state.descriptors.length === 0) {
@@ -300,6 +307,20 @@ class CharacteristicCard extends React.Component {
                     </CardContent>
                 </Card>
             )
+        }
+
+
+        if (properties.notify) {
+            if (!this.is_notifying) {
+                // start notifying
+                this.is_notifying = true;
+                const callback = this.handleNotifications;
+                this.state.characteristic.startNotifications().then(_ => {
+                    this.state.characteristic.addEventListener(
+                        'characteristicvaluechanged',
+                        callback);
+                });
+            }
         }
 
         return (

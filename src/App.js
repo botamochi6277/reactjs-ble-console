@@ -30,7 +30,6 @@ import TerminalIcon from '@mui/icons-material/Terminal';
 import ErrorIcon from '@mui/icons-material/Error';
 
 import NumbersIcon from '@mui/icons-material/Numbers';
-import AbcIcon from '@mui/icons-material/Abc';
 
 
 class BLEServiceModel {
@@ -176,9 +175,7 @@ class BLEManager extends React.Component {
           <CardContent>
             <Typography variant="h5" component="div"> <TerminalIcon />  Console Log</Typography>
             <BLEAvailableAlert />
-            <Typography sx={{ mb: 1.5 }} color="text.secondary">
-              {this.state.log_message}
-            </Typography>
+            <Alert severity="info">{this.state.log_message}</Alert>
           </CardContent>
         </Card>
 
@@ -190,19 +187,17 @@ class BLEManager extends React.Component {
                 <Typography variant="h5" component="div">
                   <FunctionsIcon /> Service
                 </Typography>
-                <Stack direction="row" spacing={1}>
-                  {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
-                  <TextField
-                    required
-                    style={{ width: 400 }}
-                    id="outlined-required"
-                    label="Service UUID"
-                    defaultValue={this.state.service_uuid}
-                  />
-                  <CardActions>
-                    <Button variant="contained" onClick={this.searchDevice} startIcon={<SearchIcon />}>Search for Device</Button>
-                  </CardActions>
-                </Stack>
+
+                {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
+                <TextField
+                  required
+                  style={{ width: 400 }}
+                  id="outlined-required"
+                  label="Service UUID"
+                  defaultValue={this.state.service_uuid}
+                />
+
+                <Button variant="contained" onClick={this.searchDevice} startIcon={<SearchIcon />}>Search</Button>
 
               </CardContent>
             </Card>

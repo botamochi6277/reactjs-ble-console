@@ -182,40 +182,44 @@ class BLEManager extends React.Component {
           </CardContent>
         </Card>
 
-        {/* service */}
-        <Card variant="outlined">
-          <CardContent>
-            <Typography variant="h5" component="div">
-              <FunctionsIcon /> Service
-            </Typography>
-            <Stack direction="row" spacing={1}>
-              {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
-              <TextField
-                required
-                style={{ width: 400 }}
-                id="outlined-required"
-                label="Service UUID"
-                defaultValue={this.state.service_uuid}
-              />
-              <CardActions>
-                <Button variant="contained" onClick={this.searchDevice} startIcon={<SearchIcon />}>Search for Device</Button>
-              </CardActions>
-            </Stack>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={8} lg={8}>
+            {/* service */}
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  <FunctionsIcon /> Service
+                </Typography>
+                <Stack direction="row" spacing={1}>
+                  {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
+                  <TextField
+                    required
+                    style={{ width: 400 }}
+                    id="outlined-required"
+                    label="Service UUID"
+                    defaultValue={this.state.service_uuid}
+                  />
+                  <CardActions>
+                    <Button variant="contained" onClick={this.searchDevice} startIcon={<SearchIcon />}>Search for Device</Button>
+                  </CardActions>
+                </Stack>
 
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4} lg={4}>
+            {/* device */}
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  <TabletAndroidIcon /> Device
+                </Typography>
 
-        {/* device */}
-        <Card variant="outlined">
-          <CardContent>
-            <Typography variant="h5" component="div">
-              <TabletAndroidIcon /> Device
-            </Typography>
-
-            <DeviceNameClip device={this.state.device} />
-          </CardContent>
-        </Card>
-
+                <DeviceNameClip device={this.state.device} />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
         {/* Characteristics */}
         <Card>

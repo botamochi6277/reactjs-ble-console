@@ -18,7 +18,7 @@ import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-
+import Alert from '@mui/material/Alert';
 
 // icons
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
@@ -50,6 +50,30 @@ function DeviceNameClip(props) {
   }
 
 
+}
+
+function BLEAvailableAlert() {
+  // https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth/getAvailability
+
+  if (typeof (navigator.bluetooth) === "undefined") {
+    return (
+      <Alert severity="error">Web Bluetooth API is unavailable with this browser</Alert>
+    );
+  }
+
+
+  navigator.bluetooth.getAvailability().then(available => {
+    if (available) {
+      console.log("This device supports Bluetooth!");
+      return;
+    }
+    else {
+      console.log("Doh! Bluetooth is not supported");
+      return (
+        <Alert severity="error">Bluetooth is not supported</Alert>
+      );
+    }
+  });
 }
 
 
@@ -139,6 +163,7 @@ class BLEManager extends React.Component {
     } catch (error) {
       console.log(`Argh! ${error}`);
       this.setState({ log_message: `Argh! ${error}` })
+
     }
 
   }
@@ -150,6 +175,7 @@ class BLEManager extends React.Component {
         <Card variant="outlined">
           <CardContent>
             <Typography variant="h5" component="div"> <TerminalIcon />  Console Log</Typography>
+            <BLEAvailableAlert />
             <Typography sx={{ mb: 1.5 }} color="text.secondary">
               {this.state.log_message}
             </Typography>

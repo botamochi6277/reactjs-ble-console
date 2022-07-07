@@ -1,3 +1,5 @@
+//@ts-check
+
 import './App.css';
 import React from 'react';
 
@@ -32,6 +34,8 @@ import ErrorIcon from '@mui/icons-material/Error';
 import NumbersIcon from '@mui/icons-material/Numbers';
 
 
+import ServiceCard from './ServiceCard';
+
 function DeviceNameClip(props) {
   const device = props.device;
   if (device == null) {
@@ -54,7 +58,9 @@ function BLEAvailableAlert() {
   navigator.bluetooth.getAvailability().then(available => {
     if (available) {
       console.log("This device supports Bluetooth!");
-      return;
+      return (
+        <div > </div>
+      );
     }
     else {
       console.log("Doh! Bluetooth is not supported");
@@ -186,25 +192,7 @@ class BLEManager extends React.Component {
         <Grid container spacing={2}>
           <Grid item xs={12} md={8} lg={8}>
             {/* service */}
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h5" component="div">
-                  <FunctionsIcon /> Service
-                </Typography>
-
-                {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
-                <TextField
-                  required
-                  style={{ width: 400 }}
-                  id="outlined-required"
-                  label="Service UUID"
-                  defaultValue={this.state.service_uuid}
-                />
-
-                <Button variant="contained" onClick={this.searchDevice} startIcon={<SearchIcon />}>Search</Button>
-
-              </CardContent>
-            </Card>
+            <ServiceCard serviceUuid={this.state.service_uuid} onClick={this.searchDevice} />
           </Grid>
           <Grid item xs={12} md={4} lg={4}>
             {/* device */}

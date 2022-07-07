@@ -8,6 +8,8 @@ import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import NativeSelect from '@mui/material/NativeSelect';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 import { Button, Card } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
@@ -42,24 +44,26 @@ const ble_types = [
 
 
 function BLETypeSelect(props) {
-    const [ble_type, setType] = React.useState('');
+    // const [ble_type, setType] = React.useState('');
     const handleChange = (event) => {
-        setType(event.target.value);
+        // setType(event.target.value);
         if (props.onChange != null) {
             props.onChange(event.target.value);
         }
     };
-    const menus = ble_types.map((b) => <option value={b.name} key={b.name}>{b.name}</option>)
+
+    const menus = ble_types.map((b) => <MenuItem value={b.name} key={b.name}>{b.name}</MenuItem>)
 
     return (
         <Box sx={{ minWidth: 120 }}>
             <FormControl size="small">
                 <InputLabel variant="standard" id="ble-data-type-select-label" htmlFor="ble-data-type-native-select">Type</InputLabel>
-                <NativeSelect
+                <Select
+                    fullWidth
                     // labelId="ble-data-type-select-label"
                     // id="ble-data-type-select"
-                    defaultValue={'int8'}
-                    // value={ble_type}
+                    // defaultValue={'int8'}
+                    value={props.value}
                     // label="Type"
                     onChange={handleChange}
                     variant="outlined"
@@ -69,7 +73,7 @@ function BLETypeSelect(props) {
                     }}
                 >
                     {menus}
-                </NativeSelect>
+                </Select>
             </FormControl>
         </Box>);
 }
@@ -185,14 +189,18 @@ class CharacteristicCard extends React.Component {
 
     constructor(props) {
         super(props);
+
+        const t = props.type
+        const decoder = ble_types.find((b) => b.name === t).decoder
+
         this.state = {
             characteristic: props.characteristic,
-            type: "na",
+            type: props.type,
             avatar: props.avatar,
-            name: "test",
+            name: props.name,
             value: 0,
             descriptors: [],
-            decoder: (v, o) => v.getInt8(o)
+            decoder: decoder
         }
         // private params
         this.is_reading_dscp = false;
@@ -333,7 +341,7 @@ class CharacteristicCard extends React.Component {
                     <Chip label={uuid} variant="outlined" avatar={<Avatar>uuid</Avatar>} />
 
                     <CardActions>
-                        <BLETypeSelect onChange={this.changeBleType} />
+                        <BLETypeSelect onChange={this.changeBleType} value={this.state.type} />
                         <Button variant="contained" onClick={this.readValue}>Read Value</Button>
                     </CardActions>
                     <ValueField value={value} />

@@ -32,14 +32,6 @@ import ErrorIcon from '@mui/icons-material/Error';
 import NumbersIcon from '@mui/icons-material/Numbers';
 
 
-class BLEServiceModel {
-  constructor(props) {
-    this.srv_uuid = props.service_uuid;
-
-  }
-
-}
-
 function DeviceNameClip(props) {
   const device = props.device;
   if (device == null) {
@@ -47,8 +39,6 @@ function DeviceNameClip(props) {
   } else {
     return <Chip color="success" icon={<BluetoothIcon />} label={device.name} />
   }
-
-
 }
 
 function BLEAvailableAlert() {
@@ -77,15 +67,16 @@ function BLEAvailableAlert() {
 
 
 const arduino_imu = {
-  service_uuid: "ABF0E000-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(),
-  characteristic_uuids: [
-    "ABF0E001-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // acc x
-    "ABF0E002-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // acc y
-    "ABF0E003-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // acc z
-    "ABF0E004-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // gyro x
-    "ABF0E005-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // gyro y
-    "ABF0E006-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // gyro z
-    "ABF0E007-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), // temperature
+  service: { uuid: "ABF0E000-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), name: "Arduino IMU" },
+  characteristics: [
+    { name: "timer", uuid: "ABF0E001-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "uint32", unit: "msec", little_endian: true },
+    { name: "acc x", uuid: "ABF0E002-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "g", little_endian: true },
+    { name: "acc y", uuid: "ABF0E003-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "g", little_endian: true },
+    { name: "acc z", uuid: "ABF0E004-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "g", little_endian: true },
+    { name: "gyro x", uuid: "ABF0E005-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "deg/s", little_endian: true },
+    { name: "gyro y", uuid: "ABF0E006-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "deg/s", little_endian: true },
+    { name: "gyro z", uuid: "ABF0E007-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "deg/s", little_endian: true },
+    { name: "temperature", uuid: "ABF0E008-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "°C", little_endian: true },
   ]
 }
 
@@ -99,13 +90,23 @@ function CharacteristicGridCards(props) {
     )
   }
 
+  // const preset = props.preset;
+
+  function minicard(ch, preset) {
+    const cp = preset.characteristics.find((c) => c.uuid === ch.uuid)
+    return (
+      <Grid item key={ch.uuid} xs={12} md={6} lg={4}>
+        <CharacteristicCard name={cp.name} type={cp.type} characteristic={ch} avatar={<Avatar> <NumbersIcon />  </Avatar>} />
+      </Grid>
+    )
+  }
+
   const cards = characteristics.map(
     (chars) =>
-      <Grid item key={chars.uuid} xs={12} md={6} lg={4}>
-        <CharacteristicCard name="test" type="int" characteristic={chars} avatar={<Avatar> <NumbersIcon />  </Avatar>} />
-      </Grid>
+      minicard(chars, props.preset)
   );
 
+  console.log(`len minicards ${cards.length}`)
   return cards;
 }
 
@@ -116,8 +117,9 @@ class BLEManager extends React.Component {
     this.state = {
       device: null,// Promise<BluetoothDevice>
       characteristics: [],
-      service_uuid: arduino_imu.service_uuid,
+      service_uuid: arduino_imu.service.uuid,
       characteristic_uuids: arduino_imu.characteristic_uuids,
+      service_preset: arduino_imu,
       log_message: "console log message will be appear",
     }
 
@@ -127,8 +129,9 @@ class BLEManager extends React.Component {
 
   async searchDevice(e) {
     e.preventDefault();
-    console.log(this.state.service_uuid);
-    this.setState({ log_message: `service uuid = ${this.state.service_uuid}` })
+    const msg = `searching for service having uuid: ${this.state.service_preset.service.uuid}`;
+    console.log(msg);
+    this.setState({ log_message: msg })
     try {
       const ble_device = await navigator.bluetooth.requestDevice({
         filters: [{ services: [this.state.service_uuid] }]
@@ -136,9 +139,9 @@ class BLEManager extends React.Component {
 
       // https://ja.reactjs.org/docs/state-and-lifecycle.html#using-state-correctly
       this.setState({ device: ble_device });// this process may be still async
+      this.setState({ log_message: `connecting ${ble_device.name}` })
 
       console.log(`device name: ${ble_device.name}`);
-      // console.log(`state.device name: ${this.device.name}`); // null access error
 
       console.log('Connecting to GATT Server...');
       const server = await ble_device.gatt.connect();
@@ -149,15 +152,16 @@ class BLEManager extends React.Component {
       // get the all characteristic uuids
 
       console.log('Getting Characteristics...');
+      let preset_characteristic_uuids = this.state.service_preset.characteristics.map((c) => c.uuid);
       let characteristics = [];
-      for (let index = 0; index < this.state.characteristic_uuids.length; index++) {
-        const uuid = this.state.characteristic_uuids[index];
+
+      for (let index = 0; index < preset_characteristic_uuids.length; index++) {
+        const uuid = preset_characteristic_uuids[index];
         const characteristic = await service.getCharacteristic(uuid);
         console.log(`Characteristic UUID:  ${characteristic.uuid}`);
         characteristics.push(characteristic);
       }
       this.setState({ characteristics: characteristics });
-      // get value
 
     } catch (error) {
       console.log(`Argh! ${error}`);
@@ -224,7 +228,7 @@ class BLEManager extends React.Component {
             </Typography>
             <Box sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>
-                <CharacteristicGridCards characteristics={this.state.characteristics}  ></CharacteristicGridCards>
+                <CharacteristicGridCards characteristics={this.state.characteristics} preset={this.state.service_preset} ></CharacteristicGridCards>
               </Grid>
             </Box>
           </CardContent>

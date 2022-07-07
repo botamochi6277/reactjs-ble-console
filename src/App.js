@@ -35,14 +35,6 @@ import ServiceCard from './ServiceCard';
 import CharacteristicCard from './CharacteristicCard';
 import DeviceCard from './DeviceCard';
 
-function DeviceNameClip(props) {
-  const device = props.device;
-  if (device == null) {
-    return <Chip color="warning" icon={<ErrorIcon />} label={"No connected device"} />
-  } else {
-    return <Chip color="success" icon={<BluetoothIcon />} label={device.name} />
-  }
-}
 
 function BLEAvailableAlert() {
   // https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth/getAvailability
@@ -68,11 +60,33 @@ function BLEAvailableAlert() {
       );
     }
   });
+  return (
+    <div > </div>
+  );
 }
 
+// https://www.typescriptlang.org/ja/docs/handbook/jsdoc-supported-types.html#typedef、callbackおよびparam
+/**
+ * @typedef {Object} CharacteristicPreset 
+ * @property {string} name 
+ * @property {string} uuid 
+ * @property {string} type
+ * @property {string} unit 
+ * @property {boolean} little_endian 
+ */
 
+/**
+ * @typedef {Object} ServicePreset
+ * @property {string} name
+ * @property {string} uuid
+ * @property {Array<CharacteristicPreset>} characteristics
+ */
+
+/**
+ * @type {ServicePreset}
+ */
 const arduino_imu = {
-  service: { uuid: "ABF0E000-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), name: "Arduino IMU" },
+  uuid: "ABF0E000-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), name: "Arduino IMU",
   characteristics: [
     { name: "timer", uuid: "ABF0E001-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "uint32", unit: "msec", little_endian: true },
     { name: "acc x", uuid: "ABF0E002-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "g", little_endian: true },
@@ -85,6 +99,11 @@ const arduino_imu = {
   ]
 }
 
+/**
+ * 
+ * @param {{characteristics:Array<BluetoothRemoteGATTCharacteristic>,preset:object}} props 
+ * @returns 
+ */
 function CharacteristicGridCards(props) {
   const characteristics = props.characteristics;
   if (characteristics.length === 0) {
@@ -97,8 +116,19 @@ function CharacteristicGridCards(props) {
 
   // const preset = props.preset;
 
+  /**
+   * 
+   * @param {BluetoothRemoteGATTCharacteristic} ch 
+   * @param {ServicePreset} preset 
+   * @returns 
+   */
   function minicard(ch, preset) {
     const cp = preset.characteristics.find((c) => c.uuid === ch.uuid)
+    if (typeof cp === "undefined") {
+      return (
+        <></>
+      );
+    }
     return (
       <Grid item key={ch.uuid} xs={12} md={6} lg={4}>
         <CharacteristicCard name={cp.name} type={cp.type} characteristic={ch} avatar={<Avatar> <NumbersIcon />  </Avatar>} />
@@ -122,8 +152,8 @@ class BLEManager extends React.Component {
     this.state = {
       device: null,// Promise<BluetoothDevice>
       characteristics: [],
-      service_uuid: arduino_imu.service.uuid,
-      characteristic_uuids: arduino_imu.characteristic_uuids,
+      service_uuid: arduino_imu.uuid,
+      characteristic_uuids: arduino_imu.characteristics.map((c) => c.uuid),
       service_preset: arduino_imu,
       log_message: "console log message will be appear",
     }
@@ -134,13 +164,29 @@ class BLEManager extends React.Component {
 
   async searchDevice(e) {
     e.preventDefault();
-    const msg = `searching for service having uuid: ${this.state.service_preset.service.uuid}`;
+    const msg = `searching for service having uuid: ${this.state.service_preset.uuid}`;
     console.log(msg);
     this.setState({ log_message: msg })
     try {
       const ble_device = await navigator.bluetooth.requestDevice({
         filters: [{ services: [this.state.service_uuid] }]
       });
+
+      if (ble_device === undefined) {
+        const unfound_msg = `Available device is not found`
+        this.setState({ log_message: `connecting ${unfound_msg}` })
+        return;
+      }
+      if (typeof (ble_device) === "undefined") {
+        const unfound_msg = `Available device is not found`
+        this.setState({ log_message: `connecting ${unfound_msg}` })
+        return;
+      }
+      if (ble_device === null) {
+        const unfound_msg = `Available device is not found`
+        this.setState({ log_message: `connecting ${unfound_msg}` })
+        return;
+      }
 
       // https://ja.reactjs.org/docs/state-and-lifecycle.html#using-state-correctly
       this.setState({ device: ble_device });// this process may be still async

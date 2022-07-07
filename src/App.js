@@ -3,10 +3,7 @@
 import './App.css';
 import React from 'react';
 
-import CharacteristicCard from './CharacteristicCard';
-
-
-import { Card } from '@mui/material';
+import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 
@@ -35,6 +32,8 @@ import NumbersIcon from '@mui/icons-material/Numbers';
 
 
 import ServiceCard from './ServiceCard';
+import CharacteristicCard from './CharacteristicCard';
+import DeviceCard from './DeviceCard';
 
 function DeviceNameClip(props) {
   const device = props.device;
@@ -196,15 +195,7 @@ class BLEManager extends React.Component {
           </Grid>
           <Grid item xs={12} md={4} lg={4}>
             {/* device */}
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h5" component="div">
-                  <TabletAndroidIcon /> Device
-                </Typography>
-
-                <DeviceNameClip device={this.state.device} />
-              </CardContent>
-            </Card>
+            <DeviceCard device={this.state.device} />
           </Grid>
         </Grid>
 

@@ -11,11 +11,11 @@ import SearchIcon from '@mui/icons-material/Search';
 
 /**
  * 
- * @param {object} props 
+ * @param {{onClick:React.MouseEventHandler<HTMLButtonElement>,serviceUuid:string}} props 
  * @returns 
  */
 function ServiceCard(props) {
-    const on_click = props.onClick;
+    let on_click = props.onClick;
     const service_uuid = props.serviceUuid;
     return (
         <Card variant="outlined">
@@ -30,12 +30,10 @@ function ServiceCard(props) {
                     style={{ width: 400 }}
                     id="outlined-required"
                     label="Service UUID"
-                    defaultValue={service_uuid}
                     value={service_uuid}
                 />
 
                 <Button variant="contained" onClick={on_click} startIcon={<SearchIcon />}>Search</Button>
-
             </CardContent>
         </Card>
     )

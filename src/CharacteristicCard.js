@@ -57,19 +57,18 @@ function BLETypeSelect(props) {
     return (
         <Box sx={{ minWidth: 120 }}>
             <FormControl size="small">
-                <InputLabel variant="standard" id="ble-data-type-select-label" htmlFor="ble-data-type-native-select">Type</InputLabel>
+                <InputLabel id="ble-data-type-select-label" htmlFor="ble-data-type-select">Type</InputLabel>
                 <Select
                     fullWidth
                     // labelId="ble-data-type-select-label"
                     // id="ble-data-type-select"
-                    // defaultValue={'int8'}
                     value={props.value}
-                    // label="Type"
+                    label="Type"
                     onChange={handleChange}
                     variant="outlined"
                     inputProps={{
                         name: 'Type',
-                        id: 'ble-data-type-native-select',
+                        id: 'ble-data-type-select',
                     }}
                 >
                     {menus}

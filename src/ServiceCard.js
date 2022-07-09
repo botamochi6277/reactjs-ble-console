@@ -10,6 +10,9 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+
 import FunctionsIcon from '@mui/icons-material/Functions';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -55,7 +58,7 @@ function ServiceSelect(props) {
         <Box sx={{ minWidth: 240 }}>
             <FormControl fullWidth>
                 <InputLabel
-                    variant="standard"
+                    // variant="standard"
                     id="ble-data-type-select-label"
                     htmlFor="ble-service-name-select">
                     Service Name
@@ -64,8 +67,9 @@ function ServiceSelect(props) {
                     value={props.currentSrv.name}
                     onChange={handleChange}
                     variant="outlined"
+                    label="Service Name"
                     inputProps={{
-                        name: 'Type',
+                        name: 'Service',
                         id: 'ble-service-name-select',
                     }}
                 >
@@ -94,18 +98,23 @@ function ServiceCard(props) {
                 <Typography variant="h5" component="div">
                     <FunctionsIcon /> Service
                 </Typography>
-                <ServiceSelect candidates={props.candidates} onChange={on_change} currentSrv={props.service} />
+                <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                    spacing={{ xs: 1, sm: 1, md: 1 }}
+                >
+                    <ServiceSelect candidates={props.candidates} onChange={on_change} currentSrv={props.service} />
+                    {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
+                    <TextField
+                        required
+                        fullWidth
+                        // style={{ width: 400 }}
+                        id="outlined-required"
+                        label="Service UUID"
+                        value={service_uuid}
+                    />
+                    <Button variant="contained" onClick={on_click} startIcon={<SearchIcon />} fullWidth>Search</Button>
+                </Stack>
 
-                {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
-                <TextField
-                    required
-                    style={{ width: 400 }}
-                    id="outlined-required"
-                    label="Service UUID"
-                    value={service_uuid}
-                />
-
-                <Button variant="contained" onClick={on_click} startIcon={<SearchIcon />}>Search</Button>
             </CardContent>
         </Card>
     )

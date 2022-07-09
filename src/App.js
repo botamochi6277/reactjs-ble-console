@@ -34,7 +34,9 @@ import NumbersIcon from '@mui/icons-material/Numbers';
 import ServiceCard from './ServiceCard';
 import CharacteristicCard from './CharacteristicCard';
 import DeviceCard from './DeviceCard';
+import ServicePreset from './ServicePreset';
 
+const service_preset = ServicePreset();
 
 function BLEAvailableAlert() {
   // https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth/getAvailability
@@ -82,22 +84,9 @@ function BLEAvailableAlert() {
  * @property {Array<CharacteristicPreset>} characteristics
  */
 
-/**
- * @type {ServicePreset}
- */
-const arduino_imu = {
-  uuid: "ABF0E000-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), name: "Arduino IMU",
-  characteristics: [
-    { name: "timer", uuid: "ABF0E001-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "uint32", unit: "msec", little_endian: true },
-    { name: "acc x", uuid: "ABF0E002-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "g", little_endian: true },
-    { name: "acc y", uuid: "ABF0E003-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "g", little_endian: true },
-    { name: "acc z", uuid: "ABF0E004-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "g", little_endian: true },
-    { name: "gyro x", uuid: "ABF0E005-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "deg/s", little_endian: true },
-    { name: "gyro y", uuid: "ABF0E006-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "deg/s", little_endian: true },
-    { name: "gyro z", uuid: "ABF0E007-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "deg/s", little_endian: true },
-    { name: "temperature", uuid: "ABF0E008-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(), type: "float32", unit: "°C", little_endian: true },
-  ]
-}
+
+const arduino_imu = service_preset.find((p) => p.name === "Arduino IMU");
+
 
 /**
  * 
@@ -113,8 +102,6 @@ function CharacteristicGridCards(props) {
       </Grid>
     )
   }
-
-  // const preset = props.preset;
 
   /**
    * 
@@ -174,17 +161,17 @@ class BLEManager extends React.Component {
 
       if (ble_device === undefined) {
         const unfound_msg = `Available device is not found`
-        this.setState({ log_message: `connecting ${unfound_msg}` })
+        this.setState({ log_message: `${unfound_msg}` })
         return;
       }
       if (typeof (ble_device) === "undefined") {
         const unfound_msg = `Available device is not found`
-        this.setState({ log_message: `connecting ${unfound_msg}` })
+        this.setState({ log_message: `${unfound_msg}` })
         return;
       }
       if (ble_device === null) {
         const unfound_msg = `Available device is not found`
-        this.setState({ log_message: `connecting ${unfound_msg}` })
+        this.setState({ log_message: `${unfound_msg}` })
         return;
       }
 
@@ -195,6 +182,11 @@ class BLEManager extends React.Component {
       console.log(`device name: ${ble_device.name}`);
 
       console.log('Connecting to GATT Server...');
+      if (typeof ble_device.gatt === "undefined") {
+        const msg = `NO GATT Server`
+        this.setState({ log_message: msg })
+        return;
+      }
       const server = await ble_device.gatt.connect();
 
       console.log('Getting Service...');

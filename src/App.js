@@ -5,11 +5,8 @@ import React from 'react';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 
 import Typography from '@mui/material/Typography';
@@ -21,22 +18,16 @@ import Alert from '@mui/material/Alert';
 
 // icons
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
-import SearchIcon from '@mui/icons-material/Search';
-import FunctionsIcon from '@mui/icons-material/Functions';
-import TabletAndroidIcon from '@mui/icons-material/TabletAndroid';
 import EmojiSymbolsIcon from '@mui/icons-material/EmojiSymbols';
 import TerminalIcon from '@mui/icons-material/Terminal';
-import ErrorIcon from '@mui/icons-material/Error';
-
 import NumbersIcon from '@mui/icons-material/Numbers';
-
 
 import ServiceCard from './ServiceCard';
 import CharacteristicCard from './CharacteristicCard';
 import DeviceCard from './DeviceCard';
-import ServicePreset from './ServicePreset';
+import service_preset from './ServicePreset';
 
-const service_preset = ServicePreset();
+
 
 function BLEAvailableAlert() {
   // https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth/getAvailability
@@ -118,7 +109,12 @@ function CharacteristicGridCards(props) {
     }
     return (
       <Grid item key={ch.uuid} xs={12} md={6} lg={4}>
-        <CharacteristicCard name={cp.name} type={cp.type} characteristic={ch} avatar={<Avatar> <NumbersIcon />  </Avatar>} />
+        <CharacteristicCard
+          name={cp.name}
+          type={cp.type}
+          unit={cp.unit}
+          characteristic={ch}
+          avatar={<Avatar> <NumbersIcon />  </Avatar>} />
       </Grid>
     )
   }
@@ -135,18 +131,38 @@ function CharacteristicGridCards(props) {
 
 class BLEManager extends React.Component {
   constructor(props) {
+    const init_srv = service_preset[0];
+
     super(props);
+    /**
+     * @type {{device:BluetoothDevice|null,characteristics:Array<BluetoothRemoteGATTCharacteristic>,service_preset:ServicePreset,log_message:string,candidates:Array<ServicePreset>}}
+     */
     this.state = {
       device: null,// Promise<BluetoothDevice>
       characteristics: [],
-      service_uuid: arduino_imu.uuid,
-      characteristic_uuids: arduino_imu.characteristics.map((c) => c.uuid),
-      service_preset: arduino_imu,
+      service_preset: init_srv,
       log_message: "console log message will be appear",
+      candidates: service_preset,
     }
 
     this.searchDevice = this.searchDevice.bind(this);
+    this.changeService = this.changeService.bind(this);
 
+  }
+
+  changeService(name) {
+    const srv = this.state.candidates.find((c) => c.name === name);
+
+    if (typeof srv === "undefined") {
+      this.setState({
+        service_preset: service_preset[0]
+      });
+
+    } else {
+      this.setState({
+        service_preset: srv
+      });
+    }
   }
 
   async searchDevice(e) {
@@ -156,7 +172,7 @@ class BLEManager extends React.Component {
     this.setState({ log_message: msg })
     try {
       const ble_device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: [this.state.service_uuid] }]
+        filters: [{ services: [this.state.service_preset.uuid] }]
       });
 
       if (ble_device === undefined) {
@@ -190,7 +206,7 @@ class BLEManager extends React.Component {
       const server = await ble_device.gatt.connect();
 
       console.log('Getting Service...');
-      const service = await server.getPrimaryService(this.state.service_uuid);
+      const service = await server.getPrimaryService(this.state.service_preset.uuid);
 
       // get the all characteristic uuids
 
@@ -229,7 +245,12 @@ class BLEManager extends React.Component {
         <Grid container spacing={2}>
           <Grid item xs={12} md={8} lg={8}>
             {/* service */}
-            <ServiceCard serviceUuid={this.state.service_uuid} onClick={this.searchDevice} />
+            <ServiceCard
+              onClick={this.searchDevice}
+              onChange={this.changeService}
+              candidates={this.state.candidates}
+              service={this.state.service_preset}
+            />
           </Grid>
           <Grid item xs={12} md={4} lg={4}>
             {/* device */}

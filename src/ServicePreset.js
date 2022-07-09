@@ -3,7 +3,7 @@
 /**
  * @typedef {Object} CharacteristicPreset 
  * @property {string} name 
- * @property {string} uuid 
+ * @property {string|number} uuid 
  * @property {string} type
  * @property {string} unit 
  * @property {boolean} little_endian 
@@ -12,7 +12,7 @@
 /**
  * @typedef {Object} ServicePreset
  * @property {string} name
- * @property {string} uuid
+ * @property {string|number} uuid
  * @property {Array<CharacteristicPreset>} characteristics
  */
 
@@ -38,20 +38,19 @@ const imu_6_axis = {
  * @type {ServicePreset}
  */
 const heart_rate = {
-    name: "heart_rate",
-    uuid: "180d",
+    name: "Heart Rate",
+    uuid: 0x180d,
     characteristics: [
-        { name: "heart rate measurement", uuid: "2a37", type: "uint16", unit: "bpm", little_endian: true },
-        { name: "heart rate control point", uuid: "2a39", type: "int16", unit: "", little_endian: true }
+        { name: "heart rate measurement", uuid: "00002a37-0000-1000-8000-00805f9b34fb", type: "uint16", unit: "bpm", little_endian: true },//"0x2a37"
+        { name: "body sensor location", uuid: "00002a38-0000-1000-8000-00805f9b34fb", type: "int16", unit: "", little_endian: true }//0x2a39
     ]
 }
 
-/**
- * 
- * @returns {Array<ServicePreset>}
- */
-function ServicePreset() {
-    return [imu_6_axis, heart_rate];
-}
 
-export default ServicePreset;
+/**
+ * @type {Array<ServicePreset>}
+ */
+const service_preset = [imu_6_axis, heart_rate];
+
+
+export default service_preset;

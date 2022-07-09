@@ -2,12 +2,12 @@ import React from 'react';
 
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
+import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
-import NativeSelect from '@mui/material/NativeSelect';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -177,9 +177,11 @@ function ValueField(props) {
     return (
         <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
             <NumbersIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-            <TextField id="input-with-sx" label="value" variant="standard" InputProps={{
-                readOnly: readonly,
-            }} value={v} />
+            <TextField id="input-with-sx" label="value" variant="standard"
+                InputProps={{
+                    readOnly: readonly,
+                    endAdornment: <InputAdornment position="end">{props.unit}</InputAdornment>
+                }} value={v} />
             {btn}
         </Box>
     );
@@ -198,6 +200,7 @@ class CharacteristicCard extends React.Component {
             type: props.type,
             avatar: props.avatar,
             name: props.name,
+            unit: props.unit,
             value: 0,
             descriptors: [],
             decoder: decoder
@@ -344,7 +347,7 @@ class CharacteristicCard extends React.Component {
                         <BLETypeSelect onChange={this.changeBleType} value={this.state.type} />
                         <Button variant="contained" onClick={this.readValue}>Read Value</Button>
                     </CardActions>
-                    <ValueField value={value} />
+                    <ValueField value={value} unit={this.state.unit} />
                 </CardContent>
             </Card>
         )

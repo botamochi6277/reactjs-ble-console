@@ -135,7 +135,7 @@ class BLEManager extends React.Component {
 
     super(props);
     /**
-     * @type {{device:BluetoothDevice|null,characteristics:Array<BluetoothRemoteGATTCharacteristic>,service_preset:ServicePreset,log_message:string,candidates:Array<ServicePreset>}}
+     * @type {{device:BluetoothDevice|null,characteristics:Array<BluetoothRemoteGATTCharacteristic>,service_preset:ServicePreset,log_message:string,candidates:Array<ServicePreset>,search_all_device:boolean}}
      */
     this.state = {
       device: null,// Promise<BluetoothDevice>
@@ -143,11 +143,23 @@ class BLEManager extends React.Component {
       service_preset: init_srv,
       log_message: "console log message will be appear",
       candidates: service_preset,
+      search_all_device: false
     }
 
+    this.switchSearchAllDevice = this.switchSearchAllDevice.bind(this);
     this.searchDevice = this.searchDevice.bind(this);
     this.changeService = this.changeService.bind(this);
 
+  }
+
+  /**
+   * 
+   * @param {boolean} b 
+   */
+  switchSearchAllDevice(b) {
+    this.setState(
+      { search_all_device: b }
+    );
   }
 
   changeService(name) {
@@ -167,13 +179,31 @@ class BLEManager extends React.Component {
 
   async searchDevice(e) {
     e.preventDefault();
+    let filters = [];
+    let filter_service = this.state.service_preset.uuid;
+    if (filter_service.startsWith('0x')) {
+      const i = parseInt(filter_service);
+      if (i) {
+        filters.push({ services: [i] });
+      }
+    }
+    else if (filter_service) {
+      filters.push({ services: [filter_service] });
+    }
+
+    let options = {};
+    if (this.state.search_all_device) {
+      options.acceptAllDevices = true;
+    } else {
+      options.filters = filters;
+    }
+
     const msg = `searching for service having uuid: ${this.state.service_preset.uuid}`;
     console.log(msg);
     this.setState({ log_message: msg })
     try {
-      const ble_device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: [this.state.service_preset.uuid] }]
-      });
+
+      const ble_device = await navigator.bluetooth.requestDevice(options);
 
       if (ble_device === undefined) {
         const unfound_msg = `Available device is not found`
@@ -242,21 +272,15 @@ class BLEManager extends React.Component {
           </CardContent>
         </Card>
 
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={8} lg={8}>
-            {/* service */}
-            <ServiceCard
-              onClick={this.searchDevice}
-              onChange={this.changeService}
-              candidates={this.state.candidates}
-              service={this.state.service_preset}
-            />
-          </Grid>
-          <Grid item xs={12} md={4} lg={4}>
-            {/* device */}
-            <DeviceCard device={this.state.device} />
-          </Grid>
-        </Grid>
+        <ServiceCard
+          onClick={this.searchDevice}
+          onChangeService={this.changeService}
+          onChangeSwitch={this.switchSearchAllDevice}
+          candidates={this.state.candidates}
+          service={this.state.service_preset}
+          searchAllDevice={this.state.search_all_device}
+        />
+        <DeviceCard device={this.state.device} />
 
         {/* Characteristics */}
         <Card>

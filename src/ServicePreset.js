@@ -3,7 +3,7 @@
 /**
  * @typedef {Object} CharacteristicPreset 
  * @property {string} name 
- * @property {string|number} uuid 
+ * @property {string} uuid 
  * @property {string} type
  * @property {string} unit 
  * @property {boolean} little_endian 
@@ -12,7 +12,7 @@
 /**
  * @typedef {Object} ServicePreset
  * @property {string} name
- * @property {string|number} uuid
+ * @property {string} uuid
  * @property {Array<CharacteristicPreset>} characteristics
  */
 
@@ -39,7 +39,7 @@ const imu_6_axis = {
  */
 const heart_rate = {
     name: "Heart Rate",
-    uuid: 0x180d,
+    uuid: "0x180d",
     characteristics: [
         { name: "heart rate measurement", uuid: "00002a37-0000-1000-8000-00805f9b34fb", type: "uint16", unit: "bpm", little_endian: true },//"0x2a37"
         { name: "body sensor location", uuid: "00002a38-0000-1000-8000-00805f9b34fb", type: "int16", unit: "", little_endian: true }//0x2a39

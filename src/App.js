@@ -104,7 +104,15 @@ function CharacteristicGridCards(props) {
     const cp = preset.characteristics.find((c) => c.uuid === ch.uuid)
     if (typeof cp === "undefined") {
       return (
-        <></>
+        // set default variables
+        <Grid item key={ch.uuid} xs={12} md={6} lg={4}>
+          <CharacteristicCard
+            name={`${ch.uuid.slice(0, 6)}`}
+            type="uint8"
+            unit=""
+            characteristic={ch}
+            avatar={<Avatar> <NumbersIcon />  </Avatar>} />
+        </Grid>
       );
     }
     return (
@@ -235,8 +243,14 @@ class BLEManager extends React.Component {
       }
       const server = await ble_device.gatt.connect();
 
+      let target_srv_uuid;
+      if (this.state.service_preset.uuid.startsWith('0x')) {
+        target_srv_uuid = parseInt(this.state.service_preset.uuid);
+      } else {
+        target_srv_uuid = this.state.service_preset.uuid;
+      }
       console.log('Getting Service...');
-      const service = await server.getPrimaryService(this.state.service_preset.uuid);
+      const service = await server.getPrimaryService(target_srv_uuid);
 
       // get the all characteristic uuids
 
@@ -245,8 +259,13 @@ class BLEManager extends React.Component {
       let characteristics = [];
 
       for (let index = 0; index < preset_characteristic_uuids.length; index++) {
-        const uuid = preset_characteristic_uuids[index];
-        const characteristic = await service.getCharacteristic(uuid);
+        let ch_uuid;
+        if (preset_characteristic_uuids[index].startsWith('0x')) {
+          ch_uuid = parseInt(preset_characteristic_uuids[index]);
+        } else {
+          ch_uuid = preset_characteristic_uuids[index];
+        }
+        const characteristic = await service.getCharacteristic(ch_uuid);
         console.log(`Characteristic UUID:  ${characteristic.uuid}`);
         characteristics.push(characteristic);
       }

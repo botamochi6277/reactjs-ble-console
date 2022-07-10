@@ -25,6 +25,6 @@ jobs:
       - name: Commit and push files
         run: |
           git checkout -b gh-pages
-          git add .
+          git add ./build
           git commit -m "build pages" -a
           git push origin HEAD:gh-pages --force

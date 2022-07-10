@@ -10,7 +10,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       - id: Build-Reactjs
-        uses: botamochi6277/reactjs-ble-console.git@main
+        uses: botamochi6277/reactjs-ble-console@main
       - name: git setting
         run: |
           git config --local user.email "action_runner@users.noreply.github.com"

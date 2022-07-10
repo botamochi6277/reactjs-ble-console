@@ -2,6 +2,7 @@
   "name": "reactjs-ble-console",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://botamochi6277.github.io/reactjs-ble-console/",
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
@@ -36,8 +37,7 @@
     ],
     "development": [
       "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      "last 1 firefox version"
     ]
   }
 }

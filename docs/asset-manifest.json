@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/reactjs-ble-console/static/css/main.31cdd5d0.css",
+    "main.js": "/reactjs-ble-console/static/js/main.cc30fd35.js",
+    "static/js/787.4932075f.chunk.js": "/reactjs-ble-console/static/js/787.4932075f.chunk.js",
+    "index.html": "/reactjs-ble-console/index.html",
+    "main.31cdd5d0.css.map": "/reactjs-ble-console/static/css/main.31cdd5d0.css.map",
+    "main.cc30fd35.js.map": "/reactjs-ble-console/static/js/main.cc30fd35.js.map",
+    "787.4932075f.chunk.js.map": "/reactjs-ble-console/static/js/787.4932075f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.31cdd5d0.css",
+    "static/js/main.cc30fd35.js"
+  ]
+}

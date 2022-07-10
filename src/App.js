@@ -12,7 +12,6 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Alert from '@mui/material/Alert';
 
@@ -74,9 +73,6 @@ function BLEAvailableAlert() {
  * @property {string} uuid
  * @property {Array<CharacteristicPreset>} characteristics
  */
-
-
-const arduino_imu = service_preset.find((p) => p.name === "Arduino IMU");
 
 
 /**

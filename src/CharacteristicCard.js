@@ -15,8 +15,6 @@ import { Button, Card } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 
-import ErrorIcon from '@mui/icons-material/Error';
-
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import EditIcon from '@mui/icons-material/Edit';
@@ -145,21 +143,6 @@ function PropertiesChip(props) {
     return (
         chips
     )
-}
-
-function DescriptorsChips(props) {
-    const descriptors = props.descriptors;
-    if (descriptors.length === 0) {
-        return (
-            <Chip icon={<ErrorIcon />} label="No Descriptor"></Chip>
-        )
-    } else {
-        const chips = descriptors.map(
-            (d) =>
-                <Chip key={d} label={d} />
-        );
-        return chips;
-    }
 }
 
 function ValueField(props) {

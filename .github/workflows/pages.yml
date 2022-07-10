@@ -3,14 +3,27 @@ on:
   push:
     branches: [main]
 jobs:
-  build_vue:
+  build_reactjs:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['12.x']
     name: Deploy sample pages
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
       - id: Build-Reactjs
         uses: botamochi6277/reactjs-ble-console@main
+      - name: install and build
+        run: |
+          npm ci
+          npm run build
+        env:
+          CI: true
       - name: git setting
         run: |
           git config --local user.email "action_runner@users.noreply.github.com"

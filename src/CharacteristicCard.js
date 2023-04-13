@@ -177,8 +177,8 @@ class CharacteristicCard extends React.Component {
     constructor(props) {
         super(props);
 
-        const t = props.type
-        const decoder = ble_types.find((b) => b.name === t).decoder
+        const t = props.type;
+        const decoder = ble_types.find((b) => b.name === t)?.decoder;
 
         this.state = {
             characteristic: props.characteristic,
@@ -205,8 +205,8 @@ class CharacteristicCard extends React.Component {
         const t = ble_types.find(element => element.name === v)
         this.setState(
             {
-                type: t.name,
-                decoder: t.decoder
+                type: t ? t.name : "string",
+                decoder: t ? t.decoder : ble_types['string'].decoder
             }
         );
     }
@@ -222,7 +222,7 @@ class CharacteristicCard extends React.Component {
         event.preventDefault();
         console.log(`reading value of ${this.state.characteristic.uuid}`);
         const dv = await this.state.characteristic.readValue();//dataview
-        const v = this.state.decoder(dv, 0);
+        const v = this.state.decoder ? this.state.decoder(dv, 0) : 0;
         console.log(`value = ${v}, byte_length = ${dv.buffer.byteLength}`);
 
         this.setState({ value: v });
@@ -265,8 +265,10 @@ class CharacteristicCard extends React.Component {
                 case "00002904-0000-1000-8000-00805f9b34fb":
                     // Characteristic Presentation Format
                     const v3 = await descriptor.readValue();
-                    const n = v3.getUint16(0, true);
-                    dscp.push(n);
+                    console.log(`Presentation view: ${v3.byteLength} byte`)
+
+                    // const n = v3.getUint8(0, true);
+                    // dscp.push(n);
                     break;
                 default:
                     console.log(`Unprepared Descriptor: ${descriptor.uuid}`);
@@ -284,7 +286,7 @@ class CharacteristicCard extends React.Component {
 
     handleNotifications(event) {
         let value = event.target.value;
-        const v = this.state.decoder(value, 0);
+        const v = this.state.decoder ? this.state.decoder(value, 0) : 0;
         this.setState({ value: v });
     }
 
@@ -296,13 +298,13 @@ class CharacteristicCard extends React.Component {
             }
         }
 
-        const uuid = this.state.characteristic.uuid;
+        const uuid = this.state.characteristic ? this.state.characteristic.uuid : "0x00";
         // BluetoothCharacteristicProperties
-        const properties = this.state.characteristic.properties;
+        const properties = this.state.characteristic ? this.state.characteristic.properties : undefined;
         // const value = this.state.characteristic.value;
         const value = this.state.value;
 
-        let readonly = !properties.write;
+        let readonly = properties ? !properties.write : true;
 
         if (this.state.characteristic == null) {
             return (
@@ -315,7 +317,7 @@ class CharacteristicCard extends React.Component {
         }
 
 
-        if (properties.notify) {
+        if (properties?.notify) {
             if (!this.is_notifying) {
                 // start notifying
                 this.is_notifying = true;
@@ -328,6 +330,20 @@ class CharacteristicCard extends React.Component {
             }
         }
 
+        const ReadValBtn = (props) => {
+            if (props.properties.notify) {
+                return (
+                    <></>
+                )
+            } else if (props.properties.read) {
+                return (
+                    <Button variant="contained" onClick={this.readValue}>Read Value</Button>
+                )
+            } else {
+                return (<></>)
+            }
+        }
+
         return (
             <Card>
                 <CardContent>
@@ -336,10 +352,9 @@ class CharacteristicCard extends React.Component {
 
                     <PropertiesChip properties={properties} readonly={readonly} />
                     <Chip label={uuid} variant="outlined" avatar={<Avatar>uuid</Avatar>} />
-
                     <CardActions>
                         <BLETypeSelect onChange={this.changeBleType} value={this.state.type} />
-                        <Button variant="contained" onClick={this.readValue}>Read Value</Button>
+                        <ReadValBtn properties={properties}></ReadValBtn>
                     </CardActions>
                     <ValueField value={value} unit={this.state.unit} />
                 </CardContent>

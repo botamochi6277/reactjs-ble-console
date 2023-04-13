@@ -33,7 +33,10 @@ function BLEAvailableAlert() {
 
   if (typeof (navigator.bluetooth) === "undefined") {
     return (
-      <Alert severity="error">Web Bluetooth API is unavailable with this browser</Alert>
+      <Alert severity="error">
+        Web Bluetooth API is unavailable with this browser.
+        Google Chrome is recommended.
+      </Alert>
     );
   }
 
@@ -128,8 +131,10 @@ function CharacteristicGridCards(props) {
       minicard(chars, props.preset)
   );
 
-  console.log(`len minicards ${cards.length}`)
-  return cards;
+  console.debug(`len minicards ${cards.length}`)
+  return (
+    <>{cards}</>
+  );
 }
 
 
@@ -318,8 +323,6 @@ class BLEManager extends React.Component {
 
 
 function App() {
-
-  console.log("hello app!")
 
   return (
     <div className="App">

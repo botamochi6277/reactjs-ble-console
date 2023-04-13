@@ -22,8 +22,8 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PodcastsIcon from '@mui/icons-material/Podcasts';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import NumbersIcon from '@mui/icons-material/Numbers';
-
-
+// import TextDecoder from 'util'
+// var util = require('util');
 const utf8_decoder = new TextDecoder('utf-8')
 
 
@@ -140,8 +140,11 @@ function PropertiesChip(props) {
             <Chip label={c.name} icon={c.icon} key={c.name}></Chip>
     )
 
+    // https://bobbyhadz.com/blog/react-cannot-be-used-as-a-jsx-component
     return (
-        chips
+        <>
+            {chips}
+        </>
     )
 }
 
@@ -239,13 +242,14 @@ class CharacteristicCard extends React.Component {
 
         for (let index = 0; index < descriptors.length; index++) {
             const descriptor = descriptors[index];
-            console.log(`descriptor uuid: ${descriptor.uuid}`);
+            console.debug(`descriptor uuid: ${descriptor.uuid}`);
             switch (descriptor.uuid) {
                 case "00002901-0000-1000-8000-00805f9b34fb":
                     // Characteristic User Descriptor
                     const v = await descriptor.readValue();
-                    console.log(`${decoder.decode(v)}`);
+                    console.debug(`${decoder.decode(v)}`);
                     dscp.push(decoder.decode(v));
+                    // string
                     this.setState(
                         { name: decoder.decode(v) }
                     );
@@ -254,13 +258,21 @@ class CharacteristicCard extends React.Component {
                 case "00002902-0000-1000-8000-00805f9b34fb":
                     // Client Characteristic Configuration descriptor.
                     const v2 = await descriptor.readValue();
-                    console.log(`${decoder.decode(v2)}`);
+                    console.debug(`${decoder.decode(v2)}`);
+                    // int
                     dscp.push(decoder.decode(v2));
                     break;
-                default: {
-                    console.log(`Unknown Descriptor: ${descriptor.uuid}`);
+                case "00002904-0000-1000-8000-00805f9b34fb":
+                    // Characteristic Presentation Format
+                    const v3 = await descriptor.readValue();
+                    const n = v3.getUint16(0, true);
+                    dscp.push(n);
+                    break;
+                default:
+                    console.log(`Unprepared Descriptor: ${descriptor.uuid}`);
                     console.log(`type: ${typeof (descriptor.uuid)}`);
-                }
+                    break;
+
             }
         }
 

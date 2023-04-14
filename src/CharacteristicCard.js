@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-import { Button, Card } from '@mui/material';
+import { Button, Card, CardHeader } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 
@@ -22,6 +22,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PodcastsIcon from '@mui/icons-material/Podcasts';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import NumbersIcon from '@mui/icons-material/Numbers';
+import { grey } from '@mui/material/colors';
 // import TextDecoder from 'util'
 // var util = require('util');
 const utf8_decoder = new TextDecoder('utf-8')
@@ -54,18 +55,18 @@ function BLETypeSelect(props) {
 
     return (
         <Box sx={{ minWidth: 120 }}>
-            <FormControl size="small">
-                <InputLabel id="ble-data-type-select-label" htmlFor="ble-data-type-select">Type</InputLabel>
+            <FormControl size='small'>
+                <InputLabel id="ble-data-type-select-label" htmlFor="ble-data-type-select">format</InputLabel>
                 <Select
                     fullWidth
                     // labelId="ble-data-type-select-label"
                     // id="ble-data-type-select"
                     value={props.value}
-                    label="Type"
+                    label="format"
                     onChange={handleChange}
-                    variant="outlined"
+                    variant="standard"
                     inputProps={{
-                        name: 'Type',
+                        name: 'format',
                         id: 'ble-data-type-select',
                     }}
                 >
@@ -161,10 +162,15 @@ function ValueField(props) {
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-            <NumbersIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+
             <TextField id="input-with-sx" label="value" variant="standard"
                 InputProps={{
                     readOnly: readonly,
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <NumbersIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+                        </InputAdornment>
+                    ),
                     endAdornment: <InputAdornment position="end">{props.unit}</InputAdornment>
                 }} value={v} />
             {btn}
@@ -266,12 +272,13 @@ class CharacteristicCard extends React.Component {
                     // Characteristic Presentation Format
                     const v3 = await descriptor.readValue();
                     console.log(`Presentation view: ${v3.byteLength} byte`)
+                    console.log(v3.getUint8().toString(16))
 
                     // const n = v3.getUint8(0, true);
                     // dscp.push(n);
                     break;
                 default:
-                    console.log(`Unprepared Descriptor: ${descriptor.uuid}`);
+                    console.log(`Unprepagrey Descriptor: ${descriptor.uuid}`);
                     console.log(`type: ${typeof (descriptor.uuid)}`);
                     break;
 
@@ -346,17 +353,29 @@ class CharacteristicCard extends React.Component {
 
         return (
             <Card>
-                <CardContent>
-                    <Typography variant="h5" component="div">{this.state.name}</Typography>
-                    {/* <DescriptorsChips descriptors={this.state.descriptors} /> */}
+                <CardHeader
+                    avatar={
+                        <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">
+                            {this.state.name[0]}
+                        </Avatar>
 
-                    <PropertiesChip properties={properties} readonly={readonly} />
-                    <Chip label={uuid} variant="outlined" avatar={<Avatar>uuid</Avatar>} />
+                    }
+                    title={this.state.name}
+                    subheader={uuid}
+                >
+                </CardHeader>
+                <CardContent>
                     <CardActions>
                         <BLETypeSelect onChange={this.changeBleType} value={this.state.type} />
                         <ReadValBtn properties={properties}></ReadValBtn>
+                        <ValueField value={value} unit={this.state.unit} />
                     </CardActions>
-                    <ValueField value={value} unit={this.state.unit} />
+
+
+                    <CardActions disableSpacing>
+                        <PropertiesChip properties={properties} readonly={readonly} />
+                    </CardActions>
+
                 </CardContent>
             </Card>
         )

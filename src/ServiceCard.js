@@ -1,6 +1,5 @@
 //@ts-check
 import React from 'react';
-import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { CardHeader } from '@mui/material';
@@ -14,8 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-
+import Grid from '@mui/material/Grid';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -90,10 +88,9 @@ function ServiceSelect(props) {
     );
 
     return (
-        <Box sx={{ minWidth: 240 }}>
-            <FormControl fullWidth>
+        <Box >
+            <FormControl variant="standard" fullWidth>
                 <InputLabel
-                    // variant="standard"
                     id="ble-data-type-select-label"
                     htmlFor="ble-service-name-select">
                     Service Name
@@ -101,7 +98,6 @@ function ServiceSelect(props) {
                 <Select
                     value={props.currentSrv.name}
                     onChange={handleChange}
-                    variant="standard"
                     label="Service Name"
                     inputProps={{
                         name: 'Service',
@@ -145,26 +141,29 @@ function ServiceCard(props) {
 
             </CardHeader>
             <CardContent>
+                {/* 2-4-4-2 */}
+                <Grid container spacing={2}>
 
-                <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
-                    spacing={{ xs: 1, sm: 1, md: 1 }}
-                >
-                    <SwitchAllDevice searchAllDevice={search_all_device} onChange={on_switch} />
-                    <ServiceSelect candidates={props.candidates} onChange={on_change} currentSrv={props.service} />
-                    {/* https://zenn.dev/enish/articles/5cc332d3eeb1a7 */}
-                    <TextField
-                        required
-                        fullWidth
-                        variant='standard'
-                        // style={{ width: 400 }}
-                        id="outlined-required"
-                        label="Service UUID"
-                        value={service_uuid}
-                    />
-                    <Button variant="contained" onClick={on_click} startIcon={<SearchIcon />} fullWidth>Search</Button>
-                </Stack>
-
+                    <Grid item xs={6} md={3}>
+                        <ServiceSelect candidates={props.candidates} onChange={on_change} currentSrv={props.service} />
+                    </Grid>
+                    <Grid item xs={6} md={4}>
+                        <TextField
+                            required
+                            fullWidth
+                            variant='standard'
+                            id="outlined-required"
+                            label="Service UUID"
+                            value={service_uuid}
+                        />
+                    </Grid>
+                    <Grid item xs={6} md={3}>
+                        <SwitchAllDevice searchAllDevice={search_all_device} onChange={on_switch} />
+                    </Grid>
+                    <Grid item xs={6} md={2}>
+                        <Button variant="contained" onClick={on_click} startIcon={<SearchIcon />} fullWidth>Search</Button>
+                    </Grid>
+                </Grid>
             </CardContent>
         </Card>
     )

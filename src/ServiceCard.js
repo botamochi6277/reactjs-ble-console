@@ -1,8 +1,10 @@
 //@ts-check
-
+import React from 'react';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import { CardHeader } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
@@ -52,7 +54,7 @@ function SwitchAllDevice(props) {
     };
 
     return (
-        <FormControl fullWidth component="fieldset" variant="outlined">
+        <FormControl fullWidth component="fieldset" variant="standard">
             <FormControlLabel
                 control={
                     <Switch
@@ -99,7 +101,7 @@ function ServiceSelect(props) {
                 <Select
                     value={props.currentSrv.name}
                     onChange={handleChange}
-                    variant="outlined"
+                    variant="standard"
                     label="Service Name"
                     inputProps={{
                         name: 'Service',
@@ -131,10 +133,19 @@ function ServiceCard(props) {
     const search_all_device = props.searchAllDevice;
     return (
         <Card variant="outlined">
+            <CardHeader
+                avatar={
+                    <Avatar sx={{ width: 36, height: 36 }}>
+                        <FunctionsIcon />
+                    </Avatar>
+                }
+                title="Service"
+                titleTypographyProps={{ variant: 'h5' }}
+            >
+
+            </CardHeader>
             <CardContent>
-                <Typography variant="h5" component="div">
-                    <FunctionsIcon /> Service
-                </Typography>
+
                 <Stack
                     direction={{ xs: 'column', sm: 'row' }}
                     spacing={{ xs: 1, sm: 1, md: 1 }}
@@ -145,6 +156,7 @@ function ServiceCard(props) {
                     <TextField
                         required
                         fullWidth
+                        variant='standard'
                         // style={{ width: 400 }}
                         id="outlined-required"
                         label="Service UUID"

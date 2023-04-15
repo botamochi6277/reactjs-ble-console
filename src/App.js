@@ -10,7 +10,11 @@ import {
   Container,
   Alert,
   Grid,
-  Avatar
+  Avatar,
+  Stack,
+  AppBar,
+  Toolbar,
+  Typography
 } from '@mui/material';
 
 // icons
@@ -281,7 +285,7 @@ class BLEManager extends React.Component {
 
   render() {
     return (
-      <div>
+      <Stack spacing={1}>
         {/* logger */}
         <Card variant="outlined">
           <CardHeader
@@ -329,7 +333,7 @@ class BLEManager extends React.Component {
           </CardContent>
         </Card>
 
-      </div>
+      </Stack>
     )
   }
 }
@@ -340,8 +344,32 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <h1> <BluetoothIcon />  BLE console</h1>
-        <BLEManager ></BLEManager>
+        <Stack spacing={1}>
+          <AppBar position="static">
+            <Container maxWidth="xl">
+              <Toolbar disableGutters>
+                <BluetoothIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="a"
+                  href="/"
+                  sx={{
+                    mr: 2,
+                    display: { xs: 'none', md: 'flex' },
+                    fontFamily: 'monospace',
+                    fontWeight: 700,
+                    letterSpacing: '.3rem',
+                    color: 'inherit',
+                    textDecoration: 'none',
+                  }}
+                >
+                  BLE WEB Console
+                </Typography>
+              </Toolbar></Container></AppBar>
+
+          <BLEManager ></BLEManager>
+        </Stack>
       </Container>
 
     </div>

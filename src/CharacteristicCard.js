@@ -1,19 +1,17 @@
 import React from 'react';
 
-import Typography from '@mui/material/Typography';
-import Chip from '@mui/material/Chip';
-import InputAdornment from '@mui/material/InputAdornment';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-
-import { Button, Card, CardHeader } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
+import {
+    Button, Card, CardHeader, CardContent, CardActions, Typography,
+    Chip,
+    InputAdornment,
+    InputLabel,
+    FormControl,
+    Box,
+    Avatar,
+    TextField,
+    Select,
+    MenuItem
+} from '@mui/material';
 
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import NotificationsIcon from '@mui/icons-material/Notifications';

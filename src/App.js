@@ -3,17 +3,15 @@
 import './App.css';
 import React from 'react';
 
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import { CardHeader } from '@mui/material';
-
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-
-import Grid from '@mui/material/Grid';
-import Chip from '@mui/material/Chip';
-import Avatar from '@mui/material/Avatar';
-import Alert from '@mui/material/Alert';
+import {
+  CardHeader, Card,
+  CardContent,
+  Box,
+  Container,
+  Alert,
+  Grid,
+  Avatar
+} from '@mui/material';
 
 // icons
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
@@ -88,7 +86,8 @@ function CharacteristicGridCards(props) {
   if (characteristics.length === 0) {
     return (
       <Grid item>
-        <Chip label="Characteristics will appear after connecting device"></Chip>
+        <Alert severity='info'>Characteristics will appear after connecting device</Alert>
+        {/* <Chip label="Characteristics will appear after connecting device"></Chip> */}
       </Grid>
     )
   }

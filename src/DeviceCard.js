@@ -1,13 +1,8 @@
 //@ts-check
 import React from 'react';
 
-import Chip from '@mui/material/Chip';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import { CardHeader } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
+import { CardHeader, Alert, Avatar, Chip, Card, CardContent } from '@mui/material';
 
-import ErrorIcon from '@mui/icons-material/Error';
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import TabletAndroidIcon from '@mui/icons-material/TabletAndroid';
 
@@ -16,10 +11,10 @@ import TabletAndroidIcon from '@mui/icons-material/TabletAndroid';
  * @param {{device:BluetoothDevice|null}} props 
  * @returns 
  */
-function DeviceNameClip(props) {
+function DeviceName(props) {
     const device = props.device;
     if (device == null) {
-        return <Chip color="warning" icon={<ErrorIcon />} label={"No connected device"} />
+        return (<Alert severity="info">No connected device</Alert>)
     } else {
         return <Chip color="success" icon={<BluetoothIcon />} label={device.name} />
     }
@@ -47,8 +42,7 @@ function DeviceCard(props) {
 
             </CardHeader>
             <CardContent>
-
-                <DeviceNameClip device={device} />
+                <DeviceName device={device} />
             </CardContent>
         </Card>
     );

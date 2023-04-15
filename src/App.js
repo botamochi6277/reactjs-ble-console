@@ -1,6 +1,5 @@
 //@ts-check
 
-import './App.css';
 import React from 'react';
 
 import {
@@ -15,9 +14,10 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button, IconButton, Link
+  Link,
+  Button,
+  createTheme, ThemeProvider, CssBaseline,
 } from '@mui/material';
-
 // icons
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import EmojiSymbolsIcon from '@mui/icons-material/EmojiSymbols';
@@ -30,7 +30,8 @@ import ServiceCard from './ServiceCard';
 import CharacteristicCard from './CharacteristicCard';
 import DeviceCard from './DeviceCard';
 import service_preset from './ServicePreset';
-
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 
 function BLEAvailableAlert() {
@@ -344,11 +345,29 @@ class BLEManager extends React.Component {
 
 function App() {
 
+
+  const [theme, setTheme] = React.useState(
+    createTheme({
+      palette: {
+        mode: 'dark',
+      },
+    })
+  );
+
+  const toggleTheme = (theme) => {
+    if (theme.palette.mode === 'dark') {
+      setTheme(createTheme({ palette: { mode: 'light', }, }))
+    } else {
+      setTheme(createTheme({ palette: { mode: 'dark', }, }))
+    }
+  }
+
   return (
-    <div className="App">
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Container>
         <Stack spacing={1}>
-          <AppBar position="static">
+          <AppBar position="static" color="primary" enableColorOnDark>
             <Container maxWidth="xl">
               <Toolbar disableGutters>
                 <BluetoothIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -377,10 +396,20 @@ function App() {
               </Toolbar></Container></AppBar>
 
           <BLEManager ></BLEManager>
+
+          <Button
+            startIcon={theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+            variant="outlined"
+            color="secondary"
+            onClick={() => toggleTheme(theme)}
+            fullWidth
+          >
+            {theme.palette.mode} mode
+          </Button>
         </Stack>
       </Container>
+    </ThemeProvider>
 
-    </div>
   );
 }
 

@@ -52,8 +52,8 @@ function BLETypeSelect(props) {
     const menus = ble_types.map((b) => <MenuItem value={b.name} key={b.name}>{b.name}</MenuItem>)
 
     return (
-        <Box sx={{ minWidth: 120 }}>
-            <FormControl size='small'>
+        <Box >
+            <FormControl size='small' variant="standard">
                 <InputLabel id="ble-data-type-select-label" htmlFor="ble-data-type-select">format</InputLabel>
                 <Select
                     fullWidth
@@ -62,7 +62,6 @@ function BLETypeSelect(props) {
                     value={props.value}
                     label="format"
                     onChange={handleChange}
-                    variant="standard"
                     inputProps={{
                         name: 'format',
                         id: 'ble-data-type-select',

@@ -1,15 +1,15 @@
 //@ts-check
 import React from 'react';
 
-import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import { CardHeader } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
 
 import ErrorIcon from '@mui/icons-material/Error';
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import TabletAndroidIcon from '@mui/icons-material/TabletAndroid';
-
 
 /**
  * 
@@ -35,10 +35,19 @@ function DeviceCard(props) {
     const device = props.device;
     return (
         <Card variant="outlined">
+            <CardHeader
+                avatar={
+                    <Avatar sx={{ width: 36, height: 36 }}>
+                        <TabletAndroidIcon />
+                    </Avatar>
+                }
+                title="Device"
+                titleTypographyProps={{ variant: 'h5' }}
+            >
+
+            </CardHeader>
             <CardContent>
-                <Typography variant="h5" component="div">
-                    <TabletAndroidIcon /> Device
-                </Typography>
+
                 <DeviceNameClip device={device} />
             </CardContent>
         </Card>

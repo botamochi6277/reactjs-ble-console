@@ -5,11 +5,11 @@ import React from 'react';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import { CardHeader } from '@mui/material';
 
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
-import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
@@ -285,8 +285,16 @@ class BLEManager extends React.Component {
       <div>
         {/* logger */}
         <Card variant="outlined">
+          <CardHeader
+            avatar={
+              <Avatar sx={{ width: 36, height: 36 }}>
+                <TerminalIcon />
+              </Avatar>
+            }
+            title="Console Log"
+            titleTypographyProps={{ variant: 'h5' }}
+          ></CardHeader>
           <CardContent>
-            <Typography variant="h5" component="div"> <TerminalIcon />  Console Log</Typography>
             <BLEAvailableAlert />
             <Alert severity="info">{this.state.log_message}</Alert>
           </CardContent>
@@ -304,10 +312,16 @@ class BLEManager extends React.Component {
 
         {/* Characteristics */}
         <Card>
+          <CardHeader
+            avatar={
+              <Avatar sx={{ width: 36, height: 36 }}>
+                <EmojiSymbolsIcon />
+              </Avatar>
+            }
+            title="Characteristics"
+            titleTypographyProps={{ variant: 'h5' }}
+          ></CardHeader>
           <CardContent>
-            <Typography variant="h5" component="div">
-              <EmojiSymbolsIcon /> Characteristics
-            </Typography>
             <Box sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <CharacteristicGridCards characteristics={this.state.characteristics} preset={this.state.service_preset} ></CharacteristicGridCards>

@@ -14,7 +14,8 @@ import {
   Stack,
   AppBar,
   Toolbar,
-  Typography
+  Typography,
+  Button, IconButton, Link
 } from '@mui/material';
 
 // icons
@@ -22,6 +23,8 @@ import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import EmojiSymbolsIcon from '@mui/icons-material/EmojiSymbols';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import NumbersIcon from '@mui/icons-material/Numbers';
+import { GitHub } from '@mui/icons-material';
+
 
 import ServiceCard from './ServiceCard';
 import CharacteristicCard from './CharacteristicCard';
@@ -366,6 +369,11 @@ function App() {
                 >
                   BLE WEB Console
                 </Typography>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                </Typography>
+                <Link color="inherit" href='https://github.com/botamochi6277/reactjs-ble-console' target='_blank' >
+                  <GitHub />
+                </Link>
               </Toolbar></Container></AppBar>
 
           <BLEManager ></BLEManager>

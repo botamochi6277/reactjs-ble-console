@@ -370,7 +370,7 @@ function App() {
           <AppBar position="static" color="primary" enableColorOnDark>
             <Container maxWidth="xl">
               <Toolbar disableGutters>
-                <BluetoothIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                <BluetoothIcon sx={{ display: { md: 'flex' }, mr: 1 }} />
                 <Typography
                   variant="h6"
                   noWrap
@@ -378,7 +378,7 @@ function App() {
                   href="/"
                   sx={{
                     mr: 2,
-                    display: { xs: 'none', md: 'flex' },
+                    display: { xs: 'none', sm: 'flex' },
                     fontFamily: 'monospace',
                     fontWeight: 700,
                     letterSpacing: '.3rem',

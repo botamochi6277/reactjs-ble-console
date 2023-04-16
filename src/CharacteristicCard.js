@@ -10,7 +10,8 @@ import {
     Avatar,
     TextField,
     Select,
-    MenuItem
+    MenuItem,
+    Stack
 } from '@mui/material';
 
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -21,24 +22,26 @@ import PodcastsIcon from '@mui/icons-material/Podcasts';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import NumbersIcon from '@mui/icons-material/Numbers';
 import { grey } from '@mui/material/colors';
-// import TextDecoder from 'util'
-// var util = require('util');
+
 const utf8_decoder = new TextDecoder('utf-8')
 
 
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView
 const ble_types = [
-    { name: 'int8', decoder: (v, o) => v.getInt8(o, true) },
-    { name: 'uint8', decoder: (v, o) => v.getUint8(o, true) },
-    { name: 'int16', decoder: (v, o) => v.getInt16(o, true) },
-    { name: 'uint16', decoder: (v, o) => v.getUint16(o, true) },
-    { name: 'int32', decoder: (v, o) => v.getInt32(o, true) },
-    { name: 'uint32', decoder: (v, o) => v.getUint32(o, true) },
-    { name: 'float32', decoder: (v, o) => `${v.getFloat32(o, true).toFixed(4)}` },
-    { name: 'float64', decoder: (v, o) => `${v.getFloat64(o, true).toFixed(4)}` },
-    { name: 'string', decoder: (v, o) => utf8_decoder.decode(v) },
-]
+    { name: 'int8', hex: 0x0C, decoder: (v, offset) => v.getInt8(offset, true) },
+    { name: 'uint8', hex: 0x04, decoder: (v, offset) => v.getUint8(offset, true) },
+    { name: 'int16', hex: 0x0E, decoder: (v, offset) => v.getInt16(offset, true) },
+    { name: 'uint16', hex: 0x06, decoder: (v, offset) => v.getUint16(offset, true) },
+    { name: 'int32', hex: 0x10, decoder: (v, offset) => v.getInt32(offset, true) },
+    { name: 'uint32', hex: 0x08, decoder: (v, offset) => v.getUint32(offset, true) },
+    { name: 'float32', hex: 0x14, decoder: (v, offset) => `${v.getFloat32(offset, true).toFixed(4)}` },
+    { name: 'float64', hex: 0x15, decoder: (v, offset) => `${v.getFloat64(offset, true).toFixed(4)}` },
+    { name: 'string', hex: 0x00, decoder: (v, offset) => utf8_decoder.decode(v) },
+];
 
+const ble_units = [
+    { name: 'acc', unit: 'm/s^2', hex: 0x2713 }
+];
 
 function BLETypeSelect(props) {
     // const [ble_type, setType] = React.useState('');
@@ -163,6 +166,7 @@ function ValueField(props) {
             <TextField id="input-with-sx" label="value" variant="standard"
                 InputProps={{
                     readOnly: readonly,
+                    style: { textAlign: 'right' },
                     startAdornment: (
                         <InputAdornment position="start">
                             <NumbersIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
@@ -185,7 +189,7 @@ class CharacteristicCard extends React.Component {
 
         this.state = {
             characteristic: props.characteristic,
-            type: props.type,
+            type: props.type, // value format
             avatar: props.avatar,
             name: props.name,
             unit: props.unit,
@@ -237,7 +241,7 @@ class CharacteristicCard extends React.Component {
         if (this.state.characteristic === null) {
             return;
         }
-        let decoder = new TextDecoder('utf-8')
+        let txt_decoder = new TextDecoder('utf-8')
 
         const descriptors = await this.state.characteristic.getDescriptors();
 
@@ -250,32 +254,62 @@ class CharacteristicCard extends React.Component {
                 case "00002901-0000-1000-8000-00805f9b34fb":
                     // Characteristic User Descriptor
                     const v = await descriptor.readValue();
-                    console.debug(`${decoder.decode(v)}`);
-                    dscp.push(decoder.decode(v));
+                    console.debug(`${txt_decoder.decode(v)}`);
+                    dscp.push(txt_decoder.decode(v));
                     // string
                     this.setState(
-                        { name: decoder.decode(v) }
+                        { name: txt_decoder.decode(v) }
                     );
 
                     break;
                 case "00002902-0000-1000-8000-00805f9b34fb":
                     // Client Characteristic Configuration descriptor.
                     const v2 = await descriptor.readValue();
-                    console.debug(`${decoder.decode(v2)}`);
+                    console.debug(`${txt_decoder.decode(v2)}`);
                     // int
-                    dscp.push(decoder.decode(v2));
+                    dscp.push(txt_decoder.decode(v2));
                     break;
                 case "00002904-0000-1000-8000-00805f9b34fb":
                     // Characteristic Presentation Format
-                    const v3 = await descriptor.readValue();
-                    console.log(`Presentation view: ${v3.byteLength} byte`)
-                    console.log(v3.getUint8().toString(16))
+                    const p_view = await descriptor.readValue();
+                    // p_view: dataview
+                    // format | exponent |unit|namespace|description
+                    // 1      | 1        | 2  | 1       | 2
+                    // console.log(`Presentation view: ${p_view.byteLength} bytes`)
+                    // for (let index = 0; index < p_view.byteLength; index++) {
+                    //     const element = p_view.getUint8(index, true);
+                    //     console.log(`[${index}]: 0x${element.toString(16)}`)
+                    // }
+                    // console.log(`Presentation view: 0x${p_view.getUint32(0).toString(16)}`)
+                    const len = p_view.byteLength;
+                    const fmt = p_view.getUint8(0, false);
+                    const exp = p_view.getUint8(1, true);
+                    const unit = p_view.getUint16(2, true);
+                    const ns = p_view.getUint8(4, true);
 
-                    // const n = v3.getUint8(0, true);
+                    console.debug(`fmt: 0x${fmt.toString(16)}`)
+                    console.debug(`exp: 0x${exp.toString(16)}`)
+                    console.debug(`unit: 0x${unit.toString(16)}`)
+                    console.debug(`ns: 0x${ns.toString(16)}`)
+
+                    const format_item = ble_types.find((b) => b.hex === fmt);
+                    const unit_item = ble_units.find((b) => b.hex === unit);
+
+                    if (!format_item) { console.debug(`no format: 0x${fmt.toString(16)}`); return; }
+                    if (!unit_item) { console.debug('no unit'); return; }
+
+                    this.setState(
+                        {
+                            type: format_item.name,
+                            decoder: format_item.decoder,
+                            unit: unit_item.unit
+                        }
+                    )
+                    // const n = p_view.getUint8(0, true);
                     // dscp.push(n);
                     break;
                 default:
-                    console.log(`Unprepagrey Descriptor: ${descriptor.uuid}`);
+                    console.log(`Unprepared Descriptor: ${descriptor.uuid}`);
                     console.log(`type: ${typeof (descriptor.uuid)}`);
                     break;
 
@@ -370,7 +404,9 @@ class CharacteristicCard extends React.Component {
 
 
                     <CardActions disableSpacing>
-                        <PropertiesChip properties={properties} readonly={readonly} />
+                        <Stack direction="row" spacing={1}>
+                            <PropertiesChip properties={properties} readonly={readonly} />
+                        </Stack>
                     </CardActions>
 
                 </CardContent>

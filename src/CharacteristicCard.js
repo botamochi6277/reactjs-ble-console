@@ -34,14 +34,26 @@ const ble_types = [
     { name: 'uint16', hex: 0x06, decoder: (v, offset) => v.getUint16(offset, true) },
     { name: 'int32', hex: 0x10, decoder: (v, offset) => v.getInt32(offset, true) },
     { name: 'uint32', hex: 0x08, decoder: (v, offset) => v.getUint32(offset, true) },
+    { name: 'uint64', hex: 0x0a, decoder: (v, offset) => v.getUint32(offset, true) },
     { name: 'float32', hex: 0x14, decoder: (v, offset) => `${v.getFloat32(offset, true).toFixed(4)}` },
     { name: 'float64', hex: 0x15, decoder: (v, offset) => `${v.getFloat64(offset, true).toFixed(4)}` },
     { name: 'string', hex: 0x00, decoder: (v, offset) => utf8_decoder.decode(v) },
 ];
 
 const ble_units = [
-    { name: 'acc', unit: 'm/s^2', hex: 0x2713 }
+    { name: 'acc', unit: <>m/s<sup>2</sup></>, hex: 0x2713 },
+    { name: 'gyro', unit: 'rad/s', hex: 0x2743 },
+    { name: 'time', unit: 'sec', hex: 0x2703 },
+    { name: 'temperature', unit: '°C', hex: 0x272F }
 ];
+
+const si_prefixes = [
+    { exp: -6, prefix: 'μ' },
+    { exp: -3, prefix: 'm' },
+    { exp: 0, prefix: '' },
+    { exp: 3, prefix: 'k' },
+    { exp: 6, prefix: 'M' }
+]
 
 function BLETypeSelect(props) {
     // const [ble_type, setType] = React.useState('');
@@ -281,28 +293,26 @@ class CharacteristicCard extends React.Component {
                     //     console.log(`[${index}]: 0x${element.toString(16)}`)
                     // }
                     // console.log(`Presentation view: 0x${p_view.getUint32(0).toString(16)}`)
-                    const len = p_view.byteLength;
+                    // const len = p_view.byteLength;
                     const fmt = p_view.getUint8(0, false);
-                    const exp = p_view.getUint8(1, true);
+                    const exp = p_view.getInt8(1, true);
                     const unit = p_view.getUint16(2, true);
                     const ns = p_view.getUint8(4, true);
 
-                    console.debug(`fmt: 0x${fmt.toString(16)}`)
-                    console.debug(`exp: 0x${exp.toString(16)}`)
-                    console.debug(`unit: 0x${unit.toString(16)}`)
-                    console.debug(`ns: 0x${ns.toString(16)}`)
+                    console.debug(`fmt: 0x${fmt.toString(16)}, exp: ${exp.toString(16)}, unit: 0x${unit.toString(16)}, ns: 0x${ns.toString(16)}`);
 
                     const format_item = ble_types.find((b) => b.hex === fmt);
                     const unit_item = ble_units.find((b) => b.hex === unit);
-
+                    const prefix_item = si_prefixes.find(s => s.exp === exp);
                     if (!format_item) { console.debug(`no format: 0x${fmt.toString(16)}`); return; }
                     if (!unit_item) { console.debug('no unit'); return; }
+                    if (!prefix_item) { console.debug('no exponential'); return; }
 
                     this.setState(
                         {
                             type: format_item.name,
                             decoder: format_item.decoder,
-                            unit: unit_item.unit
+                            unit: <>{prefix_item.prefix}{unit_item.unit}</>
                         }
                     )
                     // const n = p_view.getUint8(0, true);

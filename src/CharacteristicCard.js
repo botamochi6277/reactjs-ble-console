@@ -21,6 +21,12 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PodcastsIcon from '@mui/icons-material/Podcasts';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import NumbersIcon from '@mui/icons-material/Numbers';
+
+import ThermostatIcon from '@mui/icons-material/Thermostat';
+import TimerIcon from '@mui/icons-material/Timer';
+import SpeedIcon from '@mui/icons-material/Speed';
+import ScreenRotationAltIcon from '@mui/icons-material/ScreenRotationAlt';
+
 import { grey } from '@mui/material/colors';
 
 const utf8_decoder = new TextDecoder('utf-8')
@@ -41,10 +47,10 @@ const ble_types = [
 ];
 
 const ble_units = [
-    { name: 'acc', unit: <>m/s<sup>2</sup></>, hex: 0x2713 },
-    { name: 'gyro', unit: 'rad/s', hex: 0x2743 },
-    { name: 'time', unit: 'sec', hex: 0x2703 },
-    { name: 'temperature', unit: '°C', hex: 0x272F }
+    { name: 'acc', unit: <>m/s<sup>2</sup></>, hex: 0x2713, icon: <SpeedIcon /> },
+    { name: 'gyro', unit: 'rad/s', hex: 0x2743, icon: <ScreenRotationAltIcon /> },
+    { name: 'time', unit: 'sec', hex: 0x2703, icon: <TimerIcon /> },
+    { name: 'temperature', unit: '°C', hex: 0x272F, icon: <ThermostatIcon /> }
 ];
 
 const si_prefixes = [
@@ -205,6 +211,7 @@ class CharacteristicCard extends React.Component {
             avatar: props.avatar,
             name: props.name,
             unit: props.unit,
+            icon: '',
             value: 0,
             descriptors: [],
             decoder: decoder
@@ -312,7 +319,8 @@ class CharacteristicCard extends React.Component {
                         {
                             type: format_item.name,
                             decoder: format_item.decoder,
-                            unit: <>{prefix_item.prefix}{unit_item.unit}</>
+                            unit: <>{prefix_item.prefix}{unit_item.unit}</>,
+                            icon: unit_item.icon
                         }
                     )
                     // const n = p_view.getUint8(0, true);
@@ -397,7 +405,7 @@ class CharacteristicCard extends React.Component {
                 <CardHeader
                     avatar={
                         <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">
-                            {this.state.name[0]}
+                            {this.state.icon}
                         </Avatar>
 
                     }

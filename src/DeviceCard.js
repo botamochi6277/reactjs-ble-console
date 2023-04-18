@@ -29,7 +29,7 @@ function DeviceName(props) {
 function DeviceCard(props) {
     const device = props.device;
     return (
-        <Card variant="outlined">
+        <Card>
             <CardHeader
                 avatar={
                     <Avatar sx={{ width: 36, height: 36 }}>

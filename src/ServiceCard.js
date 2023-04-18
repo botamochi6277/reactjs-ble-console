@@ -128,7 +128,7 @@ function ServiceCard(props) {
     const service_uuid = srv.uuid;
     const search_all_device = props.searchAllDevice;
     return (
-        <Card variant="outlined">
+        <Card>
             <CardHeader
                 avatar={
                     <Avatar sx={{ width: 36, height: 36 }}>

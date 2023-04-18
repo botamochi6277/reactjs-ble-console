@@ -91,15 +91,6 @@ function BLEAvailableAlert() {
  */
 function CharacteristicGridCards(props) {
   const characteristics = props.characteristics;
-  if (characteristics.length === 0) {
-    return (
-      <Grid item>
-        <Alert severity='info'>Characteristics will appear after connecting device</Alert>
-        {/* <Chip label="Characteristics will appear after connecting device"></Chip> */}
-      </Grid>
-    )
-  }
-
   /**
    * 
    * @param {BluetoothRemoteGATTCharacteristic} ch 
@@ -291,7 +282,7 @@ class BLEManager extends React.Component {
     return (
       <Stack spacing={1}>
         {/* logger */}
-        <Card variant="outlined">
+        <Card>
           <CardHeader
             avatar={
               <Avatar sx={{ width: 36, height: 36 }}>
@@ -329,6 +320,11 @@ class BLEManager extends React.Component {
             titleTypographyProps={{ variant: 'h5' }}
           ></CardHeader>
           <CardContent>
+            {
+              this.state.characteristics.length === 0 &&
+              <Alert severity='info'>Characteristics will appear after connecting device</Alert>
+            }
+
             <Box sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <CharacteristicGridCards characteristics={this.state.characteristics} preset={this.state.service_preset} ></CharacteristicGridCards>

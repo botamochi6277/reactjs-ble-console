@@ -15,9 +15,11 @@ export const ble_data_formats: BleType[] = [
 ];
 
 export const ble_units = [
+  { name: 'unitless', unit: "", hex: 0x2700 },
   { name: 'acc', unit: "m/ss", hex: 0x2713 },
   { name: 'gyro', unit: 'rad/s', hex: 0x2743 },
   { name: 'time', unit: 'sec', hex: 0x2703 },
+  { name: 'angle', unit: 'deg', hex: 0x2763 },
   { name: 'temperature', unit: '°C', hex: 0x272F }
 ];
 
@@ -58,7 +60,7 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
   let unit = "";
   let data_decoder = ble_data_formats[ble_data_formats.length - 1].decoder;
   let ns = 0;
-
+  console.debug(`#descriptors: ${descriptors.length}`);
   for (let index = 0; index < descriptors.length; index++) {
     const descriptor = descriptors[index];
     console.debug(`descriptor uuid: ${descriptor.uuid}`);
@@ -100,7 +102,7 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
         const unit_item = ble_units.find((b) => b.hex === unit_hex);
         const prefix_item = si_prefixes.find(s => s.exp === exp_hex);
 
-        fmt = format_item ? format_item.name : "";
+        fmt = format_item ? format_item.name : "unitless";
         unit = `${prefix_item?.prefix}${unit_item?.unit}`;
         data_decoder = format_item ? format_item.decoder : ble_data_formats[ble_data_formats.length - 1].decoder;
         // const n = p_view.getUint8(0, true);

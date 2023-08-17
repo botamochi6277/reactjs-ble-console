@@ -4,7 +4,6 @@ import App from './App.tsx'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 
 import CssBaseline from '@mui/material/CssBaseline';
-import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

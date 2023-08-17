@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 import {
     Button, Card, CardHeader, CardContent, CardActions, Typography,
@@ -12,7 +12,9 @@ import {
     Select,
     MenuItem,
     Stack,
-    SelectChangeEvent
+    SelectChangeEvent,
+    Switch,
+    FormControlLabel
 } from '@mui/material';
 
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -190,13 +192,6 @@ const CharacteristicCard = (props: {
     changeBleType: (ev: SelectChangeEvent) => void
 }) => {
 
-    // const changeBleType = (b_type: BleType) => {
-    //     const new_type = ble_data_formats.find(element => element.name === b_type.name);
-    //     if (!new_type) { return; }
-    //     setBleType(new_type);
-    // }
-
-
     // const handleNotifications = (event) => {
     //     let value = event.target.value;
     //     const v = this.state.decoder ? this.state.decoder(value, 0) : 0;
@@ -208,15 +203,29 @@ const CharacteristicCard = (props: {
     const properties = props.characteristic.characteristic.properties;
     let readonly = properties ? !properties.write : true;
 
-    // if (this.state.characteristic == null) {
-    //     return (
-    //         <Card>
-    //             <CardContent>
-    //                 <Typography variant="h5" component="div">{this.state.name}</Typography>
-    //             </CardContent>
-    //         </Card>
-    //     )
-    // }
+
+    const [is_subscribing, setIsSubscribe] = React.useState(false);
+
+    const onChangeSubscription = () => {
+        if (!properties.notify) { return; }
+        const my_characteristic = props.characteristic.characteristic;
+        if (!is_subscribing) {
+            my_characteristic.startNotifications().then(() => {
+                my_characteristic.addEventListener(
+                    'characteristicvaluechanged',
+                    props.readValueHandle);
+            });
+            setIsSubscribe(true); // switch
+        } else {
+            // fail to stop...
+            my_characteristic.stopNotifications().then(() => {
+                my_characteristic.removeEventListener(
+                    'characteristicvaluechanged',
+                    props.readValueHandle);
+            });
+            setIsSubscribe(false);
+        }
+    }
 
 
     // if (properties?.notify) {
@@ -232,24 +241,6 @@ const CharacteristicCard = (props: {
     //     }
     // }
 
-    const ReadValBtn = (props: {
-        properties: BluetoothCharacteristicProperties,
-        readValueHandle: () => void
-    }) => {
-        if (properties.notify) {
-            return (
-                <></>
-            )
-        } else if (properties.read) {
-            return (
-                <Button variant="contained"
-                    onClick={() => { props.readValueHandle() }}>
-                    Read Value</Button>
-            )
-        } else {
-            return (<></>)
-        }
-    }
 
     return (
         <Card variant='outlined'>
@@ -281,26 +272,27 @@ const CharacteristicCard = (props: {
             </CardActions>
 
             <CardActions>
-                <Stack direction="row" spacing={1} justifyContent={"space-evenly"}>
-                    <Button
-                        startIcon={<MenuBookIcon />}
-                        variant="contained"
-                        sx={{ display: properties.read ? 'block' : 'none' }}
-                        onClick={() => { props.readValueHandle() }}>
-                        Read</Button>
-                    <Button
-                        startIcon={<NotificationsIcon />}
-                        variant="contained"
-                        sx={{ display: properties.notify ? 'block' : 'none' }}
-                    >
-                        Notify</Button>
-                    <Button
-                        startIcon={<EditIcon />}
-                        variant="contained"
-                        sx={{ display: properties.write ? 'block' : 'none' }}
-                    >
-                        Write</Button>
-                </Stack>
+
+                <Button
+                    startIcon={<MenuBookIcon />}
+                    variant="contained"
+                    sx={{ display: properties.read ? 'flex' : 'none' }}
+                    onClick={() => { props.readValueHandle() }}>
+                    Read</Button>
+                <Button
+                    startIcon={<NotificationsIcon />}
+                    variant={is_subscribing ? "outlined" : "contained"}
+                    sx={{ display: properties.notify ? 'flex' : 'none' }}
+                    onClick={onChangeSubscription}
+                >
+                    Notify</Button>
+                <Button
+                    startIcon={<EditIcon />}
+                    variant="contained"
+                    sx={{ display: properties.write ? 'flex' : 'none' }}
+                >
+                    Write</Button>
+
             </CardActions>
         </Card>
     )

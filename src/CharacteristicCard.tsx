@@ -31,6 +31,33 @@ import ScreenRotationAltIcon from '@mui/icons-material/ScreenRotationAlt';
 import { grey } from '@mui/material/colors';
 
 import { ble_data_formats } from "./bluetooth_utils"
+
+
+const DataTypeIcon = (props: { unit: string }) => {
+    // const ble_units = [
+    //     { name: 'acc', unit: <>m/s<sup>2</sup></>, hex: 0x2713, icon: <SpeedIcon /> },
+    //     { name: 'gyro', unit: 'rad/s', hex: 0x2743, icon: <ScreenRotationAltIcon /> },
+    //     { name: 'time', unit: 'sec', hex: 0x2703, icon: <TimerIcon /> },
+    //     { name: 'temperature', unit: '°C', hex: 0x272F, icon: <ThermostatIcon /> }
+    // ];
+    switch (props.unit) {
+        case "m/s**2":
+            return <SpeedIcon />;
+        case "rad/s":
+            return <ScreenRotationAltIcon />;
+        case "sec":
+            return <TimerIcon />;
+        case "msec":
+            return <TimerIcon />;
+        case '°C':
+            return <ThermostatIcon />;
+        default:
+            return <NumbersIcon />;
+    }
+}
+
+
+
 function BLETypeSelect(props: {
     value: string,
     onChange: (ev: SelectChangeEvent) => void
@@ -61,7 +88,6 @@ function BLETypeSelect(props: {
 
 function PropertiesChip(props: {
     properties: BluetoothCharacteristicProperties,
-    readonly: boolean
 }) {
     // https://developer.mozilla.org/en-US/docs/Web/API/BluetoothCharacteristicProperties
     const properties = props.properties;
@@ -124,7 +150,7 @@ function PropertiesChip(props: {
 
     const chips = chip_state.map(
         (c) =>
-            <Chip label={c.name} icon={c.icon} key={c.name}></Chip>
+            <Chip label={c.name} icon={c.icon} key={c.name} size='small' />
     )
 
     // https://bobbyhadz.com/blog/react-cannot-be-used-as-a-jsx-component
@@ -140,10 +166,8 @@ function ValueField(props: {
     readonly: boolean,
     unit: string
 }) {
-    const btn = props.readonly ? <Button>Write</Button> : <p />;
     return (
         <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-
             <TextField id="input-with-sx" label="value" variant="standard"
                 InputProps={{
                     readOnly: props.readonly,
@@ -155,7 +179,6 @@ function ValueField(props: {
                     ),
                     endAdornment: <InputAdornment position="end">{props.unit}</InputAdornment>
                 }} value={props.value} />
-            {btn}
         </Box>
     );
 }
@@ -229,40 +252,56 @@ const CharacteristicCard = (props: {
     }
 
     return (
-        <Card>
+        <Card variant='outlined'>
             <CardHeader
-                // avatar={
-                //     <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">
-                //         {this.state.icon}
-                //     </Avatar>
+                avatar={
+                    <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">
+                        <DataTypeIcon unit={props.characteristic.unit} />
+                    </Avatar>
 
-                // }
+                }
                 title={props.characteristic.name}
                 subheader={uuid}
             >
             </CardHeader>
             <CardContent>
-                <CardActions>
-                    <BLETypeSelect
-                        onChange={props.changeBleType}
-                        value={props.characteristic.format} />
-                    <ReadValBtn properties={properties}
-                        readValueHandle={props.readValueHandle}
-                    />
-                    <ValueField
-                        value={typeof (props.characteristic.value) === "string" ? props.characteristic.value : props.characteristic.value.toString()}
-                        unit={props.characteristic.unit}
-                        readonly={readonly} />
-                </CardActions>
-
-
-                <CardActions disableSpacing>
-                    <Stack direction="row" spacing={1}>
-                        <PropertiesChip properties={properties} readonly={readonly} />
-                    </Stack>
-                </CardActions>
-
+                <Stack direction="row" spacing={1}>
+                    <PropertiesChip properties={properties} />
+                </Stack>
             </CardContent>
+
+            <CardActions>
+                <BLETypeSelect
+                    onChange={props.changeBleType}
+                    value={props.characteristic.format} />
+                <ValueField
+                    value={typeof (props.characteristic.value) === "string" ? props.characteristic.value : props.characteristic.value.toString()}
+                    unit={props.characteristic.unit}
+                    readonly={readonly} />
+            </CardActions>
+
+            <CardActions>
+                <Stack direction="row" spacing={1} justifyContent={"space-evenly"}>
+                    <Button
+                        startIcon={<MenuBookIcon />}
+                        variant="contained"
+                        sx={{ display: properties.read ? 'block' : 'none' }}
+                        onClick={() => { props.readValueHandle() }}>
+                        Read</Button>
+                    <Button
+                        startIcon={<NotificationsIcon />}
+                        variant="contained"
+                        sx={{ display: properties.notify ? 'block' : 'none' }}
+                    >
+                        Notify</Button>
+                    <Button
+                        startIcon={<EditIcon />}
+                        variant="contained"
+                        sx={{ display: properties.write ? 'block' : 'none' }}
+                    >
+                        Write</Button>
+                </Stack>
+            </CardActions>
         </Card>
     )
 }

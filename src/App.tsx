@@ -53,7 +53,7 @@ function BLEAvailableAlert() {
 
   navigator.bluetooth.getAvailability().then(available => {
     if (available) {
-      console.log("This device supports Bluetooth!");
+      // console.log("This device supports Bluetooth!");
       return (
         <div > </div>
       );
@@ -89,8 +89,10 @@ function CharacteristicGridCards(props: {
               name: c.name,
               config: c.config,
               format: new_type.name,
+              prefix: c.prefix,
               unit: c.unit,
               decoder: new_type.decoder,
+              encoder: new_type.encoder,
               value: c.value
             };
           }
@@ -112,8 +114,10 @@ function CharacteristicGridCards(props: {
                 name: c.name,
                 config: c.config,
                 format: c.format,
+                prefix: c.prefix,
                 unit: c.unit,
                 decoder: c.decoder,
+                encoder: c.encoder,
                 value: v
               };
             }
@@ -134,8 +138,10 @@ function CharacteristicGridCards(props: {
               name: c.name,
               config: c.config,
               format: c.format,
+              prefix: c.prefix,
               unit: c.unit,
               decoder: c.decoder,
+              encoder: c.encoder,
               value: c.decoder(v, 0)
             };
           }

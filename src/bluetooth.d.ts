@@ -15,7 +15,8 @@ type ServicePreset = {
 type BleType = {
   name: string,
   hex: number,
-  decoder: (v: DataView, offset: number) => number | string
+  decoder: (v: DataView, offset: number) => number | string,
+  encoder: (v: any) => BufferSource
 }
 
 
@@ -24,8 +25,10 @@ type CharacteristicWrapper = {
   name: string,
   config: string,
   format: string,
+  prefix: string
   unit: string,
   // hex: number,
   decoder: ((v: DataView, offset: number) => number | string),
+  encoder: (v: any) => BufferSource
   value: number | string
 }

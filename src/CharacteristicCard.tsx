@@ -12,9 +12,7 @@ import {
     Select,
     MenuItem,
     Stack,
-    SelectChangeEvent,
-    Switch,
-    FormControlLabel
+    SelectChangeEvent
 } from '@mui/material';
 
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -32,7 +30,7 @@ import ScreenRotationAltIcon from '@mui/icons-material/ScreenRotationAlt';
 
 import { grey } from '@mui/material/colors';
 
-import { ble_data_formats } from "./bluetooth_utils"
+import { ble_data_formats, writeValue } from "./bluetooth_utils"
 
 
 const DataTypeIcon = (props: { unit: string }) => {
@@ -166,11 +164,13 @@ function PropertiesChip(props: {
 function ValueField(props: {
     value: string,
     readonly: boolean,
-    unit: string
+    unit: string,
+    onChange: ((ev: ChangeEvent) => void) | undefined
 }) {
     return (
         <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
             <TextField id="input-with-sx" label="value" variant="standard"
+                onChange={props.onChange}
                 InputProps={{
                     readOnly: props.readonly,
                     style: { textAlign: 'right' },
@@ -206,6 +206,11 @@ const CharacteristicCard = (props: {
 
 
     const [is_subscribing, setIsSubscribe] = React.useState(false);
+    const [text_field_value, setTextFieldVal] = React.useState("");
+    React.useEffect(
+        () => { setTextFieldVal(typeof (props.characteristic.value) === "string" ? props.characteristic.value : props.characteristic.value.toString()) },
+        [props.characteristic]
+    )
 
     const onChangeSubscription = () => {
         if (!properties.notify) { return; }
@@ -228,6 +233,10 @@ const CharacteristicCard = (props: {
         }
     }
 
+    const writeVal = () => {
+        const data = props.characteristic.format === "string" ? text_field_value : Number(text_field_value);
+        writeValue(props.characteristic, data, props.readValueHandle);
+    }
 
     // if (properties?.notify) {
     //     if (!this.is_notifying) {
@@ -267,8 +276,9 @@ const CharacteristicCard = (props: {
                     onChange={props.changeBleType}
                     value={props.characteristic.format} />
                 <ValueField
-                    value={typeof (props.characteristic.value) === "string" ? props.characteristic.value : props.characteristic.value.toString()}
+                    value={text_field_value}
                     unit={props.characteristic.unit}
+                    onChange={(ev: ChangeEvent) => { setTextFieldVal((ev.target as HTMLInputElement).value) }}
                     readonly={readonly} />
             </CardActions>
 
@@ -291,6 +301,7 @@ const CharacteristicCard = (props: {
                     startIcon={<EditIcon />}
                     variant="contained"
                     sx={{ display: properties.write ? 'flex' : 'none' }}
+                    onClick={writeVal}
                 >
                     Write</Button>
 

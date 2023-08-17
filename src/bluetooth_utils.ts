@@ -1,17 +1,18 @@
 
-const utf8_decoder = new TextDecoder('utf-8')
+const utf8_decoder = new TextDecoder('utf-8');
+const utf8_encoder = new TextEncoder();
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView
 export const ble_data_formats: BleType[] = [
-  { name: 'int8', hex: 0x0C, decoder: (v: DataView, offset: number) => v.getInt8(offset) },
-  { name: 'uint8', hex: 0x04, decoder: (v: DataView, offset: number) => v.getUint8(offset) },
-  { name: 'int16', hex: 0x0E, decoder: (v: DataView, offset: number) => v.getInt16(offset, true) },
-  { name: 'uint16', hex: 0x06, decoder: (v: DataView, offset: number) => v.getUint16(offset, true) },
-  { name: 'int32', hex: 0x10, decoder: (v: DataView, offset: number) => v.getInt32(offset, true) },
-  { name: 'uint32', hex: 0x08, decoder: (v: DataView, offset: number) => v.getUint32(offset, true) },
-  { name: 'uint64', hex: 0x0a, decoder: (v: DataView, offset: number) => v.getUint32(offset, true) },
-  { name: 'float32', hex: 0x14, decoder: (v: DataView, offset: number) => `${v.getFloat32(offset, true).toFixed(4)}` },
-  { name: 'float64', hex: 0x15, decoder: (v: DataView, offset: number) => `${v.getFloat64(offset, true).toFixed(4)}` },
-  { name: 'string', hex: 0x00, decoder: (v: DataView, offset: number) => { offset; return utf8_decoder.decode(v); } },
+  { name: 'int8', hex: 0x0C, decoder: (v: DataView, offset: number) => v.getInt8(offset), encoder: (v: any) => Int8Array.of(v) },
+  { name: 'uint8', hex: 0x04, decoder: (v: DataView, offset: number) => v.getUint8(offset), encoder: (v: any) => Uint8Array.of(v) },
+  { name: 'int16', hex: 0x0E, decoder: (v: DataView, offset: number) => v.getInt16(offset, true), encoder: (v: any) => Int16Array.of(v) },
+  { name: 'uint16', hex: 0x06, decoder: (v: DataView, offset: number) => v.getUint16(offset, true), encoder: (v: any) => Uint16Array.of(v) },
+  { name: 'int32', hex: 0x10, decoder: (v: DataView, offset: number) => v.getInt32(offset, true), encoder: (v: any) => Int32Array.of(v) },
+  { name: 'uint32', hex: 0x08, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) },
+  { name: 'uint64', hex: 0x0a, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) }, // no getUint64
+  { name: 'float32', hex: 0x14, decoder: (v: DataView, offset: number) => `${v.getFloat32(offset, true).toFixed(4)}`, encoder: (v: any) => Float32Array.of(v) },
+  { name: 'float64', hex: 0x15, decoder: (v: DataView, offset: number) => `${v.getFloat64(offset, true).toFixed(4)}`, encoder: (v: any) => Float64Array.of(v) },
+  { name: 'string', hex: 0x00, decoder: (v: DataView, offset: number) => { offset; return utf8_decoder.decode(v); }, encoder: (v: any) => utf8_encoder.encode(v) },
 ];
 
 export const ble_units = [
@@ -41,6 +42,11 @@ export async function readValue(ch: CharacteristicWrapper) {
 }
 
 
+export function writeValue(ch: CharacteristicWrapper, v: any, callback: () => void) {
+  ch.characteristic.writeValue(ch.encoder(v)).then(callback);
+}
+
+
 export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
   // https://googlechrome.github.io/samples/web-bluetooth/read-descriptors-async-await.html
 
@@ -53,12 +59,13 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
   //     unit: <>{prefix_item.prefix}{unit_item.unit}</>,
   //     icon: unit_item.icon
   // }
-  let dscp = [];
   let characteristic_name = "";
   let characteristic_config = "";
   let fmt = "";
   let unit = "";
+  let prefix = "";
   let data_decoder = ble_data_formats[ble_data_formats.length - 1].decoder;
+  let data_encoder = ble_data_formats[ble_data_formats.length - 1].encoder;
   let ns = 0;
   console.debug(`#descriptors: ${descriptors.length}`);
   for (let index = 0; index < descriptors.length; index++) {
@@ -68,7 +75,6 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
       case "00002901-0000-1000-8000-00805f9b34fb":
         // Characteristic User Descriptor
         const data_v = await descriptor.readValue();
-        dscp.push(txt_decoder.decode(data_v));
         characteristic_name = txt_decoder.decode(data_v);
         console.debug(characteristic_name);
         break;
@@ -103,10 +109,12 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
         const prefix_item = si_prefixes.find(s => s.exp === exp_hex);
 
         fmt = format_item ? format_item.name : "unitless";
-        unit = `${prefix_item?.prefix}${unit_item?.unit}`;
+        prefix = prefix_item ? prefix_item.prefix : "";
+        unit = unit_item ? unit_item.unit : "";
+
         data_decoder = format_item ? format_item.decoder : ble_data_formats[ble_data_formats.length - 1].decoder;
+        data_encoder = format_item ? format_item.encoder : ble_data_formats[ble_data_formats.length - 1].encoder;
         // const n = p_view.getUint8(0, true);
-        // dscp.push(n);
         break;
       default:
         console.log(`Unprepared Descriptor: ${descriptor.uuid}`);
@@ -119,8 +127,10 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
     name: characteristic_name,
     config: characteristic_config,
     fmt: fmt,
+    prefix: prefix,
     unit: unit,
-    decoder: data_decoder
+    decoder: data_decoder,
+    encoder: data_encoder
   }
 }
 
@@ -200,8 +210,10 @@ export async function searchDevice(
         name: profile.name,
         config: profile.config,
         format: profile.fmt,
+        prefix: profile.prefix,
         unit: profile.unit,
         decoder: profile.decoder,
+        encoder: profile.encoder,
         value: 0
       }
       characteristics.push(w);

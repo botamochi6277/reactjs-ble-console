@@ -1,12 +1,11 @@
-//@ts-check
-import React from 'react';
+import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { CardHeader } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
@@ -17,35 +16,13 @@ import Grid from '@mui/material/Grid';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import SearchIcon from '@mui/icons-material/Search';
 
-/**
- * @typedef {Object} CharacteristicPreset 
- * @property {string} name 
- * @property {string} uuid 
- * @property {string} type
- * @property {string} unit 
- * @property {boolean} little_endian 
- */
 
-/**
- * @typedef {Object} ServicePreset
- * @property {string} name
- * @property {string} uuid
- * @property {Array<CharacteristicPreset>} characteristics
- */
-
-/**
- * 
- * @param {{searchAllDevice:boolean, onChange:Function}} props 
- * @returns 
- */
-function SwitchAllDevice(props) {
-    const search_all_device = props.searchAllDevice;
+function SwitchAllDevice(props: {
+    is_search_all_device: boolean,
+    onChange: (b: boolean) => void
+}) {
     const onChange = props.onChange;
-    const handleChange = (event) => {
-        // setState({
-        //   ...state,
-        //   [event.target.name]: event.target.checked,
-        // });
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (onChange != null) {
             onChange(event.target.checked);
         }
@@ -56,7 +33,7 @@ function SwitchAllDevice(props) {
             <FormControlLabel
                 control={
                     <Switch
-                        checked={search_all_device}
+                        checked={props.is_search_all_device}
                         onChange={handleChange} name="search_all_device" />
                 }
                 label="Search All Device"
@@ -65,22 +42,18 @@ function SwitchAllDevice(props) {
     );
 }
 
-/**
- * 
- * @param {{candidates:Array<ServicePreset>,currentSrv:ServicePreset,onChange:Function}} props 
- * @returns 
- */
-function ServiceSelect(props) {
+function ServiceSelect(props:
+    {
+        candidates: Array<ServicePreset>,
+        currentSrv: ServicePreset,
+        onChange: (s: string) => void
+    }) {
 
     const candidates = props.candidates;
 
-    // const [ble_type, setType] = React.useState('');
-    const handleChange = (event) => {
-        // setType(event.target.value);
+    const handleChange = (event: SelectChangeEvent) => {
         console.log(`current service : ${event.target.value}`);
-        if (props.onChange != null) {
-            props.onChange(event.target.value);
-        }
+        props.onChange(event.target.value);
     };
 
     const menus = candidates.map(
@@ -110,23 +83,17 @@ function ServiceSelect(props) {
         </Box>);
 }
 
-/**
- * 
- * @param {{onClick:React.MouseEventHandler<HTMLButtonElement>,
- * onChangeService:React.MouseEventHandler<HTMLButtonElement>,
- * onChangeSwitch:React.MouseEventHandler<HTMLButtonElement>,
- * searchAllDevice:boolean,
- * service:ServicePreset,
- * candidates:Array<ServicePreset>}} props 
- * @returns 
- */
-function ServiceCard(props) {
-    const on_click = props.onClick;
-    const on_change = props.onChangeService;
-    const on_switch = props.onChangeSwitch;
+function ServiceCard(props: {
+    onSearchDevice: () => void,
+    onChangeService: (s: string) => void,
+    onChangeAllSearchDevice: (b: boolean) => void,
+    is_search_all_device: boolean,
+    service: ServicePreset,
+    candidates: ServicePreset[]
+}) {
+
     const srv = props.service;
     const service_uuid = srv.uuid;
-    const search_all_device = props.searchAllDevice;
     return (
         <Card>
             <CardHeader
@@ -145,7 +112,10 @@ function ServiceCard(props) {
                 <Grid container spacing={2}>
 
                     <Grid item xs={6} md={3}>
-                        <ServiceSelect candidates={props.candidates} onChange={on_change} currentSrv={props.service} />
+                        <ServiceSelect
+                            candidates={props.candidates}
+                            onChange={props.onChangeService}
+                            currentSrv={props.service} />
                     </Grid>
                     <Grid item xs={6} md={4}>
                         <TextField
@@ -158,10 +128,12 @@ function ServiceCard(props) {
                         />
                     </Grid>
                     <Grid item xs={6} md={3}>
-                        <SwitchAllDevice searchAllDevice={search_all_device} onChange={on_switch} />
+                        <SwitchAllDevice
+                            is_search_all_device={props.is_search_all_device}
+                            onChange={props.onChangeAllSearchDevice} />
                     </Grid>
                     <Grid item xs={6} md={2}>
-                        <Button variant="contained" onClick={on_click} startIcon={<SearchIcon />} fullWidth>Search</Button>
+                        <Button variant="contained" onClick={props.onSearchDevice} startIcon={<SearchIcon />} fullWidth>Search</Button>
                     </Grid>
                 </Grid>
             </CardContent>

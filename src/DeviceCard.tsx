@@ -1,17 +1,11 @@
-//@ts-check
-import React from 'react';
-
 import { CardHeader, Alert, Avatar, Chip, Card, CardContent } from '@mui/material';
 
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import TabletAndroidIcon from '@mui/icons-material/TabletAndroid';
 
-/**
- * 
- * @param {{device:BluetoothDevice|null}} props 
- * @returns 
- */
-function DeviceName(props) {
+const DeviceName = (props: {
+    device: BluetoothDevice | null
+}) => {
     const device = props.device;
     if (device == null) {
         return (<Alert severity="info">No connected device</Alert>)
@@ -20,13 +14,8 @@ function DeviceName(props) {
     }
 }
 
-
-/**
- * 
- * @param {{device:BluetoothDevice|null}} props 
- * @returns 
- */
-function DeviceCard(props) {
+const DeviceCard = (props: { device: BluetoothDevice | null }
+) => {
     const device = props.device;
     return (
         <Card>

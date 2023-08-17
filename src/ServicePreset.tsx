@@ -1,25 +1,4 @@
-//@ts-check
-
-/**
- * @typedef {Object} CharacteristicPreset 
- * @property {string} name 
- * @property {string} uuid 
- * @property {string} type
- * @property {string} unit 
- * @property {boolean} little_endian 
- */
-
-/**
- * @typedef {Object} ServicePreset
- * @property {string} name
- * @property {string} uuid
- * @property {Array<CharacteristicPreset>} characteristics
- */
-
-/**
- * @type {ServicePreset}
- */
-const imu_6_axis = {
+const imu_6_axis: ServicePreset = {
     name: "Arduino IMU",
     uuid: "ABF0E000-B597-4BE0-B869-6054B7ED0CE3".toLowerCase(),
     characteristics: [
@@ -34,10 +13,7 @@ const imu_6_axis = {
     ]
 }
 
-/**
- * @type {ServicePreset}
- */
-const heart_rate = {
+const heart_rate: ServicePreset = {
     name: "Heart Rate",
     uuid: "0x180d",
     characteristics: [
@@ -46,11 +22,14 @@ const heart_rate = {
     ]
 }
 
+const stackchan: ServicePreset = {
+    name: "stackchan",
+    uuid: "671e0000-8cef-46b7-8af3-2eddeb12803e",
+    characteristics: []
+}
 
-/**
- * @type {Array<ServicePreset>}
- */
-const service_preset = [imu_6_axis, heart_rate];
+
+const service_preset: ServicePreset[] = [imu_6_axis, heart_rate, stackchan];
 
 
 export default service_preset;

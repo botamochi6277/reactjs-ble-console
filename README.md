@@ -1,16 +1,27 @@
-# ReactJS BLE Console
+# React + TypeScript + Vite
 
-ReactJS application read predefined service values.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## References
+Currently, two official plugins are available:
 
-- https://googlechrome.github.io/samples/web-bluetooth/index.html
-- https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API
-- https://www.bluetooth.com/specifications/assigned-numbers/
-- https://stackoverflow.com/questions/51298406/property-bluetooth-does-not-exist-on-type-navigator
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## TODO
+## Expanding the ESLint configuration
 
-- write value
-- type icon
-- show all charactoristic
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+
+- Configure the top-level `parserOptions` property like this:
+
+```js
+   parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: ['./tsconfig.json', './tsconfig.node.json'],
+    tsconfigRootDir: __dirname,
+   },
+```
+
+- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
+- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list

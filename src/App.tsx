@@ -77,20 +77,7 @@ function CharacteristicGridCards(props: {
   function mini_card(
     ch: CharacteristicWrapper,
     idx: number) {
-    // const cp = preset.characteristics.find((c) => c.uuid === ch.uuid)
-    // if (typeof cp === "undefined") {
-    //   return (
-    //     // set default variables
-    //     <Grid item key={ch.characteristic.uuid} xs={12} md={6} lg={4}>
-    //       <CharacteristicCard
-    //         name={`${ch.characteristic.uuid.slice(0, 6)}`}
-    //         type="uint8"
-    //         unit=""
-    //         characteristic={ch.characteristic}
-    //         avatar={<Avatar> <NumbersIcon />  </Avatar>} />
-    //     </Grid>
-    //   );
-    // }
+
     const changeBleType = (ev: SelectChangeEvent) => {
       const new_type = ble_data_formats.find(element => element.name === ev.target.value);
       if (!new_type) { return; }
@@ -136,11 +123,33 @@ function CharacteristicGridCards(props: {
       });
     }
 
+    const notifyValueHandle = (ev: any) => {
+      if (!ev.target) { return; }
+      let v = ev.target.value as DataView;
+      props.setCharacteristics(
+        props.characteristics.map((c, i) => {
+          if (i === idx) {
+            return {
+              characteristic: c.characteristic,
+              name: c.name,
+              config: c.config,
+              format: c.format,
+              unit: c.unit,
+              decoder: c.decoder,
+              value: c.decoder(v, 0)
+            };
+          }
+          else { return c; }
+        })
+      );
+    }
+
     return (
       <Grid item key={`${ch.characteristic.uuid}-${idx}`} xs={12} md={6} lg={4}>
         <CharacteristicCard
           characteristic={ch}
           readValueHandle={() => { readValueHandle(ch) }}
+          notifyHandle={notifyValueHandle}
           changeBleType={changeBleType}
           avatar={<Avatar> <NumbersIcon />  </Avatar>} />
       </Grid>
@@ -152,7 +161,6 @@ function CharacteristicGridCards(props: {
       mini_card(char, i)
   );
 
-  console.debug(`len minicards ${cards.length}`)
   return (
     <>{cards}</>
   );

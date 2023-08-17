@@ -189,6 +189,7 @@ const CharacteristicCard = (props: {
     characteristic: CharacteristicWrapper,
     avatar: JSX.Element | undefined,
     readValueHandle: () => void,
+    notifyHandle: (ev: Event) => void,
     changeBleType: (ev: SelectChangeEvent) => void
 }) => {
 
@@ -213,7 +214,7 @@ const CharacteristicCard = (props: {
             my_characteristic.startNotifications().then(() => {
                 my_characteristic.addEventListener(
                     'characteristicvaluechanged',
-                    props.readValueHandle);
+                    props.notifyHandle);
             });
             setIsSubscribe(true); // switch
         } else {
@@ -221,7 +222,7 @@ const CharacteristicCard = (props: {
             my_characteristic.stopNotifications().then(() => {
                 my_characteristic.removeEventListener(
                     'characteristicvaluechanged',
-                    props.readValueHandle);
+                    props.notifyHandle);
             });
             setIsSubscribe(false);
         }

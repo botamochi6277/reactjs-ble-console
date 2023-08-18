@@ -256,8 +256,8 @@ const BLEManager = () => {
         candidates={service_preset}
         service={srv_preset}
         is_search_all_device={is_search_all_device}
+        device={device}
       />
-      <DeviceCard device={device} />
 
       {/* Characteristics */}
       <Card>

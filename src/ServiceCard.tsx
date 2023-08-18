@@ -13,9 +13,13 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+
+import Chip from '@mui/material/Chip';
+
+// icons
 import FunctionsIcon from '@mui/icons-material/Functions';
 import SearchIcon from '@mui/icons-material/Search';
-
+import BluetoothIcon from '@mui/icons-material/Bluetooth';
 
 function SwitchAllDevice(props: {
     is_search_all_device: boolean,
@@ -89,7 +93,8 @@ function ServiceCard(props: {
     onChangeAllSearchDevice: (b: boolean) => void,
     is_search_all_device: boolean,
     service: ServicePreset,
-    candidates: ServicePreset[]
+    candidates: ServicePreset[],
+    device: BluetoothDevice | null
 }) {
 
     const srv = props.service;
@@ -102,11 +107,13 @@ function ServiceCard(props: {
                         <FunctionsIcon />
                     </Avatar>
                 }
-                title="Service"
+                title="Device & Service"
                 titleTypographyProps={{ variant: 'h5' }}
             >
-
             </CardHeader>
+            <CardContent>
+                {props.device ? (<Chip color="success" icon={<BluetoothIcon />} label={props.device.name} />) : (<Chip color="secondary" icon={<FunctionsIcon />} label={"no device"} />)}
+            </CardContent>
             <CardContent>
                 {/* 2-4-4-2 */}
                 <Grid container spacing={2}>

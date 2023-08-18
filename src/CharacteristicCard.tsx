@@ -238,20 +238,6 @@ const CharacteristicCard = (props: {
         writeValue(props.characteristic, data, props.readValueHandle);
     }
 
-    // if (properties?.notify) {
-    //     if (!this.is_notifying) {
-    //         // start notifying
-    //         this.is_notifying = true;
-    //         const callback = this.handleNotifications;
-    //         this.state.characteristic.startNotifications().then(_ => {
-    //             this.state.characteristic.addEventListener(
-    //                 'characteristicvaluechanged',
-    //                 callback);
-    //         });
-    //     }
-    // }
-
-
     return (
         <Card variant='outlined'>
             <CardHeader

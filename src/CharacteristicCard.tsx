@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 
 import {
-    Button, Card, CardHeader, CardContent, CardActions, Typography,
+    Button, Card, CardHeader, CardContent, CardActions,
     Chip,
     InputAdornment,
     InputLabel,
@@ -12,7 +12,7 @@ import {
     Select,
     MenuItem,
     Stack,
-    SelectChangeEvent
+    SelectChangeEvent,
 } from '@mui/material';
 
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -23,12 +23,12 @@ import PodcastsIcon from '@mui/icons-material/Podcasts';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import NumbersIcon from '@mui/icons-material/Numbers';
 
+// icons
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import TimerIcon from '@mui/icons-material/Timer';
 import SpeedIcon from '@mui/icons-material/Speed';
 import ScreenRotationAltIcon from '@mui/icons-material/ScreenRotationAlt';
-
-import { grey } from '@mui/material/colors';
+import Rotate90DegreesCcwIcon from '@mui/icons-material/Rotate90DegreesCcw';
 
 import { ble_data_formats, writeValue } from "./bluetooth_utils"
 
@@ -47,10 +47,12 @@ const DataTypeIcon = (props: { unit: string }) => {
             return <ScreenRotationAltIcon />;
         case "sec":
             return <TimerIcon />;
-        case "msec":
-            return <TimerIcon />;
         case '°C':
             return <ThermostatIcon />;
+        case 'rad':
+            return <Rotate90DegreesCcwIcon />;
+        case 'deg':
+            return <Rotate90DegreesCcwIcon />;
         default:
             return <NumbersIcon />;
     }
@@ -165,8 +167,10 @@ function ValueField(props: {
     value: string,
     readonly: boolean,
     unit: string,
+    prefix: string
     onChange: ((ev: ChangeEvent) => void) | undefined
 }) {
+    const unit_str = `${props.prefix}${props.unit}`;
     return (
         <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
             <TextField id="input-with-sx" label="value" variant="standard"
@@ -179,7 +183,7 @@ function ValueField(props: {
                             <NumbersIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
                         </InputAdornment>
                     ),
-                    endAdornment: <InputAdornment position="end">{props.unit}</InputAdornment>
+                    endAdornment: <InputAdornment position="end">{unit_str}</InputAdornment>
                 }} value={props.value} />
         </Box>
     );
@@ -242,7 +246,7 @@ const CharacteristicCard = (props: {
         <Card variant='outlined'>
             <CardHeader
                 avatar={
-                    <Avatar sx={{ bgcolor: grey[500] }} aria-label="recipe">
+                    <Avatar aria-label="recipe">
                         <DataTypeIcon unit={props.characteristic.unit} />
                     </Avatar>
 
@@ -251,8 +255,8 @@ const CharacteristicCard = (props: {
                 subheader={uuid}
             >
             </CardHeader>
-            <CardContent>
-                <Stack direction="row" spacing={1}>
+            <CardContent sx={{ "padding-top": 0, "padding-bottom": 0 }}>
+                <Stack direction="row" spacing={1} justifyContent="flex-start">
                     <PropertiesChip properties={properties} />
                 </Stack>
             </CardContent>
@@ -264,6 +268,7 @@ const CharacteristicCard = (props: {
                 <ValueField
                     value={text_field_value}
                     unit={props.characteristic.unit}
+                    prefix={props.characteristic.prefix}
                     onChange={(ev: ChangeEvent) => { setTextFieldVal((ev.target as HTMLInputElement).value) }}
                     readonly={readonly} />
             </CardActions>
@@ -292,7 +297,7 @@ const CharacteristicCard = (props: {
                     Write</Button>
 
             </CardActions>
-        </Card>
+        </Card >
     )
 }
 

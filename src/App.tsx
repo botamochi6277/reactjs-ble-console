@@ -31,7 +31,6 @@ import { GitHub } from '@mui/icons-material';
 
 import ServiceCard from './ServiceCard';
 import CharacteristicCard from './CharacteristicCard';
-import DeviceCard from './DeviceCard';
 import service_preset from './ServicePreset';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';

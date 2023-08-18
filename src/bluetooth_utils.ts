@@ -17,7 +17,7 @@ export const ble_data_formats: BleType[] = [
 
 export const ble_units = [
   { name: 'unitless', unit: "", hex: 0x2700 },
-  { name: 'acc', unit: "m/ss", hex: 0x2713 },
+  { name: 'acc', unit: "m/s**2", hex: 0x2713 },
   { name: 'gyro', unit: 'rad/s', hex: 0x2743 },
   { name: 'time', unit: 'sec', hex: 0x2703 },
   { name: 'angle', unit: 'deg', hex: 0x2763 },

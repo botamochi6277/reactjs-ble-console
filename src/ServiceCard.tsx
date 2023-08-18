@@ -10,10 +10,9 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-
+import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
 
 // icons
@@ -21,7 +20,7 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 import SearchIcon from '@mui/icons-material/Search';
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 
-function SwitchAllDevice(props: {
+function CheckboxSearchAllDevice(props: {
     is_search_all_device: boolean,
     onChange: (b: boolean) => void
 }) {
@@ -36,7 +35,7 @@ function SwitchAllDevice(props: {
         <FormControl fullWidth component="fieldset" variant="standard">
             <FormControlLabel
                 control={
-                    <Switch
+                    <Checkbox
                         checked={props.is_search_all_device}
                         onChange={handleChange} name="search_all_device" />
                 }
@@ -135,7 +134,7 @@ function ServiceCard(props: {
                         />
                     </Grid>
                     <Grid item xs={6} md={3}>
-                        <SwitchAllDevice
+                        <CheckboxSearchAllDevice
                             is_search_all_device={props.is_search_all_device}
                             onChange={props.onChangeAllSearchDevice} />
                     </Grid>

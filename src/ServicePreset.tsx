@@ -23,13 +23,17 @@ const heart_rate: ServicePreset = {
 }
 
 const stackchan: ServicePreset = {
-    name: "stackchan",
+    name: "Stack-chan",
     uuid: "671e0000-8cef-46b7-8af3-2eddeb12803e",
     characteristics: []
 }
+const neopixel: ServicePreset = {
+    name: "NeoPixel",
+    uuid: "19B10000-E8F2-537E-4F6C-D104768A1214".toLowerCase(),
+    characteristics: []
+}
 
-
-const service_preset: ServicePreset[] = [imu_6_axis, heart_rate, stackchan];
+const service_preset: ServicePreset[] = [imu_6_axis, neopixel, stackchan, heart_rate];
 
 
 export default service_preset;

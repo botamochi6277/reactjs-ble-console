@@ -51,15 +51,8 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
   // https://googlechrome.github.io/samples/web-bluetooth/read-descriptors-async-await.html
 
   let txt_decoder = new TextDecoder('utf-8')
-  const descriptors = await ch.getDescriptors();
-  // name, properties, 
-  //   {
-  //     type: format_item.name,
-  //     decoder: format_item.decoder,
-  //     unit: <>{prefix_item.prefix}{unit_item.unit}</>,
-  //     icon: unit_item.icon
-  // }
-  let characteristic_name = "";
+  // initial values
+  let characteristic_name = "unknown";
   let characteristic_config = "";
   let fmt = "";
   let unit = "";
@@ -67,6 +60,23 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
   let data_decoder = ble_data_formats[ble_data_formats.length - 1].decoder;
   let data_encoder = ble_data_formats[ble_data_formats.length - 1].encoder;
   let ns = 0;
+
+  let descriptors: BluetoothRemoteGATTDescriptor[] = [];
+  ch.getDescriptors().then(ds => {
+    descriptors = ds;
+  }).catch(e => {
+    console.log(e);
+    return {
+      name: characteristic_name,
+      config: characteristic_config,
+      fmt: fmt,
+      prefix: prefix,
+      unit: unit,
+      decoder: data_decoder,
+      encoder: data_encoder
+    }
+  });
+
   console.debug(`#descriptors: ${descriptors.length}`);
   for (let index = 0; index < descriptors.length; index++) {
     const descriptor = descriptors[index];
@@ -222,7 +232,12 @@ export async function searchDevice(
     setCharacteristics(characteristics);
 
   } catch (error) {
-    console.log(`Argh! ${error}`);
-    setLogMessage(`Argh! ${error}`);
+    if (error instanceof Error) {
+      console.log(error.message);
+      setLogMessage(`Argh! ${error.message}`);
+    } else {
+      console.log(`Argh! ${error}`);
+      setLogMessage(`Argh! ${error}`);
+    }
   }
 }

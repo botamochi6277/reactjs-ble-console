@@ -34,6 +34,10 @@ const si_prefixes = [
 
 // https://developer.mozilla.org/en-US/docs/Web/API/BluetoothRemoteGATTCharacteristic
 export async function readValue(ch: CharacteristicWrapper) {
+  if (!ch.characteristic.properties.read) {
+    console.debug(`${ch.characteristic.uuid} does not permit reading`)
+    return;
+  }
   console.debug(`reading value of ${ch.characteristic.uuid}`);
   const dv = await ch.characteristic.readValue();//dataview
   const v = ch.decoder(dv, 0);

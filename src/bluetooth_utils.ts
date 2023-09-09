@@ -2,17 +2,17 @@
 const utf8_decoder = new TextDecoder('utf-8');
 const utf8_encoder = new TextEncoder();
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView
-export const ble_data_formats: BleType[] = [
-  { name: 'int8', hex: 0x0C, decoder: (v: DataView, offset: number) => v.getInt8(offset), encoder: (v: any) => Int8Array.of(v) },
-  { name: 'uint8', hex: 0x04, decoder: (v: DataView, offset: number) => v.getUint8(offset), encoder: (v: any) => Uint8Array.of(v) },
-  { name: 'int16', hex: 0x0E, decoder: (v: DataView, offset: number) => v.getInt16(offset, true), encoder: (v: any) => Int16Array.of(v) },
-  { name: 'uint16', hex: 0x06, decoder: (v: DataView, offset: number) => v.getUint16(offset, true), encoder: (v: any) => Uint16Array.of(v) },
-  { name: 'int32', hex: 0x10, decoder: (v: DataView, offset: number) => v.getInt32(offset, true), encoder: (v: any) => Int32Array.of(v) },
-  { name: 'uint32', hex: 0x08, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) },
-  { name: 'uint64', hex: 0x0a, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) }, // no getUint64
-  { name: 'float32', hex: 0x14, decoder: (v: DataView, offset: number) => `${v.getFloat32(offset, true).toFixed(4)}`, encoder: (v: any) => Float32Array.of(v) },
-  { name: 'float64', hex: 0x15, decoder: (v: DataView, offset: number) => `${v.getFloat64(offset, true).toFixed(4)}`, encoder: (v: any) => Float64Array.of(v) },
-  { name: 'string', hex: 0x00, decoder: (v: DataView, offset: number) => { offset; return utf8_decoder.decode(v); }, encoder: (v: any) => utf8_encoder.encode(v) },
+export const ble_data_formats: BleDataType[] = [
+  { name: 'int8', hex_code: 0x0C, decoder: (v: DataView, offset: number) => v.getInt8(offset), encoder: (v: any) => Int8Array.of(v) },
+  { name: 'uint8', hex_code: 0x04, decoder: (v: DataView, offset: number) => v.getUint8(offset), encoder: (v: any) => Uint8Array.of(v) },
+  { name: 'int16', hex_code: 0x0E, decoder: (v: DataView, offset: number) => v.getInt16(offset, true), encoder: (v: any) => Int16Array.of(v) },
+  { name: 'uint16', hex_code: 0x06, decoder: (v: DataView, offset: number) => v.getUint16(offset, true), encoder: (v: any) => Uint16Array.of(v) },
+  { name: 'int32', hex_code: 0x10, decoder: (v: DataView, offset: number) => v.getInt32(offset, true), encoder: (v: any) => Int32Array.of(v) },
+  { name: 'uint32', hex_code: 0x08, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) },
+  { name: 'uint64', hex_code: 0x0a, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) }, // no getUint64
+  { name: 'float32', hex_code: 0x14, decoder: (v: DataView, offset: number) => `${v.getFloat32(offset, true).toFixed(4)}`, encoder: (v: any) => Float32Array.of(v) },
+  { name: 'float64', hex_code: 0x15, decoder: (v: DataView, offset: number) => `${v.getFloat64(offset, true).toFixed(4)}`, encoder: (v: any) => Float64Array.of(v) },
+  { name: 'string', hex_code: 0x00, decoder: (v: DataView, offset: number) => { offset; return utf8_decoder.decode(v); }, encoder: (v: any) => utf8_encoder.encode(v) },
 ];
 
 export const ble_units = [
@@ -115,7 +115,7 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
 
         console.debug(`fmt: 0x${fmt_hex.toString(16)}, exp: ${exp_hex.toString(16)}, unit: 0x${unit_hex.toString(16)}, ns: 0x${ns.toString(16)}`);
 
-        const format_item = ble_data_formats.find((b) => b.hex === fmt_hex);
+        const format_item = ble_data_formats.find((b) => b.hex_code === fmt_hex);
         const unit_item = ble_units.find((b) => b.hex === unit_hex);
         const prefix_item = si_prefixes.find(s => s.exp === exp_hex);
 
@@ -220,7 +220,7 @@ export async function searchDevice(
         characteristic: characteristic,
         name: profile.name,
         config: profile.config,
-        format: profile.fmt,
+        data_type: profile.fmt,
         prefix: profile.prefix,
         unit: profile.unit,
         decoder: profile.decoder,

@@ -13,46 +13,16 @@ import {
     SelectChangeEvent,
 } from '@mui/material';
 
+// icons
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import EditIcon from '@mui/icons-material/Edit';
 import NumbersIcon from '@mui/icons-material/Numbers';
 
-// icons
-import ThermostatIcon from '@mui/icons-material/Thermostat';
-import TimerIcon from '@mui/icons-material/Timer';
-import SpeedIcon from '@mui/icons-material/Speed';
-import ScreenRotationAltIcon from '@mui/icons-material/ScreenRotationAlt';
-import Rotate90DegreesCcwIcon from '@mui/icons-material/Rotate90DegreesCcw';
-
+// house-made
 import { ble_data_formats, writeValue } from "./bluetooth_utils"
 import { CharacteristicPropertiesChip } from "./CharacteristicPropertiesChip"
-
-const DataTypeIcon = (props: { unit: string }) => {
-    // const ble_units = [
-    //     { name: 'acc', unit: <>m/s<sup>2</sup></>, hex: 0x2713, icon: <SpeedIcon /> },
-    //     { name: 'gyro', unit: 'rad/s', hex: 0x2743, icon: <ScreenRotationAltIcon /> },
-    //     { name: 'time', unit: 'sec', hex: 0x2703, icon: <TimerIcon /> },
-    //     { name: 'temperature', unit: '°C', hex: 0x272F, icon: <ThermostatIcon /> }
-    // ];
-    switch (props.unit) {
-        case "m/s**2":
-            return <SpeedIcon />;
-        case "rad/s":
-            return <ScreenRotationAltIcon />;
-        case "sec":
-            return <TimerIcon />;
-        case '°C':
-            return <ThermostatIcon />;
-        case 'rad':
-            return <Rotate90DegreesCcwIcon />;
-        case 'deg':
-            return <Rotate90DegreesCcwIcon />;
-        default:
-            return <NumbersIcon />;
-    }
-}
-
+import { DataDimensionsIcon } from "./DataDimensionsIcon";
 
 
 function BLETypeSelect(props: {
@@ -66,15 +36,15 @@ function BLETypeSelect(props: {
         <FormControl variant="standard" fullWidth>
             <InputLabel
                 id={`ble-data-type-select-label-${props.name}`}>
-                format
+                data type
             </InputLabel>
             <Select
                 value={props.value}
-                label="format"
+                label="data type"
                 labelId={`ble-data-type-select-label-${props.name}`}
                 onChange={props.onChange}
                 inputProps={{
-                    name: 'format',
+                    name: 'data type',
                     id: `ble-data-type-select-${props.name}`,
                 }}
             >
@@ -122,13 +92,6 @@ const CharacteristicCard = (props: {
     notifyHandle: (ev: Event) => void,
     changeBleType: (ev: SelectChangeEvent) => void
 }) => {
-
-    // const handleNotifications = (event) => {
-    //     let value = event.target.value;
-    //     const v = this.state.decoder ? this.state.decoder(value, 0) : 0;
-    //     this.setState({ value: v });
-    // }
-
     const uuid = props.characteristic.characteristic.uuid;
     // BluetoothCharacteristicProperties
     const properties = props.characteristic.characteristic.properties;
@@ -164,7 +127,7 @@ const CharacteristicCard = (props: {
     }
 
     const writeVal = () => {
-        const data = props.characteristic.format === "string" ? text_field_value : Number(text_field_value);
+        const data = props.characteristic.data_type === "string" ? text_field_value : Number(text_field_value);
         writeValue(props.characteristic, data, props.readValueHandle);
     }
 
@@ -173,9 +136,8 @@ const CharacteristicCard = (props: {
             <CardHeader
                 avatar={
                     <Avatar aria-label="recipe">
-                        <DataTypeIcon unit={props.characteristic.unit} />
+                        <DataDimensionsIcon dimensions={props.characteristic.unit} />
                     </Avatar>
-
                 }
                 title={props.characteristic.name}
                 subheader={uuid}
@@ -190,7 +152,7 @@ const CharacteristicCard = (props: {
             <CardActions>
                 <BLETypeSelect
                     onChange={props.changeBleType}
-                    value={props.characteristic.format}
+                    value={props.characteristic.data_type}
                     name={props.characteristic.name} />
                 <ValueField
                     value={text_field_value}

@@ -6,7 +6,15 @@ export const ble_data_formats: BleDataType[] = [
   { name: 'int8', hex_code: 0x0C, decoder: (v: DataView, offset: number) => v.getInt8(offset), encoder: (v: any) => Int8Array.of(v) },
   { name: 'uint8', hex_code: 0x04, decoder: (v: DataView, offset: number) => v.getUint8(offset), encoder: (v: any) => Uint8Array.of(v) },
   { name: 'int16', hex_code: 0x0E, decoder: (v: DataView, offset: number) => v.getInt16(offset, true), encoder: (v: any) => Int16Array.of(v) },
-  { name: 'uint16', hex_code: 0x06, decoder: (v: DataView, offset: number) => v.getUint16(offset, true), encoder: (v: any) => Uint16Array.of(v) },
+  {
+    name: 'uint16', hex_code: 0x06, decoder: (v: DataView, offset: number) => v.getUint16(offset, true),
+    encoder: (v: any) => {
+      const buffer = new ArrayBuffer(16);
+      const view = new DataView(buffer);
+      view.setUint16(0, v, true);
+      return view.buffer;
+    }
+  },
   { name: 'int32', hex_code: 0x10, decoder: (v: DataView, offset: number) => v.getInt32(offset, true), encoder: (v: any) => Int32Array.of(v) },
   { name: 'uint32', hex_code: 0x08, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) },
   { name: 'uint64', hex_code: 0x0a, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) }, // no getUint64
@@ -47,6 +55,7 @@ export async function readValue(ch: CharacteristicWrapper) {
 
 
 export function writeValue(ch: CharacteristicWrapper, v: any, callback: () => void) {
+  console.log(`sending ${v} (${ch.encoder(v)}) to ${ch.name}`)
   ch.characteristic.writeValue(ch.encoder(v)).then(callback);
 }
 

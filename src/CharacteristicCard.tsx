@@ -102,6 +102,7 @@ const CharacteristicCard = (props: {
     const [text_field_value, setTextFieldVal] = React.useState("");
     const [numeration_sys, setNumerationSys] = React.useState(ns_items[1]);
 
+    // effect for change of the characteristic
     React.useEffect(
         () => {
             if (typeof (props.characteristic.value) === "string") {
@@ -117,7 +118,7 @@ const CharacteristicCard = (props: {
             // error
 
         },
-        [props.characteristic]
+        [props.characteristic, numeration_sys]
     )
 
     const onChangeSubscription = () => {
@@ -142,8 +143,23 @@ const CharacteristicCard = (props: {
     }
 
     const writeVal = () => {
-        const data = props.characteristic.data_type === "string" ? text_field_value : Number(text_field_value);
-        writeValue(props.characteristic, data, props.readValueHandle);
+
+        if (props.characteristic.data_type === "string") {
+            writeValue(props.characteristic, text_field_value, props.readValueHandle);
+            return;
+        }
+
+        // number
+        if (["float", "double"].includes(props.characteristic.data_type)) {
+            // integer
+            writeValue(props.characteristic, parseFloat(text_field_value), props.readValueHandle);
+            return;
+        } else {
+
+            // integer
+            writeValue(props.characteristic, parseInt(text_field_value, numeration_sys.radix), props.readValueHandle);
+            return;
+        }
     }
 
     return (
@@ -170,7 +186,7 @@ const CharacteristicCard = (props: {
                     value={props.characteristic.data_type}
                     name={props.characteristic.name} />
                 <NumerationSystemSelect
-                    sx={{ display: (["uint8", "uint16", "uint32"].includes(props.characteristic.data_type)) ? 'flex' : 'none' }}
+                    sx={{ display: (["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type)) ? 'flex' : 'none' }}
                     value={numeration_sys}
                     onChange={(ev: SelectChangeEvent) => {
                         const i = ns_items.find(item => item.name === ev.target.value);
@@ -187,7 +203,7 @@ const CharacteristicCard = (props: {
                     onChange={(ev: ChangeEvent) => { setTextFieldVal((ev.target as HTMLInputElement).value) }}
                     readonly={readonly}
                     name={props.characteristic.name}
-                    start_adornment={["uint8", "uint16", "uint32"].includes(props.characteristic.data_type) ? numeration_sys.prefix : ""} />
+                    start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type) ? numeration_sys.prefix : ""} />
             </CardActions>
 
             <CardActions>

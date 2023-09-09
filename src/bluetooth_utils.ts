@@ -62,10 +62,11 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
   let ns = 0;
 
   let descriptors: BluetoothRemoteGATTDescriptor[] = [];
-  ch.getDescriptors().then(ds => {
-    descriptors = ds;
-  }).catch(e => {
-    console.log(e);
+  try {
+    descriptors = await ch.getDescriptors();
+  } catch (error) {
+    // notion: getDescriptors raises error when the characteristic has no descriptor.
+    console.log(error);
     return {
       name: characteristic_name,
       config: characteristic_config,
@@ -75,7 +76,7 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
       decoder: data_decoder,
       encoder: data_encoder
     }
-  });
+  }
 
   console.debug(`#descriptors: ${descriptors.length}`);
   for (let index = 0; index < descriptors.length; index++) {
@@ -230,7 +231,6 @@ export async function searchDevice(
     }
 
     setCharacteristics(characteristics);
-
   } catch (error) {
     if (error instanceof Error) {
       console.log(error.message);

@@ -17,13 +17,12 @@ import {
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import EditIcon from '@mui/icons-material/Edit';
-import NumbersIcon from '@mui/icons-material/Numbers';
 
 // house-made
 import { ble_data_formats, writeValue } from "./bluetooth_utils"
 import { CharacteristicPropertiesChip } from "./CharacteristicPropertiesChip"
 import { DataDimensionsIcon } from "./DataDimensionsIcon";
-
+import { NumerationSystemSelect } from "./NumerationSystemSelect";
 
 function BLETypeSelect(props: {
     value: string,
@@ -61,7 +60,8 @@ function ValueField(props: {
     unit: string,
     prefix: string
     onChange: ((ev: ChangeEvent) => void) | undefined,
-    name: string
+    name: string,
+    start_adornment: string
 }) {
     const unit_str = `${props.prefix}${props.unit}`;
     return (
@@ -74,11 +74,7 @@ function ValueField(props: {
                 InputProps={{
                     readOnly: props.readonly,
                     style: { textAlign: 'right' },
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <NumbersIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                        </InputAdornment>
-                    ),
+                    startAdornment: <InputAdornment position="start">{props.start_adornment}</InputAdornment>,
                     endAdornment: <InputAdornment position="end">{unit_str}</InputAdornment>
                 }} value={props.value} />
         </FormControl>
@@ -96,12 +92,31 @@ const CharacteristicCard = (props: {
     // BluetoothCharacteristicProperties
     const properties = props.characteristic.characteristic.properties;
     let readonly = properties ? !properties.write : true;
-
+    const ns_items: NumerationSystemItem[] = [
+        { name: "bin", radix: 2, prefix: "0b" },
+        { name: "dec", radix: 10, prefix: "" },
+        { name: "hex", radix: 16, prefix: "0x" },
+    ]
 
     const [is_subscribing, setIsSubscribe] = React.useState(false);
     const [text_field_value, setTextFieldVal] = React.useState("");
+    const [numeration_sys, setNumerationSys] = React.useState(ns_items[1]);
+
     React.useEffect(
-        () => { setTextFieldVal(typeof (props.characteristic.value) === "string" ? props.characteristic.value : props.characteristic.value.toString()) },
+        () => {
+            if (typeof (props.characteristic.value) === "string") {
+                setTextFieldVal(props.characteristic.value);
+            }
+            if (typeof (props.characteristic.value) === "number") {
+                if (["uint8", "uint16", "uint32"].includes(props.characteristic.data_type)) {
+                    setTextFieldVal(props.characteristic.value.toString(numeration_sys.radix));
+                } else {
+                    setTextFieldVal(props.characteristic.value.toString())
+                }
+            }
+            // error
+
+        },
         [props.characteristic]
     )
 
@@ -154,13 +169,25 @@ const CharacteristicCard = (props: {
                     onChange={props.changeBleType}
                     value={props.characteristic.data_type}
                     name={props.characteristic.name} />
+                <NumerationSystemSelect
+                    sx={{ display: (["uint8", "uint16", "uint32"].includes(props.characteristic.data_type)) ? 'flex' : 'none' }}
+                    value={numeration_sys}
+                    onChange={(ev: SelectChangeEvent) => {
+                        const i = ns_items.find(item => item.name === ev.target.value);
+                        if (i) { setNumerationSys(i); }
+                    }
+                    }
+                    items={ns_items}
+                    name={props.characteristic.name}
+                />
                 <ValueField
                     value={text_field_value}
                     unit={props.characteristic.unit}
                     prefix={props.characteristic.prefix}
                     onChange={(ev: ChangeEvent) => { setTextFieldVal((ev.target as HTMLInputElement).value) }}
                     readonly={readonly}
-                    name={props.characteristic.name} />
+                    name={props.characteristic.name}
+                    start_adornment={["uint8", "uint16", "uint32"].includes(props.characteristic.data_type) ? numeration_sys.prefix : ""} />
             </CardActions>
 
             <CardActions>

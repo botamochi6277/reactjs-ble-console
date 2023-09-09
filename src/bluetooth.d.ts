@@ -19,6 +19,11 @@ type BleDataType = {
   encoder: (v: any) => BufferSource
 }
 
+type NumerationSystemItem = {
+  name: string,
+  radix: number,
+  prefix: string
+}
 
 type CharacteristicWrapper = {
   characteristic: BluetoothRemoteGATTCharacteristic,

@@ -62,30 +62,31 @@ const DataTypeIcon = (props: { unit: string }) => {
 
 function BLETypeSelect(props: {
     value: string,
-    onChange: (ev: SelectChangeEvent) => void
+    onChange: (ev: SelectChangeEvent) => void,
+    name: string
 }) {
     const menus = ble_data_formats.map((b) => <MenuItem value={b.name} key={b.name}>{b.name}</MenuItem>)
 
     return (
-        <Box >
-            <FormControl size='small' variant="standard">
-                <InputLabel id="ble-data-type-select-label" htmlFor="ble-data-type-select">format</InputLabel>
-                <Select
-                    fullWidth
-                    // labelId="ble-data-type-select-label"
-                    // id="ble-data-type-select"
-                    value={props.value}
-                    label="format"
-                    onChange={props.onChange}
-                    inputProps={{
-                        name: 'format',
-                        id: 'ble-data-type-select',
-                    }}
-                >
-                    {menus}
-                </Select>
-            </FormControl>
-        </Box>);
+        <FormControl variant="standard" fullWidth>
+            <InputLabel
+                id={`ble-data-type-select-${props.name}`}
+                htmlFor={`ble-data-type-select-${props.name}`}>
+                format
+            </InputLabel>
+            <Select
+                value={props.value}
+                label="format"
+                onChange={props.onChange}
+                inputProps={{
+                    name: 'format',
+                    id: `ble-data-type-select-${props.name}`,
+                }}
+            >
+                {menus}
+            </Select>
+        </FormControl>
+    );
 }
 
 function PropertiesChip(props: {
@@ -168,12 +169,16 @@ function ValueField(props: {
     readonly: boolean,
     unit: string,
     prefix: string
-    onChange: ((ev: ChangeEvent) => void) | undefined
+    onChange: ((ev: ChangeEvent) => void) | undefined,
+    name: string
 }) {
     const unit_str = `${props.prefix}${props.unit}`;
     return (
-        <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-            <TextField id="input-with-sx" label="value" variant="standard"
+        <FormControl variant="standard" fullWidth>
+            <TextField
+                id={`input-with-sx-${props.name}`}
+                label={`${props.name}-value`}
+                variant="standard"
                 onChange={props.onChange}
                 InputProps={{
                     readOnly: props.readonly,
@@ -185,7 +190,7 @@ function ValueField(props: {
                     ),
                     endAdornment: <InputAdornment position="end">{unit_str}</InputAdornment>
                 }} value={props.value} />
-        </Box>
+        </FormControl>
     );
 }
 
@@ -255,7 +260,7 @@ const CharacteristicCard = (props: {
                 subheader={uuid}
             >
             </CardHeader>
-            <CardContent sx={{ "padding-top": 0, "padding-bottom": 0 }}>
+            <CardContent sx={{ "pt": 0, "pb": 0 }}>
                 <Stack direction="row" spacing={1} justifyContent="flex-start">
                     <PropertiesChip properties={properties} />
                 </Stack>
@@ -264,17 +269,18 @@ const CharacteristicCard = (props: {
             <CardActions>
                 <BLETypeSelect
                     onChange={props.changeBleType}
-                    value={props.characteristic.format} />
+                    value={props.characteristic.format}
+                    name={props.characteristic.name} />
                 <ValueField
                     value={text_field_value}
                     unit={props.characteristic.unit}
                     prefix={props.characteristic.prefix}
                     onChange={(ev: ChangeEvent) => { setTextFieldVal((ev.target as HTMLInputElement).value) }}
-                    readonly={readonly} />
+                    readonly={readonly}
+                    name={props.characteristic.name} />
             </CardActions>
 
             <CardActions>
-
                 <Button
                     startIcon={<MenuBookIcon />}
                     variant="contained"

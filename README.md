@@ -1,27 +1,32 @@
-# React + TypeScript + Vite
+# ReactJS BLE Console
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![jobs to build and deploy page](https://github.com/botamochi6277/reactjs-ble-console/actions/workflows/pages.yml/badge.svg)](https://github.com/botamochi6277/reactjs-ble-console/actions/workflows/pages.yml)
 
-Currently, two official plugins are available:
+A console in web browser to debug and control BLE devices.
+This repository depends on [Web Bluetooth API](https://developer.mozilla.org/docs/Web/API/Web_Bluetooth_API)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Value R/W system
 
-## Expanding the ESLint configuration
+```mermaid
+graph LR
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+subgraph peripheral
+   value
+end
 
-- Configure the top-level `parserOptions` property like this:
+subgraph client
+   raw_value
+   text_field_value
+   numeration_sys
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+   plus(( ))
+   raw_value-->|onChange|plus
+   numeration_sys-->|onChange|plus
+   plus-->|toString|text_field_value
+
+   text_field_value-.->|write|value
+end
+
+value-->|read|raw_value
+
 ```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list

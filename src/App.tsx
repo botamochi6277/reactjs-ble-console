@@ -117,7 +117,7 @@ function CharacteristicGridCards(props: {
                 unit: c.unit,
                 decoder: c.decoder,
                 encoder: c.encoder,
-                value: v
+                value: v ?? "none"
               };
             }
             else { return c; }

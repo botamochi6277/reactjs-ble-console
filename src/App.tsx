@@ -87,7 +87,7 @@ function CharacteristicGridCards(props: {
               characteristic: c.characteristic,
               name: c.name,
               config: c.config,
-              data_type: new_type.name,
+              data_type: new_type,
               prefix: c.prefix,
               unit: c.unit,
               decoder: new_type.decoder,
@@ -115,8 +115,6 @@ function CharacteristicGridCards(props: {
                 data_type: c.data_type,
                 prefix: c.prefix,
                 unit: c.unit,
-                decoder: c.decoder,
-                encoder: c.encoder,
                 value: v ?? "none"
               };
             }
@@ -139,9 +137,7 @@ function CharacteristicGridCards(props: {
               data_type: c.data_type,
               prefix: c.prefix,
               unit: c.unit,
-              decoder: c.decoder,
-              encoder: c.encoder,
-              value: c.decoder(v, 0)
+              value: c.data_type.decoder(v, 0)
             };
           }
           else { return c; }

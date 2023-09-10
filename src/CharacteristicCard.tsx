@@ -109,8 +109,17 @@ const CharacteristicCard = (props: {
                 setTextFieldVal(props.characteristic.value);
             }
             if (typeof (props.characteristic.value) === "number") {
-                if (["uint8", "uint16", "uint32"].includes(props.characteristic.data_type)) {
-                    setTextFieldVal(props.characteristic.value.toString(numeration_sys.radix));
+                if (["uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64"].includes(props.characteristic.data_type.name)) {
+                    // integer
+                    if (numeration_sys.radix == 10) {
+                        setTextFieldVal(props.characteristic.value.toString(numeration_sys.radix));
+                    } else {
+                        // binary or hex
+                        const max_val = parseInt("".padStart(props.characteristic.data_type.data_length * 2, "f"), 16);
+                        const max_digits = max_val.toString(numeration_sys.radix).length;
+                        setTextFieldVal(props.characteristic.value.toString(numeration_sys.radix).padStart(max_digits, '0'));
+                    }
+
                 } else {
                     setTextFieldVal(props.characteristic.value.toString())
                 }
@@ -144,13 +153,13 @@ const CharacteristicCard = (props: {
 
     const writeVal = () => {
 
-        if (props.characteristic.data_type === "string") {
+        if (props.characteristic.data_type.name === "string") {
             writeValue(props.characteristic, text_field_value, props.readValueHandle);
             return;
         }
 
         // number
-        if (["float", "double"].includes(props.characteristic.data_type)) {
+        if (["float", "double"].includes(props.characteristic.data_type.name)) {
             // integer
             writeValue(props.characteristic, parseFloat(text_field_value), props.readValueHandle);
             return;
@@ -183,10 +192,10 @@ const CharacteristicCard = (props: {
             <CardActions>
                 <BLETypeSelect
                     onChange={props.changeBleType}
-                    value={props.characteristic.data_type}
+                    value={props.characteristic.data_type.name}
                     name={props.characteristic.name} />
                 <NumerationSystemSelect
-                    sx={{ display: (["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type)) ? 'flex' : 'none' }}
+                    sx={{ display: (["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name)) ? 'flex' : 'none' }}
                     value={numeration_sys}
                     onChange={(ev: SelectChangeEvent) => {
                         const i = ns_items.find(item => item.name === ev.target.value);
@@ -203,7 +212,7 @@ const CharacteristicCard = (props: {
                     onChange={(ev: ChangeEvent) => { setTextFieldVal((ev.target as HTMLInputElement).value) }}
                     readonly={readonly}
                     name={props.characteristic.name}
-                    start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type) ? numeration_sys.prefix : ""} />
+                    start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name) ? numeration_sys.prefix : ""} />
             </CardActions>
 
             <CardActions>

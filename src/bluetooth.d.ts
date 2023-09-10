@@ -15,6 +15,7 @@ type ServicePreset = {
 type BleDataType = {
   name: string,
   hex_code: number,
+  data_length: number, //byte
   decoder: (v: DataView, offset: number) => number | string,
   encoder: (v: any) => BufferSource
 }
@@ -29,11 +30,8 @@ type CharacteristicWrapper = {
   characteristic: BluetoothRemoteGATTCharacteristic,
   name: string,
   config: string,
-  data_type: string,
+  data_type: BleDataType,
   prefix: string
   unit: string,
-  // hex: number,
-  decoder: ((v: DataView, offset: number) => number | string),
-  encoder: (v: any) => BufferSource
   value: number | string
 }

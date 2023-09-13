@@ -11,10 +11,12 @@ This repository depends on [Web Bluetooth API](https://developer.mozilla.org/doc
 graph LR
 
 subgraph peripheral
-   value
+   subgraph characteristic
+      value
+   end
 end
 
-subgraph client
+subgraph central
    raw_value
    text_field_value
    numeration_sys
@@ -24,7 +26,7 @@ subgraph client
    numeration_sys-->|onChange|plus
    plus-->|toString|text_field_value
 
-   text_field_value-.->|write|value
+   text_field_value-->|write|value
 end
 
 value-->|read|raw_value

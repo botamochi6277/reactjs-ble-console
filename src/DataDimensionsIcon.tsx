@@ -6,6 +6,7 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import ScreenRotationAltIcon from '@mui/icons-material/ScreenRotationAlt';
 import Rotate90DegreesCcwIcon from '@mui/icons-material/Rotate90DegreesCcw';
 import NumbersIcon from '@mui/icons-material/Numbers';
+import PaletteIcon from '@mui/icons-material/Palette';
 
 export const DataDimensionsIcon = (props: { dimensions: string }) => {
 
@@ -22,6 +23,10 @@ export const DataDimensionsIcon = (props: { dimensions: string }) => {
       return <Rotate90DegreesCcwIcon />;
     case 'deg':
       return <Rotate90DegreesCcwIcon />;
+    case '#':
+      return <PaletteIcon />;
+    case '$':
+      return <PaletteIcon />;
     default:
       return <NumbersIcon />;
   }

@@ -12,6 +12,7 @@ import {
     Stack,
     SelectChangeEvent,
 } from '@mui/material';
+import { MuiColorInput } from 'mui-color-input'
 
 // icons
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -101,7 +102,10 @@ const CharacteristicCard = (props: {
     const [is_subscribing, setIsSubscribe] = React.useState(false);
     const [text_field_value, setTextFieldVal] = React.useState("");
     const [numeration_sys, setNumerationSys] = React.useState(ns_items[1]);
-
+    const [color, setColor] = React.useState('#ffffff')
+    const handleColorChange = (color: string) => {
+        setColor(color)
+    }
     // effect for change of the characteristic
     React.useEffect(
         () => {
@@ -213,6 +217,11 @@ const CharacteristicCard = (props: {
                     readonly={readonly}
                     name={props.characteristic.name}
                     start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name) ? numeration_sys.prefix : ""} />
+                <MuiColorInput
+                    sx={{ display: props.characteristic.unit === "$" ? "flex" : "none" }}
+                    value={color}
+                    onChange={handleColorChange}
+                />
             </CardActions>
 
             <CardActions>

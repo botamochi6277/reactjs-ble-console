@@ -29,7 +29,10 @@ export const ble_units = [
   { name: 'gyro', unit: 'rad/s', hex: 0x2743 },
   { name: 'time', unit: 'sec', hex: 0x2703 },
   { name: 'angle', unit: 'deg', hex: 0x2763 },
-  { name: 'temperature', unit: '°C', hex: 0x272F }
+  { name: 'temperature', unit: '°C', hex: 0x272F },
+  // custom
+  { name: 'rgb color', unit: '#', hex: 0x27F0 },
+  { name: 'hsb color', unit: '$', hex: 0x27F1 },
 ];
 
 const si_prefixes = [

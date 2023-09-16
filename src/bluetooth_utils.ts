@@ -222,6 +222,14 @@ export async function searchDevice(
       console.log(`Characteristic UUID:  ${characteristic.uuid}`);
       // read descriptor
       const profile = await readDescriptors(characteristic);
+
+      // read initial value
+      let tmp_val: number | string = 0;
+      if (characteristic.properties.read) {
+        const dv = await characteristic.readValue();//dataview
+        tmp_val = profile.data_type.decoder(dv, 0);
+      }
+
       const w: CharacteristicWrapper = {
         characteristic: characteristic,
         name: profile.name,
@@ -229,12 +237,13 @@ export async function searchDevice(
         data_type: profile.data_type,
         prefix: profile.prefix,
         unit: profile.unit,
-        value: 0
+        value: tmp_val
       }
       characteristics.push(w);
     }
 
     setCharacteristics(characteristics);
+
   } catch (error) {
     if (error instanceof Error) {
       console.log(error.message);

@@ -169,29 +169,6 @@ function CharacteristicGridCards(props: {
 
 
 const BLEManager = () => {
-  // constructor(props: any) {
-
-
-  //   super(props);
-  //   /**
-  //    * @type {{device:BluetoothDevice|null,characteristics:Array<BluetoothRemoteGATTCharacteristic>,service_preset:ServicePreset,log_message:string,candidates:Array<ServicePreset>,is_search_all_device:boolean}}
-  //    */
-  //   this.state = {
-  //     device: null,// Promise<BluetoothDevice>
-  //     characteristics: [],
-  //     service_preset: init_srv,
-  //     log_message: "console log message will be appear",
-  //     candidates: service_preset,
-  //     is_search_all_device: false
-  //   }
-
-  //   this.switchSearchAllDevice = this.switchSearchAllDevice.bind(this);
-  //   this.()=>{searchDevice = this.()=>searchDevice.bind(this)(
-
-  // )};
-  //   this.changeService = this.changeService.bind(this);
-
-  // }
 
   const init_srv = service_preset[0];
   // srv_preset is for searching device
@@ -203,7 +180,6 @@ const BLEManager = () => {
 
   const [log_message, setLogMessage] = React.useState("console log message will be appear");
   const [is_search_all_device, setSearchAllDevice] = React.useState(false);
-
 
 
   const changeService = (name: string) => {

@@ -12,12 +12,13 @@ import {
     Stack,
     SelectChangeEvent,
 } from '@mui/material';
+
 import {
     MuiColorInput, MuiColorInputValue,
-    MuiColorInputFormat, MuiColorInputColors, matchIsValidColor
+    matchIsValidColor
 } from 'mui-color-input'
 
-import { TinyColor, tinycolor } from '@ctrl/tinycolor'; // installed w/ mui-color-input
+import { tinycolor } from '@ctrl/tinycolor'; // installed w/ mui-color-input
 
 // icons
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -108,8 +109,7 @@ const CharacteristicCard = (props: {
     const [text_field_value, setTextFieldVal] = React.useState("");
     const [numeration_sys, setNumerationSys] = React.useState(ns_items[1]);
     const [color, setColor] = React.useState<MuiColorInputValue>('#ffffff');
-    const [color_format, setColorFormat] = React.useState<MuiColorInputFormat>('hex');
-    const handleColorChange = (new_color: string, colors: MuiColorInputColors) => {
+    const handleColorChange = (new_color: string) => {
 
         // console.log(`color validation: ${matchIsValidColor(new_color)}`)
         setColor(new_color)

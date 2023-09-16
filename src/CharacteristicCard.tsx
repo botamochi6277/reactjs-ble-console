@@ -12,7 +12,12 @@ import {
     Stack,
     SelectChangeEvent,
 } from '@mui/material';
-import { MuiColorInput } from 'mui-color-input'
+import {
+    MuiColorInput, MuiColorInputValue,
+    MuiColorInputFormat, MuiColorInputColors, matchIsValidColor
+} from 'mui-color-input'
+
+import { TinyColor, tinycolor } from '@ctrl/tinycolor'; // installed w/ mui-color-input
 
 // icons
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -102,10 +107,15 @@ const CharacteristicCard = (props: {
     const [is_subscribing, setIsSubscribe] = React.useState(false);
     const [text_field_value, setTextFieldVal] = React.useState("");
     const [numeration_sys, setNumerationSys] = React.useState(ns_items[1]);
-    const [color, setColor] = React.useState('#ffffff')
-    const handleColorChange = (color: string) => {
-        setColor(color)
+    const [color, setColor] = React.useState<MuiColorInputValue>('#ffffff');
+    const [color_format, setColorFormat] = React.useState<MuiColorInputFormat>('hex');
+    const handleColorChange = (new_color: string, colors: MuiColorInputColors) => {
+
+        // console.log(`color validation: ${matchIsValidColor(new_color)}`)
+        setColor(new_color)
     }
+
+    const is_color = ["#", "$"].includes(props.characteristic.unit);
     // effect for change of the characteristic
     React.useEffect(
         () => {
@@ -124,12 +134,28 @@ const CharacteristicCard = (props: {
                         setTextFieldVal(props.characteristic.value.toString(numeration_sys.radix).padStart(max_digits, '0'));
                     }
 
+                    if (is_color) {
+
+                        if (props.characteristic.unit === "#") {
+                            // rgb hex
+                            console.log(`${matchIsValidColor(color)}`)
+                            setColor(`#${props.characteristic.value.toString(16).padStart(6, '0')}`);
+                        }
+                        if (props.characteristic.unit === "$") {
+                            const hex_str = props.characteristic.value.toString(16).padStart(8, '0');
+                            const hue = 360.0 * parseInt(hex_str.slice(0, 4), 16) / 65535;
+                            const saturation = parseInt(hex_str.slice(4, 6), 16) / 255;
+                            const brightness = parseInt(hex_str.slice(6), 16) / 255;
+                            console.log(`hsb-hex: ${hex_str}`);
+                            setColor({ h: hue, s: saturation, v: brightness });
+
+                        }
+                    }
+
                 } else {
                     setTextFieldVal(props.characteristic.value.toString())
                 }
             }
-            // error
-
         },
         [props.characteristic, numeration_sys]
     )
@@ -156,6 +182,27 @@ const CharacteristicCard = (props: {
     }
 
     const writeVal = () => {
+
+        if (is_color) {
+            console.log(color);
+            // console.log(color.v);
+            const tmp_color = tinycolor(color);
+            if (props.characteristic.unit === "#") {
+                const hex_color = tmp_color.toHex();
+                writeValue(props.characteristic, parseInt(hex_color, 16), props.readValueHandle);
+            }
+            if (props.characteristic.unit === "$") {
+                // hex to hsv
+                const tmp_hsv = tmp_color.toHsv();
+                const hue_hex = Math.floor(tmp_hsv.h / 360 * 0xFFFF).toString(16);
+                const s_hex = Math.floor(tmp_hsv.s * 0xFF).toString(16);
+                const v_hex = Math.floor(tmp_hsv.v * 0xFF).toString(16);
+                console.debug("write: " + parseInt(`${hue_hex}${s_hex}${v_hex}`, 16))
+                writeValue(props.characteristic, parseInt(`${hue_hex}${s_hex}${v_hex}`, 16), props.readValueHandle);
+            }
+
+            return;
+        }
 
         if (props.characteristic.data_type.name === "string") {
             writeValue(props.characteristic, text_field_value, props.readValueHandle);
@@ -193,7 +240,7 @@ const CharacteristicCard = (props: {
                 </Stack>
             </CardContent>
 
-            <CardActions>
+            <CardActions sx={{ display: is_color ? "none" : "flex" }}>
                 <BLETypeSelect
                     onChange={props.changeBleType}
                     value={props.characteristic.data_type.name}
@@ -217,10 +264,15 @@ const CharacteristicCard = (props: {
                     readonly={readonly}
                     name={props.characteristic.name}
                     start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name) ? numeration_sys.prefix : ""} />
+            </CardActions>
+
+            {/* color */}
+            <CardActions sx={{ display: is_color ? "flex" : "none" }}>
                 <MuiColorInput
-                    sx={{ display: props.characteristic.unit === "$" ? "flex" : "none" }}
                     value={color}
                     onChange={handleColorChange}
+                    // format={color_format} // fail of color preview in hsv
+                    fullWidth
                 />
             </CardActions>
 

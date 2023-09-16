@@ -157,7 +157,8 @@ export async function searchDevice(
   srv_preset: ServicePreset,
   setLogMessage: (s: string) => void,
   setDevice: (d: BluetoothDevice) => void,
-  setCharacteristics: (c: CharacteristicWrapper[]) => void
+  setCharacteristics: (c: CharacteristicWrapper[]) => void,
+  onDisconnected?: () => void
 ) {
   let filters = [];
   let filter_service = uuid;
@@ -189,6 +190,11 @@ export async function searchDevice(
       const un_found_msg = `Available device is not found`
       setLogMessage(un_found_msg);
       return;
+    }
+
+    // assign callback for disconnection
+    if (onDisconnected) {
+      ble_device.addEventListener('gattserverdisconnected', onDisconnected);
     }
 
     // https://ja.reactjs.org/docs/state-and-lifecycle.html#using-state-correctly

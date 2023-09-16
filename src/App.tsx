@@ -219,7 +219,8 @@ const BLEManager = () => {
             srv_preset,
             setLogMessage,
             setDevice,
-            setCharacteristics
+            setCharacteristics,
+            () => { setLogMessage("Device is disconnected") }
           )
         }}
         onChangeService={changeService}

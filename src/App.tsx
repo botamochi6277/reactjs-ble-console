@@ -220,7 +220,11 @@ const BLEManager = () => {
             setLogMessage,
             setDevice,
             setCharacteristics,
-            () => { setLogMessage("Device is disconnected") }
+            () => {
+              setLogMessage("Device is disconnected");
+              setDevice(null);
+              setCharacteristics([]);
+            }
           )
         }}
         onChangeService={changeService}

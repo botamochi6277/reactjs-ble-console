@@ -24,10 +24,8 @@ import { readValue, ble_data_formats, searchDevice } from "./bluetooth_utils";
 // icons
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import EmojiSymbolsIcon from '@mui/icons-material/EmojiSymbols';
-import TerminalIcon from '@mui/icons-material/Terminal';
 import NumbersIcon from '@mui/icons-material/Numbers';
-import { GitHub } from '@mui/icons-material';
-
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 import ServiceCard from './ServiceCard';
 import CharacteristicCard from './CharacteristicCard';
@@ -35,39 +33,6 @@ import service_preset from './ServicePreset';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 
-
-
-function BLEAvailableAlert() {
-  // https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth/getAvailability
-
-  if (typeof (navigator.bluetooth) === "undefined") {
-    return (
-      <Alert severity="error">
-        Web Bluetooth API is unavailable with this browser.
-        Google Chrome is recommended.
-      </Alert>
-    );
-  }
-
-
-  navigator.bluetooth.getAvailability().then(available => {
-    if (available) {
-      // console.log("This device supports Bluetooth!");
-      return (
-        <div > </div>
-      );
-    }
-    else {
-      console.log("Doh! Bluetooth is not supported");
-      return (
-        <Alert severity="error">Bluetooth is not supported</Alert>
-      );
-    }
-  });
-  return (
-    <div > </div>
-  );
-}
 
 function CharacteristicGridCards(props: {
   characteristics: CharacteristicWrapper[],
@@ -301,7 +266,7 @@ function App() {
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 </Typography>
                 <Link color="inherit" href='https://github.com/botamochi6277/reactjs-ble-console' target='_blank' >
-                  <GitHub />
+                  <GitHubIcon />
                 </Link>
               </Toolbar></Container></AppBar>
 

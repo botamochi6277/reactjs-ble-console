@@ -178,7 +178,7 @@ const BLEManager = () => {
   // characteristics: BluetoothRemoteGATTCharacteristic[]
   const [characteristics, setCharacteristics] = React.useState<CharacteristicWrapper[]>([]);
 
-  const [log_message, setLogMessage] = React.useState("console log message will be appear");
+  const [log_message, setLogMessage] = React.useState("please, search and connect to the target BLE device");
   const [is_search_all_device, setSearchAllDevice] = React.useState(false);
 
 
@@ -194,23 +194,6 @@ const BLEManager = () => {
 
   return (
     <Stack spacing={1}>
-      {/* logger */}
-      <Card>
-        <CardHeader
-          avatar={
-            <Avatar sx={{ width: 36, height: 36 }}>
-              <TerminalIcon />
-            </Avatar>
-          }
-          title="Console Log"
-          titleTypographyProps={{ variant: 'h5' }}
-        ></CardHeader>
-        <CardContent>
-          <BLEAvailableAlert />
-          <Alert severity="info">{log_message}</Alert>
-        </CardContent>
-      </Card>
-
       <ServiceCard
         onSearchDevice={() => {
           searchDevice(
@@ -233,6 +216,7 @@ const BLEManager = () => {
         service={srv_preset}
         is_search_all_device={is_search_all_device}
         device={device}
+        message={log_message}
       />
 
       {/* Characteristics */}

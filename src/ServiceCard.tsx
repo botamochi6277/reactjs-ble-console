@@ -1,24 +1,60 @@
 import * as React from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import { CardHeader } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Checkbox from '@mui/material/Checkbox';
-import Chip from '@mui/material/Chip';
+
+import {
+    CardHeader, Card,
+    CardContent,
+    Select,
+    Box,
+    TextField,
+    Alert,
+    Grid,
+    Avatar,
+    MenuItem,
+    InputLabel,
+    FormControl,
+    FormControlLabel,
+    Checkbox,
+    Chip,
+    Button,
+    SelectChangeEvent,
+} from '@mui/material';
 
 // icons
 import FunctionsIcon from '@mui/icons-material/Functions';
 import SearchIcon from '@mui/icons-material/Search';
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
+
+function BLEAvailableAlert() {
+    // https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth/getAvailability
+
+    if (typeof (navigator.bluetooth) === "undefined") {
+        return (
+            <Alert severity="error">
+                Web Bluetooth API is unavailable with this browser.
+                Google Chrome is recommended.
+            </Alert>
+        );
+    }
+
+
+    navigator.bluetooth.getAvailability().then(available => {
+        if (available) {
+            // console.log("This device supports Bluetooth!");
+            return (
+                <div > </div>
+            );
+        }
+        else {
+            console.log("Doh! Bluetooth is not supported");
+            return (
+                <Alert severity="error">Bluetooth is not supported</Alert>
+            );
+        }
+    });
+    return (
+        <div > </div>
+    );
+}
 
 function CheckboxSearchAllDevice(props: {
     is_search_all_device: boolean,
@@ -93,7 +129,8 @@ function ServiceCard(props: {
     is_search_all_device: boolean,
     service: ServicePreset,
     candidates: ServicePreset[],
-    device: BluetoothDevice | null
+    device: BluetoothDevice | null,
+    message: string | null,
 }) {
 
     const srv = props.service;
@@ -110,6 +147,10 @@ function ServiceCard(props: {
                 titleTypographyProps={{ variant: 'h5' }}
             >
             </CardHeader>
+            <CardContent>
+                <BLEAvailableAlert />
+                <Alert severity="info">{props.message}</Alert>
+            </CardContent>
             <CardContent>
                 {props.device ? (<Chip color="success" icon={<BluetoothIcon />} label={props.device.name} />) : (<Chip color="secondary" icon={<FunctionsIcon />} label={"no device"} />)}
             </CardContent>

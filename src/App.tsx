@@ -1,45 +1,40 @@
 import React from 'react';
 
 import {
-  CardHeader, Card,
-  CardContent,
-  Box,
-  Container,
   Alert,
-  Grid,
   Avatar,
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Container,
+  CssBaseline,
+  Grid,
+  SelectChangeEvent,
   Stack,
-  AppBar,
-  Toolbar,
-  Typography,
-  Link,
-  Button,
-  createTheme, ThemeProvider, CssBaseline, SelectChangeEvent,
+  ThemeProvider,
+  createTheme
 } from '@mui/material';
 
 
 
-import { readValue, ble_data_formats, searchDevice } from "./bluetooth_utils";
+import { ble_data_formats, readValue, searchDevice } from "./bluetooth_utils";
 
 // icons
-import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import EmojiSymbolsIcon from '@mui/icons-material/EmojiSymbols';
 import NumbersIcon from '@mui/icons-material/Numbers';
-import GitHubIcon from '@mui/icons-material/GitHub';
 
-import ServiceCard from './ServiceCard';
 import CharacteristicCard from './CharacteristicCard';
+import MyAppBar from './MyAppBar';
+import ServiceCard from './ServiceCard';
 import service_preset from './ServicePreset';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-
 
 function CharacteristicGridCards(props: {
   characteristics: CharacteristicWrapper[],
   setCharacteristics: (chs: CharacteristicWrapper[]) => void,
 }) {
   function mini_card(
-    ch: CharacteristicWrapper,
+    chr_wrapper: CharacteristicWrapper,
     idx: number) {
 
     const changeBleType = (ev: SelectChangeEvent) => {
@@ -68,8 +63,8 @@ function CharacteristicGridCards(props: {
     }
 
 
-    const readValueHandle = (ch: CharacteristicWrapper) => {
-      readValue(ch).then((v) => {
+    const readValueHandle = (chr_wrapper: CharacteristicWrapper) => {
+      readValue(chr_wrapper).then((v) => {
         props.setCharacteristics(
           props.characteristics.map((c, i) => {
             if (i === idx) {
@@ -111,10 +106,10 @@ function CharacteristicGridCards(props: {
     }
 
     return (
-      <Grid item key={`${ch.characteristic.uuid}-${idx}`} xs={12} md={6} lg={4}>
+      <Grid item key={`${chr_wrapper.characteristic.uuid}-${idx}`} xs={12} md={6} lg={4}>
         <CharacteristicCard
-          characteristic={ch}
-          readValueHandle={() => { readValueHandle(ch) }}
+          characteristic={chr_wrapper}
+          readValueHandle={() => { readValueHandle(chr_wrapper) }}
           notifyHandle={notifyValueHandle}
           changeBleType={changeBleType}
           avatar={<Avatar> <NumbersIcon />  </Avatar>} />
@@ -146,6 +141,9 @@ const BLEManager = () => {
   const [log_message, setLogMessage] = React.useState("please, search and connect to the target BLE device");
   const [is_search_all_device, setSearchAllDevice] = React.useState(false);
 
+  // const [searchParams, setSearchParams] = useSearchParams();
+  let url_search_param = new URLSearchParams();
+  // console.debug(url_search_param);
 
   const changeService = (name: string) => {
     const srv = service_preset.find((c) => c.name === name);
@@ -242,45 +240,10 @@ function App() {
       <CssBaseline />
       <Container>
         <Stack spacing={1}>
-          <AppBar position="static" color="primary" enableColorOnDark>
-            <Container maxWidth="xl">
-              <Toolbar disableGutters>
-                <BluetoothIcon sx={{ display: { md: 'flex' }, mr: 1 }} />
-                <Typography
-                  variant="h6"
-                  noWrap
-                  component="a"
-                  href="/"
-                  sx={{
-                    mr: 2,
-                    display: { xs: 'none', sm: 'flex' },
-                    fontFamily: 'monospace',
-                    fontWeight: 700,
-                    letterSpacing: '.3rem',
-                    color: 'inherit',
-                    textDecoration: 'none',
-                  }}
-                >
-                  BLE WEB Console
-                </Typography>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                </Typography>
-                <Link color="inherit" href='https://github.com/botamochi6277/reactjs-ble-console' target='_blank' >
-                  <GitHubIcon />
-                </Link>
-              </Toolbar></Container></AppBar>
+          <MyAppBar theme={theme} onToggleTheme={() => toggleTheme(theme)} />
 
           <BLEManager ></BLEManager>
 
-          <Button
-            startIcon={theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-            variant="outlined"
-            color="secondary"
-            onClick={() => toggleTheme(theme)}
-            fullWidth
-          >
-            {theme.palette.mode} mode
-          </Button>
         </Stack>
       </Container>
     </ThemeProvider>

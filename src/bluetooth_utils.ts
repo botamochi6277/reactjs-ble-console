@@ -44,26 +44,26 @@ const si_prefixes = [
 ]
 
 // https://developer.mozilla.org/en-US/docs/Web/API/BluetoothRemoteGATTCharacteristic
-export async function readValue(ch: CharacteristicWrapper) {
-  if (!ch.characteristic.properties.read) {
-    console.debug(`${ch.characteristic.uuid} does not permit reading`)
+export async function readValue(chr_wrapper: CharacteristicWrapper) {
+  if (!chr_wrapper.characteristic.properties.read) {
+    console.debug(`${chr_wrapper.characteristic.uuid} does not permit reading`)
     return;
   }
-  console.debug(`reading value of ${ch.characteristic.uuid}`);
-  const dv = await ch.characteristic.readValue();//dataview
-  const v = ch.data_type.decoder(dv, 0);
+  console.debug(`reading value of ${chr_wrapper.characteristic.uuid}`);
+  const dv = await chr_wrapper.characteristic.readValue(); // dataview
+  const v = chr_wrapper.data_type.decoder(dv, 0);
   console.debug(`value = ${v}, byte_length = ${dv.buffer.byteLength}`);
   return v;
 }
 
 
-export function writeValue(ch: CharacteristicWrapper, v: any, callback: () => void) {
-  console.log(`sending ${v} (${ch.data_type.encoder(v)}) to ${ch.name}`)
-  ch.characteristic.writeValue(ch.data_type.encoder(v)).then(callback);
+export function writeValue(chr_wrapper: CharacteristicWrapper, v: any, callback: () => void) {
+  console.log(`sending ${v} (${chr_wrapper.data_type.encoder(v)}) to ${chr_wrapper.name}`)
+  chr_wrapper.characteristic.writeValue(chr_wrapper.data_type.encoder(v)).then(callback);
 }
 
 
-export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
+export async function readDescriptors(chr: BluetoothRemoteGATTCharacteristic) {
   // https://googlechrome.github.io/samples/web-bluetooth/read-descriptors-async-await.html
 
   let txt_decoder = new TextDecoder('utf-8')
@@ -77,7 +77,7 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
 
   let descriptors: BluetoothRemoteGATTDescriptor[] = [];
   try {
-    descriptors = await ch.getDescriptors();
+    descriptors = await chr.getDescriptors();
   } catch (error) {
     // notion: getDescriptors raises error when the characteristic has no descriptor.
     console.log(error);
@@ -99,13 +99,13 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
         // Characteristic User Descriptor
         const data_v = await descriptor.readValue();
         characteristic_name = txt_decoder.decode(data_v);
-        console.debug(characteristic_name);
+        console.debug(`characteristic_name: ${characteristic_name}`);
         break;
       case "00002902-0000-1000-8000-00805f9b34fb":
         // Client Characteristic Configuration descriptor.
         const v2 = await descriptor.readValue();
         characteristic_config = txt_decoder.decode(v2);
-        console.debug(characteristic_config);
+        console.debug(`characteristic_config: ${characteristic_config}`);
         break;
       case "00002904-0000-1000-8000-00805f9b34fb":
         // Characteristic Presentation Format
@@ -141,6 +141,8 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
         break;
     }
   }
+  // 
+  console.debug(`completed reading ${descriptors.length} descriptors`)
 
   return {
     name: characteristic_name,
@@ -152,16 +154,16 @@ export async function readDescriptors(ch: BluetoothRemoteGATTCharacteristic) {
 }
 
 export async function searchDevice(
-  uuid: string,
+  srv_uuid: string,
   is_search_all_device: boolean,
   srv_preset: ServicePreset,
-  setLogMessage: (s: string) => void,
+  setLogMessage: (s: string, status?: string) => void,
   setDevice: (d: BluetoothDevice) => void,
   setCharacteristics: (c: CharacteristicWrapper[]) => void,
   onDisconnected?: () => void
 ) {
   let filters = [];
-  let filter_service = uuid;
+  let filter_service = srv_uuid;
   if (filter_service.startsWith('0x')) {
     const i = parseInt(filter_service);
     if (i) {
@@ -220,21 +222,23 @@ export async function searchDevice(
 
     const all_characteristics = await service.getCharacteristics();
 
-    let characteristics: CharacteristicWrapper[] = [];
+    let chr_wrappers: CharacteristicWrapper[] = [];
 
     for (let index = 0; index < all_characteristics.length; index++) {
-      // const ch_uuid = preset_characteristic_uuids[index].startsWith('0x') ? parseInt(preset_characteristic_uuids[index]) : preset_characteristic_uuids[index];
       const characteristic = all_characteristics[index];
       console.log(`Characteristic UUID:  ${characteristic.uuid}`);
       // read descriptor
       const profile = await readDescriptors(characteristic);
 
+      // console.debug("try to read")
       // read initial value
       let tmp_val: number | string = 0;
       if (characteristic.properties.read) {
-        const dv = await characteristic.readValue();//dataview
+        const dv = await characteristic.readValue(); // dataview
+        // console.log(dv)
         tmp_val = profile.data_type.decoder(dv, 0);
       }
+      // console.log("complete reading")
 
       const w: CharacteristicWrapper = {
         characteristic: characteristic,
@@ -245,18 +249,18 @@ export async function searchDevice(
         unit: profile.unit,
         value: tmp_val
       }
-      characteristics.push(w);
+      chr_wrappers.push(w);
     }
 
-    setCharacteristics(characteristics);
+    setCharacteristics(chr_wrappers);
 
   } catch (error) {
     if (error instanceof Error) {
-      console.log(error.message);
-      setLogMessage(`Argh! ${error.message}`);
+      console.warn(error.message);
+      setLogMessage(`Argh! ${error.message}`, "error");
     } else {
-      console.log(`Argh! ${error}`);
-      setLogMessage(`Argh! ${error}`);
+      console.warn(`Argh! ${error}`);
+      setLogMessage(`Argh! ${error}`, "error");
     }
   }
 }

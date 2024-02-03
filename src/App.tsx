@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   Alert,
   Avatar,
@@ -15,7 +13,8 @@ import {
   ThemeProvider,
   createTheme
 } from '@mui/material';
-
+import React from 'react';
+import { useSearchParams } from "react-router-dom";
 
 
 import { ble_data_formats, readValue, searchDevice } from "./bluetooth_utils";
@@ -130,7 +129,10 @@ function CharacteristicGridCards(props: {
 
 const BLEManager = () => {
 
-  const init_srv = service_preset[0];
+  const [search_params, setSearchParams] = useSearchParams(new URLSearchParams(window.location.search));
+  const tmp_uuid = search_params.get("srv") ?? "0x180";
+  const init_srv = service_preset.find((s) => s.uuid == tmp_uuid) ?? service_preset[0];
+
   // srv_preset is for searching device
   const [srv_preset, setServicePreset] = React.useState(init_srv);
   // BluetoothDevice|null
@@ -141,19 +143,12 @@ const BLEManager = () => {
   const [log_message, setLogMessage] = React.useState("please, search and connect to the target BLE device");
   const [is_search_all_device, setSearchAllDevice] = React.useState(false);
 
-  // const [searchParams, setSearchParams] = useSearchParams();
-  let url_search_param = new URLSearchParams();
-  // console.debug(url_search_param);
-
   const changeService = (name: string) => {
-    const srv = service_preset.find((c) => c.name === name);
-    if (srv) {
-      setServicePreset(srv);
-    } else {
-      setServicePreset(service_preset[0]);
-    }
+    const srv = service_preset.find((c) => c.name === name) ?? service_preset[0];
+    setServicePreset(srv);
+    // url_search_params.set("srv", srv.uuid);
+    setSearchParams({ srv: srv.uuid })
   }
-
 
   return (
     <Stack spacing={1}>
@@ -209,7 +204,6 @@ const BLEManager = () => {
           </Box>
         </CardContent>
       </Card>
-
     </Stack>
   )
 }
@@ -217,8 +211,6 @@ const BLEManager = () => {
 
 
 function App() {
-
-
   const [theme, setTheme] = React.useState(
     createTheme({
       palette: {

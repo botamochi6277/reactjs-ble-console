@@ -1,21 +1,24 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import { Helmet, HelmetProvider } from 'react-helmet-async'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import App from './App.tsx';
 
 import CssBaseline from '@mui/material/CssBaseline';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <HelmetProvider>
-      <Helmet>
-        <title>BLE Console</title>
-      </Helmet>
-      {/* <ThemeProvider theme={theme}> */}
-      {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-      <CssBaseline />
-      <App />
-      {/* </ThemeProvider> */}
-    </HelmetProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={
+          <HelmetProvider>
+            <Helmet>
+              <title>BLE Console</title>
+            </Helmet>
+            <CssBaseline />
+            <App />
+          </HelmetProvider>
+        } />
+      </Routes></BrowserRouter>
   </React.StrictMode>
 )

@@ -156,7 +156,6 @@ export async function readDescriptors(chr: BluetoothRemoteGATTCharacteristic) {
 export async function searchDevice(
   srv_uuid: string,
   is_search_all_device: boolean,
-  srv_preset: ServicePreset,
   setLogMessage: (s: string, status?: string) => void,
   setDevice: (d: BluetoothDevice) => void,
   setCharacteristics: (c: CharacteristicWrapper[]) => void,
@@ -181,7 +180,7 @@ export async function searchDevice(
     options.filters = filters;
   }
 
-  const msg = `searching for service having uuid: ${srv_preset.uuid}`;
+  const msg = `searching for service having uuid: ${srv_uuid}`;
   console.log(msg);
   setLogMessage(msg);
 
@@ -211,7 +210,7 @@ export async function searchDevice(
       return;
     }
     const server = await ble_device.gatt.connect();
-    const target_srv_uuid = srv_preset.uuid.startsWith('0x') ? parseInt(srv_preset.uuid) : srv_preset.uuid;
+    const target_srv_uuid = srv_uuid.startsWith('0x') ? parseInt(srv_uuid) : srv_uuid;
 
     console.log('Getting Service...');
     const service = await server.getPrimaryService(target_srv_uuid);

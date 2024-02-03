@@ -1,5 +1,6 @@
 import {
   Alert,
+  AlertColor,
   Avatar,
   Box,
   Card,
@@ -129,25 +130,27 @@ function CharacteristicGridCards(props: {
 
 const BLEManager = () => {
 
-  const [search_params, setSearchParams] = useSearchParams(new URLSearchParams(window.location.search));
-  const tmp_uuid = search_params.get("srv") ?? "0x180";
-  const init_srv = service_preset.find((s) => s.uuid == tmp_uuid) ?? service_preset[0];
+  const [query_params, setQueryParams] = useSearchParams(new URLSearchParams(window.location.search));
+  const tmp_uuid = query_params.get("srv") ?? "0x180";
+  const initial_srv = service_preset.find((s) => s.uuid == tmp_uuid) ?? service_preset[0];
 
   // srv_preset is for searching device
-  const [srv_preset, setServicePreset] = React.useState(init_srv);
+  const [srv_preset, setServicePreset] = React.useState(initial_srv);
+  const [srv_uuid, setSrvUuid] = React.useState(initial_srv.uuid);
   // BluetoothDevice|null
   const [device, setDevice] = React.useState<BluetoothDevice | null>(null);
   // characteristics: BluetoothRemoteGATTCharacteristic[]
   const [characteristics, setCharacteristics] = React.useState<CharacteristicWrapper[]>([]);
 
   const [log_message, setLogMessage] = React.useState("please, search and connect to the target BLE device");
+  const [log_status, setLogStatus] = React.useState<AlertColor>("info");
   const [is_search_all_device, setSearchAllDevice] = React.useState(false);
 
   const changeService = (name: string) => {
     const srv = service_preset.find((c) => c.name === name) ?? service_preset[0];
     setServicePreset(srv);
-    // url_search_params.set("srv", srv.uuid);
-    setSearchParams({ srv: srv.uuid })
+    setQueryParams({ srv: srv.uuid })
+    setSrvUuid(srv.uuid);
   }
 
   return (
@@ -155,10 +158,9 @@ const BLEManager = () => {
       <ServiceCard
         onSearchDevice={() => {
           searchDevice(
-            srv_preset.uuid,
+            srv_uuid,
             is_search_all_device,
-            srv_preset,
-            setLogMessage,
+            (msg: string, status?: string) => { setLogMessage(msg); if (status) { setLogStatus((status as AlertColor)); } },
             setDevice,
             setCharacteristics,
             () => {
@@ -168,13 +170,17 @@ const BLEManager = () => {
             }
           )
         }}
-        onChangeService={changeService}
+        onChangeServicePreset={changeService}
         onChangeAllSearchDevice={(b: boolean) => setSearchAllDevice(b)}
         candidates={service_preset}
         service={srv_preset}
+        srv_uuid={srv_uuid}
         is_search_all_device={is_search_all_device}
         device={device}
         message={log_message}
+        message_status={log_status}
+        setUuid={(ev) => { setSrvUuid(ev.target.value); setQueryParams({ srv: ev.target.value }) }}
+
       />
 
       {/* Characteristics */}

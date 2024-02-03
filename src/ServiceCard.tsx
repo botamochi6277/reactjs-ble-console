@@ -1,28 +1,29 @@
 import * as React from 'react';
 
 import {
-    CardHeader, Card,
-    CardContent,
-    Select,
-    Box,
-    TextField,
-    Alert,
-    Grid,
+    Alert, AlertColor,
     Avatar,
-    MenuItem,
-    InputLabel,
-    FormControl,
-    FormControlLabel,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
     Checkbox,
     Chip,
-    Button,
+    FormControl,
+    FormControlLabel,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Select,
     SelectChangeEvent,
+    TextField,
 } from '@mui/material';
 
 // icons
+import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import SearchIcon from '@mui/icons-material/Search';
-import BluetoothIcon from '@mui/icons-material/Bluetooth';
 
 function BLEAvailableAlert() {
     // https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth/getAvailability
@@ -124,17 +125,18 @@ function ServiceSelect(props:
 
 function ServiceCard(props: {
     onSearchDevice: () => void,
-    onChangeService: (s: string) => void,
+    onChangeServicePreset: (s: string) => void,
     onChangeAllSearchDevice: (b: boolean) => void,
     is_search_all_device: boolean,
     service: ServicePreset,
+    srv_uuid: string,
     candidates: ServicePreset[],
     device: BluetoothDevice | null,
     message: string | null,
+    message_status?: AlertColor
+    setUuid?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }) {
 
-    const srv = props.service;
-    const service_uuid = srv.uuid;
     return (
         <Card>
             <CardHeader
@@ -149,7 +151,7 @@ function ServiceCard(props: {
             </CardHeader>
             <CardContent>
                 <BLEAvailableAlert />
-                <Alert severity="info">{props.message}</Alert>
+                <Alert severity={props.message_status ?? "info"}>{props.message}</Alert>
             </CardContent>
             <CardContent>
                 {props.device ? (<Chip color="success" icon={<BluetoothIcon />} label={props.device.name} />) : (<Chip color="secondary" icon={<FunctionsIcon />} label={"no device"} />)}
@@ -161,17 +163,19 @@ function ServiceCard(props: {
                     <Grid item xs={6} md={3}>
                         <ServiceSelect
                             candidates={props.candidates}
-                            onChange={props.onChangeService}
+                            onChange={props.onChangeServicePreset}
                             currentSrv={props.service} />
                     </Grid>
                     <Grid item xs={6} md={4}>
                         <TextField
                             required
+                            disabled={props.service.name != "user_defined"}
                             fullWidth
                             variant='standard'
                             id="outlined-required"
                             label="Service UUID"
-                            value={service_uuid}
+                            value={props.srv_uuid}
+                            onChange={props.setUuid}
                         />
                     </Grid>
                     <Grid item xs={6} md={3}>

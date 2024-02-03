@@ -33,7 +33,15 @@ const neopixel: ServicePreset = {
     characteristics: []
 }
 
-const service_preset: ServicePreset[] = [imu_6_axis, neopixel, stackchan, heart_rate];
+const misc: ServicePreset = {
+    name: "user_defined",
+    uuid: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+    characteristics: []
+}
+
+
+
+const service_preset: ServicePreset[] = [imu_6_axis, neopixel, stackchan, heart_rate, misc];
 
 
 export default service_preset;

@@ -11,7 +11,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         {/* https://www.mochinoki-labo.com/github-pages-react-router-dom-v6-problem/ */}
-        <Route path={process.env.GITHUB_PAGES ? "/reactjs-ble-console/" : "/"} element={
+        <Route path={"/reactjs-ble-console/"} element={
           <HelmetProvider>
             <Helmet>
               <title>BLE Console</title>

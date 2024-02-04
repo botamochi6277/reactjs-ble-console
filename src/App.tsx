@@ -160,7 +160,7 @@ const BLEManager = () => {
           searchDevice(
             srv_uuid,
             is_search_all_device,
-            (msg: string, status?: string) => { setLogMessage(msg); if (status) { setLogStatus((status as AlertColor)); } },
+            (msg: string, status?: string) => { setLogMessage(msg); if (status) { setLogStatus((status as AlertColor)); } else { setLogStatus("info") } },
             setDevice,
             setCharacteristics,
             () => {

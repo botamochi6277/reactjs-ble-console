@@ -1,4 +1,5 @@
 
+
 const utf8_decoder = new TextDecoder('utf-8');
 const utf8_encoder = new TextEncoder();
 // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView
@@ -18,7 +19,14 @@ export const ble_data_formats: BleDataType[] = [
   { name: 'int32', data_length: 4, hex_code: 0x10, decoder: (v: DataView, offset: number) => v.getInt32(offset, true), encoder: (v: any) => Int32Array.of(v) },
   { name: 'uint32', data_length: 4, hex_code: 0x08, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) },
   { name: 'uint64', data_length: 8, hex_code: 0x0a, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) }, // no getUint64
-  { name: 'float32', data_length: 4, hex_code: 0x14, decoder: (v: DataView, offset: number) => `${v.getFloat32(offset, true).toFixed(4)}`, encoder: (v: any) => Float32Array.of(v) },
+  {
+    name: 'float32', data_length: 4, hex_code: 0x14, decoder: (v: DataView, offset: number) => `${v.getFloat32(offset, true).toFixed(4)}`, encoder: (v: any) => {
+      var buffer = new ArrayBuffer(4);// with a size in bytes
+      const view = new DataView(buffer);
+      view.setFloat32(0, v, true);
+      return view.buffer;
+    }
+  },
   { name: 'float64', data_length: 8, hex_code: 0x15, decoder: (v: DataView, offset: number) => `${v.getFloat64(offset, true).toFixed(4)}`, encoder: (v: any) => Float64Array.of(v) },
   { name: 'string', data_length: 128, hex_code: 0x00, decoder: (v: DataView, offset: number) => { offset; return utf8_decoder.decode(v); }, encoder: (v: any) => utf8_encoder.encode(v) },
 ];

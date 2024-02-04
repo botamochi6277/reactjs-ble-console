@@ -1,35 +1,38 @@
 import React, { ChangeEvent } from 'react';
 
 import {
-    Button, Card, CardHeader, CardContent, CardActions,
+    Avatar,
+    Button, Card,
+    CardActions,
+    CardContent,
+    CardHeader,
+    FormControl,
     InputAdornment,
     InputLabel,
-    FormControl,
-    Avatar,
-    TextField,
-    Select,
     MenuItem,
-    Stack,
+    Select,
     SelectChangeEvent,
+    Stack,
+    TextField,
 } from '@mui/material';
 
 import {
     MuiColorInput, MuiColorInputValue,
     matchIsValidColor
-} from 'mui-color-input'
+} from 'mui-color-input';
 
 import { tinycolor } from '@ctrl/tinycolor'; // installed w/ mui-color-input
 
 // icons
+import EditIcon from '@mui/icons-material/Edit';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import EditIcon from '@mui/icons-material/Edit';
 
 // house-made
-import { ble_data_formats, writeValue } from "./bluetooth_utils"
-import { CharacteristicPropertiesChip } from "./CharacteristicPropertiesChip"
+import { CharacteristicPropertiesChip } from "./CharacteristicPropertiesChip";
 import { DataDimensionsIcon } from "./DataDimensionsIcon";
 import { NumerationSystemSelect } from "./NumerationSystemSelect";
+import { ble_data_formats, writeValue } from "./bluetooth_utils";
 
 function BLETypeSelect(props: {
     value: string,
@@ -210,8 +213,9 @@ const CharacteristicCard = (props: {
         }
 
         // number
-        if (["float", "double"].includes(props.characteristic.data_type.name)) {
+        if (["float32", "float64"].includes(props.characteristic.data_type.name)) {
             // integer
+            // console.debug(`field value: ${text_field_value}, parsed: ${parseFloat(text_field_value)}`)
             writeValue(props.characteristic, parseFloat(text_field_value), props.readValueHandle);
             return;
         } else {

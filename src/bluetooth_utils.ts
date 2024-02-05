@@ -298,8 +298,12 @@ export async function searchDevice(
 
   } catch (error) {
     if (error instanceof Error) {
-      console.warn(error.message);
-      setLogMessage(`Argh! ${error.message}`, "error");
+      console.warn(`${error.message}, ${error.name}`);
+      if (error.name === "NotFoundError") {
+        setLogMessage(` ${error.message}`, "warning");
+      } else {
+        setLogMessage(`Argh! ${error.message}`, "error");
+      }
     } else {
       console.warn(`Argh! ${error}`);
       setLogMessage(`Argh! ${error}`, "error");

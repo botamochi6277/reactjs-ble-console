@@ -6,19 +6,47 @@ const utf8_encoder = new TextEncoder();
 export const ble_data_formats: BleDataType[] = [
   { name: 'int8', data_length: 1, hex_code: 0x0C, decoder: (v: DataView, offset: number) => v.getInt8(offset), encoder: (v: any) => Int8Array.of(v) },
   { name: 'uint8', data_length: 1, hex_code: 0x04, decoder: (v: DataView, offset: number) => v.getUint8(offset), encoder: (v: any) => Uint8Array.of(v) },
-  { name: 'int16', data_length: 2, hex_code: 0x0E, decoder: (v: DataView, offset: number) => v.getInt16(offset, true), encoder: (v: any) => Int16Array.of(v) },
+  {
+    name: 'int16', data_length: 2, hex_code: 0x0E, decoder: (v: DataView, offset: number) => v.getInt16(offset, true), encoder: (v: any) => {
+      const buffer = new ArrayBuffer(2);
+      const view = new DataView(buffer);
+      view.setInt16(0, v, true);
+      return view.buffer;
+    }
+  },
   {
     name: 'uint16', data_length: 2, hex_code: 0x06, decoder: (v: DataView, offset: number) => v.getUint16(offset, true),
     encoder: (v: any) => {
-      const buffer = new ArrayBuffer(16);
+      const buffer = new ArrayBuffer(2);
       const view = new DataView(buffer);
       view.setUint16(0, v, true);
       return view.buffer;
     }
   },
-  { name: 'int32', data_length: 4, hex_code: 0x10, decoder: (v: DataView, offset: number) => v.getInt32(offset, true), encoder: (v: any) => Int32Array.of(v) },
-  { name: 'uint32', data_length: 4, hex_code: 0x08, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) },
-  { name: 'uint64', data_length: 8, hex_code: 0x0a, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => Uint32Array.of(v) }, // no getUint64
+  {
+    name: 'int32', data_length: 4, hex_code: 0x10, decoder: (v: DataView, offset: number) => v.getInt32(offset, true), encoder: (v: any) => {
+      const buffer = new ArrayBuffer(4);
+      const view = new DataView(buffer);
+      view.setInt32(0, v, true);
+      return view.buffer;
+    }
+  },
+  {
+    name: 'uint32', data_length: 4, hex_code: 0x08, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => {
+      const buffer = new ArrayBuffer(4);
+      const view = new DataView(buffer);
+      view.setUint32(0, v, true);
+      return view.buffer;
+    }
+  },
+  {
+    name: 'uint64', data_length: 8, hex_code: 0x0a, decoder: (v: DataView, offset: number) => v.getUint32(offset, true), encoder: (v: any) => {
+      const buffer = new ArrayBuffer(8);
+      const view = new DataView(buffer);
+      view.setBigUint64(0, v, true);
+      return view.buffer;
+    }
+  }, // no getUint64
   {
     name: 'float32', data_length: 4, hex_code: 0x14, decoder: (v: DataView, offset: number) => `${v.getFloat32(offset, true).toFixed(4)}`, encoder: (v: any) => {
       var buffer = new ArrayBuffer(4);// with a size in bytes
@@ -27,7 +55,14 @@ export const ble_data_formats: BleDataType[] = [
       return view.buffer;
     }
   },
-  { name: 'float64', data_length: 8, hex_code: 0x15, decoder: (v: DataView, offset: number) => `${v.getFloat64(offset, true).toFixed(4)}`, encoder: (v: any) => Float64Array.of(v) },
+  {
+    name: 'float64', data_length: 8, hex_code: 0x15, decoder: (v: DataView, offset: number) => `${v.getFloat64(offset, true).toFixed(4)}`, encoder: (v: any) => {
+      const buffer = new ArrayBuffer(8);
+      const view = new DataView(buffer);
+      view.setFloat64(0, v, true);
+      return view.buffer;
+    }
+  },
   { name: 'string', data_length: 128, hex_code: 0x00, decoder: (v: DataView, offset: number) => { offset; return utf8_decoder.decode(v); }, encoder: (v: any) => utf8_encoder.encode(v) },
 ];
 

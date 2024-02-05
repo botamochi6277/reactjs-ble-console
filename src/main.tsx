@@ -11,7 +11,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         {/* https://www.mochinoki-labo.com/github-pages-react-router-dom-v6-problem/ */}
-        <Route path={"/"} element={
+        <Route path={import.meta.env.BASE_URL} element={
           <HelmetProvider>
             <Helmet>
               <title>BLE Web Console</title>

@@ -232,6 +232,7 @@ function App() {
       setTheme(createTheme({ palette: { mode: 'dark', }, }))
     }
   }
+  console.log(`baseurl: ${import.meta.env.BASE_URL}`);
 
   return (
     <ThemeProvider theme={theme}>

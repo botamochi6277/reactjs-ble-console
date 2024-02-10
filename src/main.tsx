@@ -8,10 +8,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         {/* https://www.mochinoki-labo.com/github-pages-react-router-dom-v6-problem/ */}
-        <Route path={"/reactjs-ble-console/"} element={
+        {/* https://zenn.dev/shivase/articles/009-react-vite-githubpages */}
+        <Route path={"/"} element={
           <HelmetProvider>
             <Helmet>
               <title>BLE Web Console</title>

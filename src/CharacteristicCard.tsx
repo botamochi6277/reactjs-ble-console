@@ -24,6 +24,7 @@ import {
 import { tinycolor } from '@ctrl/tinycolor'; // installed w/ mui-color-input
 
 // icons
+import AbcIcon from '@mui/icons-material/Abc';
 import EditIcon from '@mui/icons-material/Edit';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -207,7 +208,7 @@ const CharacteristicCard = (props: {
             return;
         }
 
-        if (props.characteristic.data_type.name === "string") {
+        if (["utf8", "utf16"].includes(props.characteristic.data_type.name)) {
             writeValue(props.characteristic, text_field_value, props.readValueHandle);
             return;
         }
@@ -231,7 +232,8 @@ const CharacteristicCard = (props: {
             <CardHeader
                 avatar={
                     <Avatar aria-label="recipe">
-                        <DataDimensionsIcon dimensions={props.characteristic.unit} />
+                        {(["utf8", "utf16"].includes(props.characteristic.data_type.name)) ? <AbcIcon /> : <DataDimensionsIcon dimensions={props.characteristic.unit} />}
+
                     </Avatar>
                 }
                 title={props.characteristic.name}

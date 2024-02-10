@@ -1,9 +1,9 @@
 import {
   FormControl,
   InputLabel,
+  MenuItem,
   Select,
   SelectChangeEvent,
-  MenuItem,
   SxProps,
   Theme
 } from '@mui/material';
@@ -21,7 +21,7 @@ export const NumerationSystemSelect = (props: {
     <FormControl variant="standard" sx={props.sx} fullWidth>
       <InputLabel
         id={`numeration-system-select-label-${props.name}`}>
-        numeration system
+        numeration sys.
       </InputLabel>
       <Select
         value={props.value.name}
@@ -29,7 +29,7 @@ export const NumerationSystemSelect = (props: {
         labelId={`numeration-system-select-label-${props.name}`}
         onChange={props.onChange}
         inputProps={{
-          name: 'numeration system',
+          name: 'numeration sys.',
           id: `numeration-system-select-${props.name}`,
         }}
       >

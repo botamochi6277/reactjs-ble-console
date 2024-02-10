@@ -1,12 +1,13 @@
 
 // icons
-import ThermostatIcon from '@mui/icons-material/Thermostat';
-import TimerIcon from '@mui/icons-material/Timer';
-import SpeedIcon from '@mui/icons-material/Speed';
-import ScreenRotationAltIcon from '@mui/icons-material/ScreenRotationAlt';
-import Rotate90DegreesCcwIcon from '@mui/icons-material/Rotate90DegreesCcw';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import NumbersIcon from '@mui/icons-material/Numbers';
 import PaletteIcon from '@mui/icons-material/Palette';
+import Rotate90DegreesCcwIcon from '@mui/icons-material/Rotate90DegreesCcw';
+import ScreenRotationAltIcon from '@mui/icons-material/ScreenRotationAlt';
+import SpeedIcon from '@mui/icons-material/Speed';
+import ThermostatIcon from '@mui/icons-material/Thermostat';
+import TimerIcon from '@mui/icons-material/Timer';
 
 export const DataDimensionsIcon = (props: { dimensions: string }) => {
 
@@ -17,15 +18,17 @@ export const DataDimensionsIcon = (props: { dimensions: string }) => {
       return <ScreenRotationAltIcon />;
     case "sec":
       return <TimerIcon />;
-    case '°C':
+    case "Hz":
+      return <MonitorHeartIcon />;
+    case "°C":
       return <ThermostatIcon />;
-    case 'rad':
+    case "rad":
       return <Rotate90DegreesCcwIcon />;
-    case 'deg':
+    case "deg":
       return <Rotate90DegreesCcwIcon />;
-    case '#':
+    case "#":
       return <PaletteIcon />;
-    case '$':
+    case "$":
       return <PaletteIcon />;
     default:
       return <NumbersIcon />;

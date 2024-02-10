@@ -63,7 +63,8 @@ export const ble_data_formats: BleDataType[] = [
       return view.buffer;
     }
   },
-  { name: 'string', data_length: 128, hex_code: 0x00, decoder: (v: DataView, offset: number) => { offset; return utf8_decoder.decode(v); }, encoder: (v: any) => utf8_encoder.encode(v) },
+  { name: 'utf8', data_length: 128, hex_code: 0x19, decoder: (v: DataView, offset: number) => { offset; return utf8_decoder.decode(v); }, encoder: (v: any) => utf8_encoder.encode(v) },
+  { name: 'utf16', data_length: 128, hex_code: 0x1a, decoder: (v: DataView, offset: number) => { offset; return utf8_decoder.decode(v); }, encoder: (v: any) => utf8_encoder.encode(v) },
 ];
 
 export const ble_units = [
@@ -71,6 +72,7 @@ export const ble_units = [
   { name: 'acc', unit: "m/s**2", hex: 0x2713 },
   { name: 'gyro', unit: 'rad/s', hex: 0x2743 },
   { name: 'time', unit: 'sec', hex: 0x2703 },
+  { name: 'frequency', unit: 'Hz', hex: 0x2722 },
   { name: 'angle', unit: 'deg', hex: 0x2763 },
   { name: 'temperature', unit: '°C', hex: 0x272F },
   // custom

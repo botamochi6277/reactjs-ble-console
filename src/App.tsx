@@ -25,10 +25,9 @@ import EmojiSymbolsIcon from '@mui/icons-material/EmojiSymbols';
 import NumbersIcon from '@mui/icons-material/Numbers';
 
 import CharacteristicCard from './CharacteristicCard';
+import ConnectingDialog from './ConnectingDialog';
 import MyAppBar from './MyAppBar';
-import ServiceCard from './ServiceCard';
 import service_preset from './ServicePreset';
-
 function CharacteristicGridCards(props: {
   characteristics: CharacteristicWrapper[],
   setCharacteristics: (chs: CharacteristicWrapper[]) => void,
@@ -142,7 +141,7 @@ const BLEManager = () => {
   // characteristics: BluetoothRemoteGATTCharacteristic[]
   const [characteristics, setCharacteristics] = React.useState<CharacteristicWrapper[]>([]);
 
-  const [log_message, setLogMessage] = React.useState("please, search and connect to the target BLE device");
+  const [log_message, setLogMessage] = React.useState("please, search for and connect to a BLE device");
   const [log_status, setLogStatus] = React.useState<AlertColor>("info");
   const [is_search_all_device, setSearchAllDevice] = React.useState(false);
 
@@ -155,7 +154,8 @@ const BLEManager = () => {
 
   return (
     <Stack spacing={1}>
-      <ServiceCard
+      <ConnectingDialog
+        is_opened={!device}
         onSearchDevice={() => {
           searchDevice(
             srv_uuid,

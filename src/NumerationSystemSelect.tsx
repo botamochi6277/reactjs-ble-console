@@ -18,7 +18,7 @@ export const NumerationSystemSelect = (props: {
 
   const menus = props.items.map((b) => <MenuItem value={b.name} key={b.name}>{b.name}</MenuItem>)
   return (
-    <FormControl variant="standard" sx={props.sx} fullWidth>
+    <FormControl variant="standard" sx={props.sx}>
       <InputLabel
         id={`numeration-system-select-label-${props.name}`}>
         numeration sys.

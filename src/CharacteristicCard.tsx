@@ -43,7 +43,7 @@ function BLETypeSelect(props: {
     const menus = ble_data_formats.map((b) => <MenuItem value={b.name} key={b.name}>{b.name}</MenuItem>)
 
     return (
-        <FormControl variant="standard" fullWidth>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 80 }}>
             <InputLabel
                 id={`ble-data-type-select-label-${props.name}`}>
                 data type
@@ -77,11 +77,12 @@ function ValueField(props: {
 }) {
     const unit_str = `${props.prefix}${props.unit}`;
     return (
-        <FormControl variant="standard" fullWidth>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 80 }}>
             <TextField
                 id={`input-with-sx-${props.name}`}
                 label={`value`}
                 variant="standard"
+                disabled={props.readonly}
                 onChange={props.onChange}
                 InputProps={{
                     readOnly: props.readonly,
@@ -253,7 +254,7 @@ const CharacteristicCard = (props: {
                     value={props.characteristic.data_type.name}
                     name={props.characteristic.name} />
                 <NumerationSystemSelect
-                    sx={{ display: (["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name)) ? 'flex' : 'none' }}
+                    sx={{ display: (["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name)) ? 'flex' : 'none', m: 1, minWidth: 80 }}
                     value={numeration_sys}
                     onChange={(ev: SelectChangeEvent) => {
                         const i = ns_items.find(item => item.name === ev.target.value);

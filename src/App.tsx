@@ -1,15 +1,7 @@
 import {
-  Alert,
   AlertColor,
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
   Container,
   CssBaseline,
-  Grid,
-  SelectChangeEvent,
   Stack,
   ThemeProvider,
   createTheme
@@ -18,114 +10,15 @@ import React from 'react';
 import { useSearchParams } from "react-router-dom";
 
 
-import { ble_data_formats, readValue, searchDevice } from "./bluetooth_utils";
+import { searchDevice } from "./bluetooth_utils";
 
 // icons
-import EmojiSymbolsIcon from '@mui/icons-material/EmojiSymbols';
-import NumbersIcon from '@mui/icons-material/Numbers';
 
-import CharacteristicCard from './CharacteristicCard';
 import ConnectingDialog from './ConnectingDialog';
 import MyAppBar from './MyAppBar';
 import service_preset from './ServicePreset';
-function CharacteristicGridCards(props: {
-  characteristics: CharacteristicWrapper[],
-  setCharacteristics: (chs: CharacteristicWrapper[]) => void,
-}) {
-  function mini_card(
-    chr_wrapper: CharacteristicWrapper,
-    idx: number) {
 
-    const changeBleType = (ev: SelectChangeEvent) => {
-      const new_type = ble_data_formats.find(element => element.name === ev.target.value);
-      if (!new_type) { return; }
-      props.setCharacteristics(
-        props.characteristics.map((c, i) => {
-          if (i === idx) {
-            return {
-              characteristic: c.characteristic,
-              name: c.name,
-              config: c.config,
-              data_type: new_type,
-              prefix: c.prefix,
-              unit: c.unit,
-              decoder: new_type.decoder,
-              encoder: new_type.encoder,
-              value: c.value
-            };
-          }
-          else { return c; }
-        })
-      );
-
-
-    }
-
-
-    const readValueHandle = (chr_wrapper: CharacteristicWrapper) => {
-      readValue(chr_wrapper).then((v) => {
-        props.setCharacteristics(
-          props.characteristics.map((c, i) => {
-            if (i === idx) {
-              return {
-                characteristic: c.characteristic,
-                name: c.name,
-                config: c.config,
-                data_type: c.data_type,
-                prefix: c.prefix,
-                unit: c.unit,
-                value: v ?? "none"
-              };
-            }
-            else { return c; }
-          })
-        );
-      });
-    }
-
-    const notifyValueHandle = (ev: any) => {
-      if (!ev.target) { return; }
-      let v = ev.target.value as DataView;
-      props.setCharacteristics(
-        props.characteristics.map((c, i) => {
-          if (i === idx) {
-            return {
-              characteristic: c.characteristic,
-              name: c.name,
-              config: c.config,
-              data_type: c.data_type,
-              prefix: c.prefix,
-              unit: c.unit,
-              value: c.data_type.decoder(v, 0)
-            };
-          }
-          else { return c; }
-        })
-      );
-    }
-
-    return (
-      <Grid item key={`${chr_wrapper.characteristic.uuid}-${idx}`} xs={12} md={6} lg={4}>
-        <CharacteristicCard
-          characteristic={chr_wrapper}
-          readValueHandle={() => { readValueHandle(chr_wrapper) }}
-          notifyHandle={notifyValueHandle}
-          changeBleType={changeBleType}
-          avatar={<Avatar> <NumbersIcon />  </Avatar>} />
-      </Grid>
-    )
-  }
-
-  const cards = props.characteristics.map(
-    (char, i) =>
-      mini_card(char, i)
-  );
-
-  return (
-    <>{cards}</>
-  );
-}
-
+import DeviceCard from './DeviceCard';
 
 const BLEManager = () => {
 
@@ -183,33 +76,11 @@ const BLEManager = () => {
 
       />
 
-      {/* Characteristics */}
-      <Card>
-        <CardHeader
-          avatar={
-            <Avatar sx={{ width: 36, height: 36 }}>
-              <EmojiSymbolsIcon />
-            </Avatar>
-          }
-          title="Characteristics"
-          titleTypographyProps={{ variant: 'h5' }}
-        ></CardHeader>
-        <CardContent>
-          {
-            characteristics.length === 0 &&
-            <Alert severity='info'>Characteristics will appear after connecting device</Alert>
-          }
-
-          <Box sx={{ flexGrow: 1 }}>
-            <Grid container spacing={2}>
-              <CharacteristicGridCards
-                characteristics={characteristics}
-                setCharacteristics={setCharacteristics}
-              />
-            </Grid>
-          </Box>
-        </CardContent>
-      </Card>
+      <DeviceCard
+        device={device}
+        chr_wrappers={characteristics}
+        setChrWrappers={setCharacteristics}
+      />
     </Stack>
   )
 }

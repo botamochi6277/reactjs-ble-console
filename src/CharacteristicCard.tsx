@@ -68,6 +68,7 @@ function BLETypeSelect(props: {
 function ValueField(props: {
     value: string,
     readonly: boolean,
+    data_type: BleDataType,
     unit: string,
     prefix: string
     onChange: ((ev: ChangeEvent) => void) | undefined,
@@ -84,7 +85,7 @@ function ValueField(props: {
                 onChange={props.onChange}
                 InputProps={{
                     readOnly: props.readonly,
-                    style: { textAlign: 'right' },
+                    style: { textAlignLast: (["utf8", "utf16"].includes(props.data_type.name) ? "inherit" : "end") },
                     startAdornment: <InputAdornment position="start">{props.start_adornment}</InputAdornment>,
                     endAdornment: <InputAdornment position="end">{unit_str}</InputAdornment>
                 }} value={props.value} />
@@ -264,6 +265,7 @@ const CharacteristicCard = (props: {
                 />
                 <ValueField
                     value={text_field_value}
+                    data_type={props.characteristic.data_type}
                     unit={props.characteristic.unit}
                     prefix={props.characteristic.prefix}
                     onChange={(ev: ChangeEvent) => { setTextFieldVal((ev.target as HTMLInputElement).value) }}

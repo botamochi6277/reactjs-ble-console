@@ -12,7 +12,6 @@ import {
     Typography
 } from "@mui/material";
 // icons
-import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import SearchIcon from '@mui/icons-material/Search';
 // house made
 import BleSrvSelect from './BleSrvSelect';
@@ -116,33 +115,31 @@ const ConnectingDialog = (props: SimpleDialogProps) => {
     return (
         <Dialog onClose={handleClose} open={props.is_opened} fullWidth>
             <DialogTitle>
-                <Stack spacing={1}>
-                    <BluetoothIcon />
-                    <Typography variant="h5">Connect BLE Device</Typography> </Stack>
+                <Typography variant="h5">Connect BLE Device</Typography>
             </DialogTitle>
             <DialogContent>
-                <BLEAvailableAlert is_available={is_ble_available} />
-                <Stack spacing={1}>
-                    <Alert severity={props.message_status ?? "info"}>{props.message}</Alert>
-                    <BleSrvSelect
-                        candidates={props.candidates}
-                        onChange={props.onChangeServicePreset}
-                        current_srv={props.service} />
-                    <TextField
-                        required
-                        disabled={props.service.name != "user_defined"}
-                        variant='standard'
-                        id="outlined-required"
-                        label="Service UUID"
-                        value={props.srv_uuid}
-                        onChange={props.setUuid}
-                        fullWidth
-                    />
-                    <CheckboxSearchAllDevice
-                        is_search_all_device={props.is_search_all_device}
-                        onChange={props.onChangeAllSearchDevice} />
-                    <Button variant="contained" onClick={props.onSearchDevice} startIcon={<SearchIcon />} fullWidth>Search for Devices</Button>
-                </Stack>
+                {is_ble_available ? (
+                    <Stack spacing={1}>
+                        <Alert severity={props.message_status ?? "info"}>{props.message}</Alert>
+                        <BleSrvSelect
+                            candidates={props.candidates}
+                            onChange={props.onChangeServicePreset}
+                            current_srv={props.service} />
+                        <TextField
+                            required
+                            disabled={props.service.name != "user_defined"}
+                            variant='standard'
+                            id="outlined-required"
+                            label="Service UUID"
+                            value={props.srv_uuid}
+                            onChange={props.setUuid}
+                            fullWidth
+                        />
+                        <CheckboxSearchAllDevice
+                            is_search_all_device={props.is_search_all_device}
+                            onChange={props.onChangeAllSearchDevice} />
+                        <Button variant="contained" onClick={props.onSearchDevice} startIcon={<SearchIcon />} fullWidth>Search for Devices</Button>
+                    </Stack>) : <BLEAvailableAlert is_available={is_ble_available} />}
             </DialogContent>
         </Dialog>);
 }

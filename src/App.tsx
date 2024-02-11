@@ -57,7 +57,7 @@ const BLEManager = () => {
             setDevice,
             setCharacteristics,
             () => {
-              setLogMessage("Device is disconnected");
+              setLogMessage("The device was disconnected");
               setDevice(null);
               setCharacteristics([]);
             }

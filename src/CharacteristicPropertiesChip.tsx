@@ -1,11 +1,11 @@
 import { Chip } from '@mui/material';
 // icons
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import EditIcon from '@mui/icons-material/Edit';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import PodcastsIcon from '@mui/icons-material/Podcasts';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import PodcastsIcon from '@mui/icons-material/Podcasts';
 
 export function CharacteristicPropertiesChip(props: {
   properties: BluetoothCharacteristicProperties,
@@ -34,13 +34,13 @@ export function CharacteristicPropertiesChip(props: {
 
   if (properties.notify) {
     chip_state.push(
-      { name: "Notify", icon: <NotificationsIcon /> }
+      { name: "notify", icon: <NotificationsIcon /> }
     )
   }
 
   if (properties.read) {
     chip_state.push(
-      { name: "Read", icon: <MenuBookIcon /> }
+      { name: "read", icon: <MenuBookIcon /> }
     );
   }
 

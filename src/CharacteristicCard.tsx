@@ -4,16 +4,17 @@ import {
     Avatar,
     Button, Card,
     CardActions,
-    CardContent,
     CardHeader,
     FormControl,
+    FormGroup,
+    IconButton,
     InputAdornment,
     InputLabel,
     MenuItem,
     Select,
     SelectChangeEvent,
     Stack,
-    TextField,
+    TextField
 } from '@mui/material';
 
 import {
@@ -30,7 +31,6 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 // house-made
-import { CharacteristicPropertiesChip } from "./CharacteristicPropertiesChip";
 import { DataDimensionsIcon } from "./DataDimensionsIcon";
 import { NumerationSystemSelect } from "./NumerationSystemSelect";
 import { ble_data_formats, writeValue } from "./bluetooth_utils";
@@ -77,12 +77,12 @@ function ValueField(props: {
 }) {
     const unit_str = `${props.prefix}${props.unit}`;
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 80 }}>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 80 }} >
             <TextField
                 id={`input-with-sx-${props.name}`}
-                label={`value`}
+                label={props.readonly ? "read only " : `value`}
                 variant="standard"
-                disabled={props.readonly}
+                color={props.readonly ? "secondary" : "primary"}
                 onChange={props.onChange}
                 InputProps={{
                     readOnly: props.readonly,
@@ -235,44 +235,71 @@ const CharacteristicCard = (props: {
                 avatar={
                     <Avatar aria-label="recipe">
                         {(["utf8", "utf16"].includes(props.characteristic.data_type.name)) ? <AbcIcon /> : <DataDimensionsIcon dimensions={props.characteristic.unit} />}
-
                     </Avatar>
                 }
                 title={props.characteristic.name}
                 subheader={uuid}
+                action={
+                    <Stack direction={"row"}>
+                        <IconButton
+                            sx={{ display: properties.read ? 'flex' : 'none' }}
+                            onClick={() => { props.readValueHandle() }}
+                            color="primary">
+                            <MenuBookIcon />
+                        </IconButton>
+                        <IconButton
+                            color={is_subscribing ? "success" : "primary"}
+                            sx={{ display: properties.notify ? 'flex' : 'none' }}
+                            onClick={onChangeSubscription}
+                        >
+                            <NotificationsIcon />
+                        </IconButton>
+                    </Stack>
+                }
             >
             </CardHeader>
-            <CardContent sx={{ "pt": 0, "pb": 0 }}>
+            {/* <CardContent sx={{ "pt": 0, "pb": 0 }}>
                 <Stack direction="row" spacing={1} justifyContent="flex-start">
                     <CharacteristicPropertiesChip properties={properties} />
                 </Stack>
-            </CardContent>
+            </CardContent> */}
 
-            <CardActions sx={{ display: is_color ? "none" : "flex" }}>
-                <BLETypeSelect
-                    onChange={props.changeBleType}
-                    value={props.characteristic.data_type.name}
-                    name={props.characteristic.name} />
-                <NumerationSystemSelect
-                    sx={{ display: (["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name)) ? 'flex' : 'none', m: 1, minWidth: 80 }}
-                    value={numeration_sys}
-                    onChange={(ev: SelectChangeEvent) => {
-                        const i = ns_items.find(item => item.name === ev.target.value);
-                        if (i) { setNumerationSys(i); }
-                    }
-                    }
-                    items={ns_items}
-                    name={props.characteristic.name}
-                />
-                <ValueField
-                    value={text_field_value}
-                    data_type={props.characteristic.data_type}
-                    unit={props.characteristic.unit}
-                    prefix={props.characteristic.prefix}
-                    onChange={(ev: ChangeEvent) => { setTextFieldVal((ev.target as HTMLInputElement).value) }}
-                    readonly={readonly}
-                    name={props.characteristic.name}
-                    start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name) ? numeration_sys.prefix : ""} />
+            <CardActions sx={{ display: is_color ? "none" : "flex", justifyContent: "space-between" }}>
+                <FormGroup
+                    row
+                >
+                    <BLETypeSelect
+                        onChange={props.changeBleType}
+                        value={props.characteristic.data_type.name}
+                        name={props.characteristic.name} />
+                    <NumerationSystemSelect
+                        sx={{ display: (["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name)) ? 'flex' : 'none', m: 1, minWidth: 80 }}
+                        value={numeration_sys}
+                        onChange={(ev: SelectChangeEvent) => {
+                            const i = ns_items.find(item => item.name === ev.target.value);
+                            if (i) { setNumerationSys(i); }
+                        }
+                        }
+                        items={ns_items}
+                        name={props.characteristic.name}
+                    />
+                    <ValueField
+                        value={text_field_value}
+                        data_type={props.characteristic.data_type}
+                        unit={props.characteristic.unit}
+                        prefix={props.characteristic.prefix}
+                        onChange={(ev: ChangeEvent) => { setTextFieldVal((ev.target as HTMLInputElement).value) }}
+                        readonly={readonly}
+                        name={props.characteristic.name}
+                        start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name) ? numeration_sys.prefix : ""} />
+                </FormGroup>
+                <Button
+                    startIcon={<EditIcon />}
+                    variant="contained"
+                    sx={{ display: properties.write ? 'flex' : 'none' }}
+                    onClick={writeVal}
+                >
+                    Write</Button>
             </CardActions>
 
             {/* color */}
@@ -283,22 +310,6 @@ const CharacteristicCard = (props: {
                     // format={color_format} // fail of color preview in hsv
                     fullWidth
                 />
-            </CardActions>
-
-            <CardActions>
-                <Button
-                    startIcon={<MenuBookIcon />}
-                    variant="contained"
-                    sx={{ display: properties.read ? 'flex' : 'none' }}
-                    onClick={() => { props.readValueHandle() }}>
-                    Read</Button>
-                <Button
-                    startIcon={<NotificationsIcon />}
-                    variant={is_subscribing ? "outlined" : "contained"}
-                    sx={{ display: properties.notify ? 'flex' : 'none' }}
-                    onClick={onChangeSubscription}
-                >
-                    Notify</Button>
                 <Button
                     startIcon={<EditIcon />}
                     variant="contained"
@@ -306,7 +317,6 @@ const CharacteristicCard = (props: {
                     onClick={writeVal}
                 >
                     Write</Button>
-
             </CardActions>
         </Card >
     )

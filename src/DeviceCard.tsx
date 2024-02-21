@@ -1,10 +1,13 @@
 import { Avatar, Box, Button, Card, CardContent, CardHeader, CircularProgress, Grid } from '@mui/material';
 
+import { LinkOff as LinkOffIcon } from '@mui/icons-material';
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import BluetoothConnectedIcon from '@mui/icons-material/BluetoothConnected';
-import ContentCutIcon from '@mui/icons-material/ContentCut';
 
+// house-made
 import CharacteristicCardGrid from './CharacteristicCardGrid';
+
+
 
 function CircularIndeterminate() {
     return (
@@ -39,7 +42,7 @@ const DeviceCard = (props: {
                 subheader={device?.id}
                 action={
                     <Button
-                        startIcon={<ContentCutIcon />}
+                        startIcon={<LinkOffIcon />}
                         variant="contained"
                         color="warning"
                         size="small"

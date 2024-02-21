@@ -86,7 +86,7 @@ const CharacteristicCardGrid = (props: {
         }
 
         return (
-            <Grid item key={`${chr_wrapper.characteristic.uuid}-${idx}`} xs={12} md={6} lg={4}>
+            <Grid item key={`${chr_wrapper.characteristic.uuid}-${idx}`} xs={12} md={6}>
                 <CharacteristicCard
                     characteristic={chr_wrapper}
                     readValueHandle={() => { readValueHandle(chr_wrapper) }}

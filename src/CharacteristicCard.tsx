@@ -25,11 +25,10 @@ import {
 import { tinycolor } from '@ctrl/tinycolor'; // installed w/ mui-color-input
 
 // icons
+import { Publish as PublishIcon, Sync as SyncIcon } from '@mui/icons-material';
 import AbcIcon from '@mui/icons-material/Abc';
 import EditIcon from '@mui/icons-material/Edit';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-
 // house-made
 import { DataDimensionsIcon } from "./DataDimensionsIcon";
 import { NumerationSystemSelect } from "./NumerationSystemSelect";
@@ -245,7 +244,7 @@ const CharacteristicCard = (props: {
                             sx={{ display: properties.read ? 'flex' : 'none' }}
                             onClick={() => { props.readValueHandle() }}
                             color="primary">
-                            <MenuBookIcon />
+                            <SyncIcon />
                         </IconButton>
                         <IconButton
                             color={is_subscribing ? "success" : "primary"}
@@ -294,12 +293,12 @@ const CharacteristicCard = (props: {
                         start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.characteristic.data_type.name) ? numeration_sys.prefix : ""} />
                 </FormGroup>
                 <Button
-                    startIcon={<EditIcon />}
+                    startIcon={<PublishIcon />}
                     variant="contained"
                     sx={{ display: properties.write ? 'flex' : 'none' }}
                     onClick={writeVal}
                 >
-                    Write</Button>
+                    Publish</Button>
             </CardActions>
 
             {/* color */}

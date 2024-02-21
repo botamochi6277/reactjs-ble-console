@@ -1,6 +1,6 @@
 
 
-import { AppBar, Container, IconButton, Stack, Switch, Theme, Toolbar, Typography } from "@mui/material";
+import { AppBar, Container, Divider, IconButton, Stack, Switch, Theme, Toolbar, Typography } from "@mui/material";
 
 // icons
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
@@ -38,18 +38,20 @@ const MyAppBar = (props: {
                     </Typography>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     </Typography>
-                    <IconButton color="inherit" href='https://github.com/botamochi6277/reactjs-ble-console' target='_blank'>
-                        <GitHubIcon />
-                    </IconButton>
-                    <Stack direction="row" spacing={0} alignItems="center">
+                    <Stack direction="row" spacing={1} divider={<Divider orientation="vertical" flexItem />}>
+                        <IconButton color="inherit" href='https://github.com/botamochi6277/reactjs-ble-console' target='_blank'>
+                            <GitHubIcon />
+                        </IconButton>
+                        <Stack direction="row" spacing={0} alignItems="center">
 
-                        <LightModeIcon fontSize="small" />
-                        <Switch
-                            checked={props.theme.palette.mode === 'dark'}
-                            onChange={props.onToggleTheme}
-                            color="secondary"
-                        />
-                        <DarkModeIcon fontSize="small" />
+                            <LightModeIcon fontSize="small" />
+                            <Switch
+                                checked={props.theme.palette.mode === 'dark'}
+                                onChange={props.onToggleTheme}
+                                color="secondary"
+                            />
+                            <DarkModeIcon fontSize="small" />
+                        </Stack>
                     </Stack>
                 </Toolbar></Container></AppBar>
     )

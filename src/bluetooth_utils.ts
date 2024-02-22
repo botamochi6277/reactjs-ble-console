@@ -88,6 +88,7 @@ const si_prefixes = [
   { exp: 6, prefix: 'M' }
 ]
 
+
 // https://developer.mozilla.org/en-US/docs/Web/API/BluetoothRemoteGATTCharacteristic
 export async function readValue(chr_wrapper: CharacteristicWrapper) {
   if (!chr_wrapper.characteristic.properties.read) {
@@ -100,6 +101,18 @@ export async function readValue(chr_wrapper: CharacteristicWrapper) {
   console.debug(`value = ${v}, byte_length = ${dv.buffer.byteLength}`);
   return v;
 }
+export async function loadValue(chr_wrapper: CharacteristicWrapper) {
+  if (!chr_wrapper.characteristic.properties.read) {
+    console.debug(`${chr_wrapper.characteristic.uuid} does not permit reading`)
+    return null;
+  }
+  return await chr_wrapper.characteristic.readValue(); // dataview
+}
+
+export const parseValue = (chr_wrapper: CharacteristicWrapper) => {
+  if (!chr_wrapper.dataview) { return null; }
+  return chr_wrapper.data_type.decoder(chr_wrapper.dataview, 0);
+}
 
 
 export function writeValue(chr_wrapper: CharacteristicWrapper, v: any, callback: () => void) {
@@ -108,7 +121,7 @@ export function writeValue(chr_wrapper: CharacteristicWrapper, v: any, callback:
 }
 
 
-export async function readDescriptors(chr: BluetoothRemoteGATTCharacteristic) {
+export async function parseProfileFromDescriptors(chr: BluetoothRemoteGATTCharacteristic) {
   // https://googlechrome.github.io/samples/web-bluetooth/read-descriptors-async-await.html
 
   let txt_decoder = new TextDecoder('utf-8')
@@ -272,13 +285,15 @@ export async function searchDevice(
       const characteristic = all_characteristics[index];
       console.log(`Characteristic UUID:  ${characteristic.uuid}`);
       // read descriptor
-      const profile = await readDescriptors(characteristic);
+      const profile = await parseProfileFromDescriptors(characteristic);
 
       // console.debug("try to read")
       // read initial value
       let tmp_val: number | string = 0;
+      let tmp_dataview = null;
       if (characteristic.properties.read) {
         const dv = await characteristic.readValue(); // dataview
+        tmp_dataview = dv;
         // console.log(dv)
         tmp_val = profile.data_type.decoder(dv, 0);
       }
@@ -291,7 +306,8 @@ export async function searchDevice(
         data_type: profile.data_type,
         prefix: profile.prefix,
         unit: profile.unit,
-        value: tmp_val
+        // value: tmp_val,
+        dataview: tmp_dataview
       }
       chr_wrappers.push(w);
     }
@@ -304,11 +320,11 @@ export async function searchDevice(
       if (error.name === "NotFoundError") {
         setLogMessage(` ${error.message}`, "warning");
       } else {
-        setLogMessage(`Argh! ${error.message}`, "error");
+        setLogMessage(`${error.message}`, "error");
       }
     } else {
-      console.warn(`Argh! ${error}`);
-      setLogMessage(`Argh! ${error}`, "error");
+      console.warn(`${error}`);
+      setLogMessage(`${error}`, "error");
     }
   }
 }

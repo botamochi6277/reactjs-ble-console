@@ -9,7 +9,9 @@ import {
 import NumbersIcon from '@mui/icons-material/Numbers';
 // local
 import CharacteristicCard from './CharacteristicCard';
-import { ble_data_formats, readValue } from "./bluetooth_utils";
+import { ble_data_formats, loadValue } from "./bluetooth_utils";
+
+
 
 const CharacteristicCardGrid = (props: {
     chr_wrappers: CharacteristicWrapper[],
@@ -26,15 +28,8 @@ const CharacteristicCardGrid = (props: {
                 props.chr_wrappers.map((c, i) => {
                     if (i === idx) {
                         return {
-                            characteristic: c.characteristic,
-                            name: c.name,
-                            config: c.config,
+                            ...c,
                             data_type: new_type,
-                            prefix: c.prefix,
-                            unit: c.unit,
-                            decoder: new_type.decoder,
-                            encoder: new_type.encoder,
-                            value: c.value
                         };
                     }
                     else { return c; }
@@ -44,51 +39,44 @@ const CharacteristicCardGrid = (props: {
 
 
         const readValueHandle = (chr_wrapper: CharacteristicWrapper) => {
-            readValue(chr_wrapper).then((v) => {
+            loadValue(chr_wrapper).then((dv) => {
                 props.setChrWrappers(
                     props.chr_wrappers.map((c, i) => {
+                        //(todo) apply subscripting value ?
                         if (i === idx) {
                             return {
-                                characteristic: c.characteristic,
-                                name: c.name,
-                                config: c.config,
-                                data_type: c.data_type,
-                                prefix: c.prefix,
-                                unit: c.unit,
-                                value: v ?? "none"
+                                ...c,
+                                dataview: dv
                             };
                         }
                         else { return c; }
                     })
                 );
+                console.log("loaded");
             });
         }
 
         const notifyValueHandle = (ev: any) => {
             if (!ev.target) { return; }
-            let v = ev.target.value as DataView;
+            let dv = ev.target.value as DataView;
             props.setChrWrappers(
                 props.chr_wrappers.map((c, i) => {
                     if (i === idx) {
                         return {
-                            characteristic: c.characteristic,
-                            name: c.name,
-                            config: c.config,
-                            data_type: c.data_type,
-                            prefix: c.prefix,
-                            unit: c.unit,
-                            value: c.data_type.decoder(v, 0)
+                            ...c,
+                            dataview: dv
                         };
                     }
                     else { return c; }
                 })
             );
+            console.debug("notified");
         }
 
         return (
             <Grid item key={`${chr_wrapper.characteristic.uuid}-${idx}`} xs={12} md={6}>
                 <CharacteristicCard
-                    characteristic={chr_wrapper}
+                    wrapper={chr_wrapper}
                     readValueHandle={() => { readValueHandle(chr_wrapper) }}
                     notifyHandle={notifyValueHandle}
                     changeBleType={changeBleType}
@@ -98,8 +86,8 @@ const CharacteristicCardGrid = (props: {
     }
 
     const cards = props.chr_wrappers.map(
-        (char, i) =>
-            mini_card(char, i)
+        (wrapper, i) =>
+            mini_card(wrapper, i)
     );
 
     return (

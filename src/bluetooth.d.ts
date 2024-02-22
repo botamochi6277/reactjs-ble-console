@@ -33,5 +33,6 @@ type CharacteristicWrapper = {
   data_type: BleDataType,
   prefix: string
   unit: string,
-  value: number | string
+  // value: number | string
+  dataview: DataView | null
 }

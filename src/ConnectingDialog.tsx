@@ -8,8 +8,7 @@ import {
     FormControl,
     FormControlLabel,
     Stack,
-    TextField,
-    Typography
+    TextField
 } from "@mui/material";
 // icons
 import SearchIcon from '@mui/icons-material/Search';
@@ -114,8 +113,8 @@ const ConnectingDialog = (props: SimpleDialogProps) => {
 
     return (
         <Dialog onClose={handleClose} open={props.is_opened} fullWidth>
-            <DialogTitle>
-                <Typography variant="h5">Connect BLE Device</Typography>
+            <DialogTitle variant="h5">
+                Connect BLE Device
             </DialogTitle>
             <DialogContent>
                 {is_ble_available ? (

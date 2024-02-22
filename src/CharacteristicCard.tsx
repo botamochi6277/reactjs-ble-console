@@ -42,7 +42,7 @@ function BLETypeSelect(props: {
     const menus = ble_data_formats.map((b) => <MenuItem value={b.name} key={b.name}>{b.name}</MenuItem>)
 
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 80 }}>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 40 }}>
             <InputLabel
                 id={`ble-data-type-select-label-${props.name}`}>
                 data type
@@ -76,7 +76,7 @@ function ValueField(props: {
 }) {
     const unit_str = `${props.prefix}${props.unit}`;
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 80 }} >
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 40 }} >
             <TextField
                 id={`input-with-sx-${props.name}`}
                 label={props.readonly ? "read only " : `value`}
@@ -184,7 +184,6 @@ const CharacteristicCard = (props: {
             });
             setIsSubscribe(true); // switch
         } else {
-            // fail to stop...
             my_characteristic.stopNotifications().then(() => {
                 my_characteristic.removeEventListener(
                     'characteristicvaluechanged',

@@ -111,13 +111,10 @@ function App() {
       <Container>
         <Stack spacing={1}>
           <MyAppBar theme={theme} onToggleTheme={() => toggleTheme(theme)} />
-
           <BLEManager ></BLEManager>
-
         </Stack>
       </Container>
     </ThemeProvider>
-
   );
 }
 

@@ -12,7 +12,6 @@ import CharacteristicCard from './CharacteristicCard';
 import { ble_data_formats, loadValue } from "./bluetooth_utils";
 
 
-
 const CharacteristicCardGrid = (props: {
     chr_wrappers: CharacteristicWrapper[],
     setChrWrappers: (chs: CharacteristicWrapper[]) => void,
@@ -42,7 +41,6 @@ const CharacteristicCardGrid = (props: {
             loadValue(chr_wrapper).then((dv) => {
                 props.setChrWrappers(
                     props.chr_wrappers.map((c, i) => {
-                        //(todo) apply subscripting value ?
                         if (i === idx) {
                             return {
                                 ...c,
@@ -52,7 +50,6 @@ const CharacteristicCardGrid = (props: {
                         else { return c; }
                     })
                 );
-                console.log("loaded");
             });
         }
 
@@ -70,14 +67,13 @@ const CharacteristicCardGrid = (props: {
                     else { return c; }
                 })
             );
-            console.debug("notified");
         }
 
         return (
             <Grid item key={`${chr_wrapper.characteristic.uuid}-${idx}`} xs={12} md={6}>
                 <CharacteristicCard
                     wrapper={chr_wrapper}
-                    readValueHandle={() => { readValueHandle(chr_wrapper) }}
+                    readValueHandle={() => { readValueHandle(chr_wrapper); }}
                     notifyHandle={notifyValueHandle}
                     changeBleType={changeBleType}
                     avatar={<Avatar> <NumbersIcon />  </Avatar>} />

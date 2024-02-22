@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Card, CardContent, CardHeader, CircularProgress, Grid } from '@mui/material';
+import { Avatar, Box, Card, CardContent, CardHeader, CircularProgress, Grid } from '@mui/material';
 
 import { LinkOff as LinkOffIcon } from '@mui/icons-material';
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
@@ -7,7 +7,7 @@ import BluetoothConnectedIcon from '@mui/icons-material/BluetoothConnected';
 // house-made
 import CharacteristicCardGrid from './CharacteristicCardGrid';
 
-
+import ResponsiveButton from './ResponsiveButton';
 
 function CircularIndeterminate() {
     return (
@@ -41,12 +41,20 @@ const DeviceCard = (props: {
                 titleTypographyProps={{ variant: 'h5' }}
                 subheader={device?.id}
                 action={
-                    <Button
-                        startIcon={<LinkOffIcon />}
-                        variant="contained"
-                        color="warning"
-                        size="small"
-                        onClick={() => { device?.gatt?.disconnect() }}>Disconnect</Button>
+
+                    <ResponsiveButton
+                        icon={<LinkOffIcon />}
+                        onClick={() => { device?.gatt?.disconnect() }}
+                        label='Disconnect'
+                        color='warning'
+                    />
+
+                    // <Button
+                    //     startIcon={<LinkOffIcon />}
+                    //     variant="contained"
+                    //     color="warning"
+                    //     size="small"
+                    //     onClick={() => { device?.gatt?.disconnect() }}>Disconnect</Button>
                 }
             >
 

@@ -287,17 +287,12 @@ export async function searchDevice(
       // read descriptor
       const profile = await parseProfileFromDescriptors(characteristic);
 
-      // console.debug("try to read")
       // read initial value
-      let tmp_val: number | string = 0;
       let tmp_dataview = null;
       if (characteristic.properties.read) {
         const dv = await characteristic.readValue(); // dataview
         tmp_dataview = dv;
-        // console.log(dv)
-        tmp_val = profile.data_type.decoder(dv, 0);
       }
-      // console.log("complete reading")
 
       const w: CharacteristicWrapper = {
         characteristic: characteristic,
@@ -306,7 +301,6 @@ export async function searchDevice(
         data_type: profile.data_type,
         prefix: profile.prefix,
         unit: profile.unit,
-        // value: tmp_val,
         dataview: tmp_dataview
       }
       chr_wrappers.push(w);

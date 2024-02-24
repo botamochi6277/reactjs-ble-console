@@ -15,6 +15,7 @@ import { ble_data_formats, loadValue } from "./bluetooth_utils";
 const CharacteristicCardGrid = (props: {
     chr_wrappers: CharacteristicWrapper[],
     setChrWrappers: (chs: CharacteristicWrapper[]) => void,
+    is_compact_view?: boolean
 }) => {
     function mini_card(
         chr_wrapper: CharacteristicWrapper,
@@ -76,7 +77,9 @@ const CharacteristicCardGrid = (props: {
                     readValueHandle={() => { readValueHandle(chr_wrapper); }}
                     notifyHandle={notifyValueHandle}
                     changeBleType={changeBleType}
-                    avatar={<Avatar> <NumbersIcon />  </Avatar>} />
+                    avatar={<Avatar> <NumbersIcon /> </Avatar>}
+                    is_compact_view={props.is_compact_view}
+                />
             </Grid>
         )
     }
@@ -87,7 +90,7 @@ const CharacteristicCardGrid = (props: {
     );
 
     return (
-        <>{cards}</>
+        <Grid container spacing={2}>{cards}</Grid>
     );
 }
 

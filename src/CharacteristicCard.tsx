@@ -32,6 +32,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 // house-made
 import { DataDimensionsIcon } from "./DataDimensionsIcon";
 import { NumerationSystemSelect } from "./NumerationSystemSelect";
+import ResponsiveButton from './ResponsiveButton';
 import { ble_data_formats, writeValue } from "./bluetooth_utils";
 
 function BLETypeSelect(props: {
@@ -98,7 +99,8 @@ const CharacteristicCard = (props: {
     avatar: JSX.Element | undefined,
     readValueHandle: () => void,
     notifyHandle: (ev: Event) => void,
-    changeBleType: (ev: SelectChangeEvent) => void
+    changeBleType: (ev: SelectChangeEvent) => void,
+    is_compact_view?: boolean
 }) => {
     const uuid = props.wrapper.characteristic.uuid;
     // BluetoothCharacteristicProperties
@@ -244,51 +246,55 @@ const CharacteristicCard = (props: {
                     </Avatar>
                 }
                 title={props.wrapper.name}
-                subheader={uuid}
+                titleTypographyProps={{ variant: (props.is_compact_view ? "h5" : "inherit") }}
+                subheader={props.is_compact_view ? null : uuid}
                 action={
-                    <Stack direction={"row"}>
-                        <IconButton
-                            sx={{ display: properties.read ? 'flex' : 'none' }}
-                            onClick={() => { props.readValueHandle() }}
-                            color="primary">
-                            <SyncIcon />
-                        </IconButton>
-                        <IconButton
-                            color={is_subscribing ? "success" : "primary"}
-                            sx={{ display: properties.notify ? 'flex' : 'none' }}
-                            onClick={onChangeSubscription}
-                        >
-                            <NotificationsIcon />
-                        </IconButton>
-                    </Stack>
+                    props.is_compact_view ?
+                        <Stack direction={"row"} spacing={0}>
+                            <IconButton
+                                sx={{ display: properties.read ? 'flex' : 'none' }}
+                                onClick={() => { props.readValueHandle() }}
+                                color="primary">
+                                <SyncIcon />
+                            </IconButton>
+                            <IconButton
+                                color={is_subscribing ? "success" : "primary"}
+                                sx={{ display: properties.notify ? 'flex' : 'none' }}
+                                onClick={onChangeSubscription}
+                            >
+                                <NotificationsIcon />
+                            </IconButton>
+                        </Stack> : null
                 }
+                sx={{ paddingBottom: (props.is_compact_view ? 0 : "inherit") }}
             >
             </CardHeader>
-            {/* <CardContent sx={{ "pt": 0, "pb": 0 }}>
-                <Stack direction="row" spacing={1} justifyContent="flex-start">
-                    <CharacteristicPropertiesChip properties={properties} />
-                </Stack>
-            </CardContent> */}
 
-            <CardActions sx={{ display: is_color ? "none" : "flex", justifyContent: "space-between" }}>
+            <CardActions
+                sx={{ display: is_color ? "none" : "flex", justifyContent: "space-between" }}
+            >
                 <FormGroup
                     row
                 >
-                    <BLETypeSelect
-                        onChange={props.changeBleType}
-                        value={props.wrapper.data_type.name}
-                        name={props.wrapper.name} />
-                    <NumerationSystemSelect
-                        sx={{ display: (["uint8", "uint16", "uint32", "uint64"].includes(props.wrapper.data_type.name)) ? 'flex' : 'none', m: 1, minWidth: 80 }}
-                        value={numeration_sys}
-                        onChange={(ev: SelectChangeEvent) => {
-                            const i = ns_items.find(item => item.name === ev.target.value);
-                            if (i) { setNumerationSys(i); }
-                        }
-                        }
-                        items={ns_items}
-                        name={props.wrapper.name}
-                    />
+                    {props.is_compact_view ? null :
+                        <>
+                            <BLETypeSelect
+                                onChange={props.changeBleType}
+                                value={props.wrapper.data_type.name}
+                                name={props.wrapper.name} />
+                            <NumerationSystemSelect
+                                sx={{ display: (["uint8", "uint16", "uint32", "uint64"].includes(props.wrapper.data_type.name)) ? 'flex' : 'none', m: 1, minWidth: 80 }}
+                                value={numeration_sys}
+                                onChange={(ev: SelectChangeEvent) => {
+                                    const i = ns_items.find(item => item.name === ev.target.value);
+                                    if (i) { setNumerationSys(i); }
+                                }
+                                }
+                                items={ns_items}
+                                name={props.wrapper.name}
+                            /></>
+                    }
+
                     <ValueField
                         value={text_field_value}
                         data_type={props.wrapper.data_type}
@@ -299,13 +305,19 @@ const CharacteristicCard = (props: {
                         name={props.wrapper.name}
                         start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.wrapper.data_type.name) ? numeration_sys.prefix : ""} />
                 </FormGroup>
-                <Button
+                {
+                    (properties.write && props.is_compact_view) ? <ResponsiveButton
+                        icon={<PublishIcon />}
+                        label='Publish'
+                        onClick={publishVal}
+                    /> : null}
+                {/* <Button
                     startIcon={<PublishIcon />}
                     variant="contained"
                     sx={{ display: properties.write ? 'flex' : 'none' }}
                     onClick={publishVal}
                 >
-                    Publish</Button>
+                    Publish</Button> */}
             </CardActions>
 
             {/* color */}
@@ -320,9 +332,30 @@ const CharacteristicCard = (props: {
                     startIcon={<EditIcon />}
                     variant="contained"
                     sx={{ display: properties.write ? 'flex' : 'none' }}
-                    onClick={publishVal}
+                    onClick={props.readValueHandle}
                 >
                     Write</Button>
+            </CardActions>
+
+            <CardActions sx={{ display: props.is_compact_view ? "none" : "flex" }}>
+                {properties.write ? <ResponsiveButton
+                    icon={<SyncIcon />}
+                    label='Sync'
+                    onClick={publishVal}
+                /> : null}
+
+                {properties.read ? <ResponsiveButton
+                    icon={<PublishIcon />}
+                    label='Publish'
+                    onClick={publishVal}
+                /> : null}
+
+                {properties.notify ? <ResponsiveButton
+                    icon={<NotificationsIcon />}
+                    label={is_subscribing ? 'Stop' : 'Subscribe'}
+                    color={is_subscribing ? "success" : "primary"}
+                    onClick={onChangeSubscription}
+                /> : null}
             </CardActions>
         </Card >
     )

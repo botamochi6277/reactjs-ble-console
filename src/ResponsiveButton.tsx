@@ -1,5 +1,5 @@
 // https://codesandbox.io/p/sandbox/mui-responsive-button-v3gtvh?file=%2Fsrc%2FDemo.tsx%3A28%2C61-28%2C67
-import { Box, Button, ButtonPropsColorOverrides } from "@mui/material";
+import { Box, Breakpoint, Button, ButtonPropsColorOverrides } from "@mui/material";
 import { OverridableStringUnion } from '@mui/types';
 import * as React from "react";
 const ResponsiveButton = (
@@ -10,6 +10,7 @@ const ResponsiveButton = (
             'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning',
             ButtonPropsColorOverrides
         >,
+        breakpoint?: Breakpoint
         onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void
     }
 ) => {
@@ -23,7 +24,7 @@ const ResponsiveButton = (
             //   }
             // }}
             sx={(theme) => ({
-                [theme.breakpoints.down("sm")]: {
+                [theme.breakpoints.down(props.breakpoint ?? "sm")]: {
                     minWidth: 32,
                     ".MuiButton-startIcon": { m: 0 }
                 }

@@ -20,7 +20,9 @@ import service_preset from './ServicePreset';
 
 import DeviceCard from './DeviceCard';
 
-const BLEManager = () => {
+const BLEManager = (props: {
+  is_compact_view?: boolean
+}) => {
 
   const [query_params, setQueryParams] = useSearchParams(new URLSearchParams(window.location.search));
   const tmp_uuid = query_params.get("srv") ?? "0x180";
@@ -80,6 +82,7 @@ const BLEManager = () => {
         device={device}
         chr_wrappers={characteristics}
         setChrWrappers={setCharacteristics}
+        is_compact_view={props.is_compact_view}
       />
     </Stack>
   )
@@ -96,6 +99,8 @@ function App() {
     })
   );
 
+  const [is_compact_view, setCompactView] = React.useState(false);
+
   const toggleTheme = (theme: any) => {
     if (theme.palette.mode === 'dark') {
       setTheme(createTheme({ palette: { mode: 'light', }, }))
@@ -110,8 +115,13 @@ function App() {
       <CssBaseline />
       <Container>
         <Stack spacing={1}>
-          <MyAppBar theme={theme} onToggleTheme={() => toggleTheme(theme)} />
-          <BLEManager ></BLEManager>
+          <MyAppBar
+            theme={theme}
+            onToggleTheme={() => toggleTheme(theme)}
+            is_compact_view={is_compact_view}
+            onToggleAdvancedMode={() => setCompactView(!is_compact_view)}
+          />
+          <BLEManager is_compact_view={is_compact_view} />
         </Stack>
       </Container>
     </ThemeProvider>

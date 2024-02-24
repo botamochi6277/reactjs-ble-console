@@ -6,11 +6,15 @@ import { AppBar, Container, Divider, IconButton, Stack, Switch, Theme, Toolbar, 
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import Grid3x3Icon from '@mui/icons-material/Grid3x3';
+import Grid4x4Icon from '@mui/icons-material/Grid4x4';
 import LightModeIcon from '@mui/icons-material/LightMode';
 
 const MyAppBar = (props: {
     theme: Theme,
-    onToggleTheme?: any // (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void)
+    onToggleTheme?: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void,
+    is_compact_view?: boolean,
+    onToggleAdvancedMode?: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void,
 }) => {
 
 
@@ -42,6 +46,17 @@ const MyAppBar = (props: {
                         <IconButton color="inherit" href='https://github.com/botamochi6277/reactjs-ble-console' target='_blank'>
                             <GitHubIcon />
                         </IconButton>
+                        {/*  */}
+                        <Stack direction="row" spacing={0} alignItems="center">
+                            <Grid4x4Icon fontSize="small" />
+                            <Switch
+                                checked={props.is_compact_view}
+                                onChange={props.onToggleAdvancedMode}
+                                color="secondary"
+                            />
+                            <Grid3x3Icon fontSize="small" />
+                        </Stack>
+                        {/*  */}
                         <Stack direction="row" spacing={0} alignItems="center">
 
                             <LightModeIcon fontSize="small" />

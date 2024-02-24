@@ -1,4 +1,4 @@
-import { Avatar, Box, Card, CardContent, CardHeader, CircularProgress, Grid } from '@mui/material';
+import { Avatar, Box, Card, CardContent, CardHeader, CircularProgress } from '@mui/material';
 
 import { LinkOff as LinkOffIcon } from '@mui/icons-material';
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
@@ -20,7 +20,8 @@ function CircularIndeterminate() {
 const DeviceCard = (props: {
     device: BluetoothDevice | null,
     chr_wrappers: CharacteristicWrapper[],
-    setChrWrappers: (chs: CharacteristicWrapper[]) => void
+    setChrWrappers: (chs: CharacteristicWrapper[]) => void,
+    is_compact_view?: boolean
 }
 ) => {
     const device = props.device;
@@ -39,22 +40,14 @@ const DeviceCard = (props: {
                 }
                 title={device ? device.name : "Device"}
                 titleTypographyProps={{ variant: 'h5' }}
-                subheader={device?.id}
+                subheader={props.is_compact_view ? null : device?.id}
                 action={
-
                     <ResponsiveButton
                         icon={<LinkOffIcon />}
                         onClick={() => { device?.gatt?.disconnect() }}
                         label='Disconnect'
                         color='warning'
                     />
-
-                    // <Button
-                    //     startIcon={<LinkOffIcon />}
-                    //     variant="contained"
-                    //     color="warning"
-                    //     size="small"
-                    //     onClick={() => { device?.gatt?.disconnect() }}>Disconnect</Button>
                 }
             >
 
@@ -63,12 +56,11 @@ const DeviceCard = (props: {
             {(device && props.chr_wrappers.length === 0) ? <CircularIndeterminate /> : null}
             <CardContent>
                 <Box sx={{ flexGrow: 1 }}>
-                    <Grid container spacing={2}>
-                        <CharacteristicCardGrid
-                            chr_wrappers={props.chr_wrappers}
-                            setChrWrappers={props.setChrWrappers}
-                        />
-                    </Grid>
+                    <CharacteristicCardGrid
+                        chr_wrappers={props.chr_wrappers}
+                        setChrWrappers={props.setChrWrappers}
+                        is_compact_view={props.is_compact_view}
+                    />
                 </Box>
             </CardContent>
         </Card>

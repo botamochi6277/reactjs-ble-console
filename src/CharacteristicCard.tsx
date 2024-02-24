@@ -332,19 +332,19 @@ const CharacteristicCard = (props: {
                     startIcon={<EditIcon />}
                     variant="contained"
                     sx={{ display: properties.write ? 'flex' : 'none' }}
-                    onClick={props.readValueHandle}
+                    onClick={publishVal}
                 >
                     Write</Button>
             </CardActions>
 
             <CardActions sx={{ display: props.is_compact_view ? "none" : "flex" }}>
-                {properties.write ? <ResponsiveButton
+                {properties.read ? <ResponsiveButton
                     icon={<SyncIcon />}
                     label='Sync'
-                    onClick={publishVal}
+                    onClick={props.readValueHandle}
                 /> : null}
 
-                {properties.read ? <ResponsiveButton
+                {properties.write ? <ResponsiveButton
                     icon={<PublishIcon />}
                     label='Publish'
                     onClick={publishVal}

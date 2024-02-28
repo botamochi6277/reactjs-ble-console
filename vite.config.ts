@@ -10,16 +10,16 @@ export default defineConfig({
   plugins: [react(),
   VitePWA({
     registerType: 'autoUpdate',
-    includeAssets: ['vite.svg'],
+    includeAssets: ['ble_button.svg'],
     injectRegister: 'auto',
     manifest: {
-      name: 'BLE Console',
-      short_name: 'BLE Console',
+      name: 'BLE_Web_Console',
+      short_name: 'BLE_Web_Console',
       description: 'BLE Interface with ReactJS and Bluetooth WEB API',
       theme_color: '#2f2f2f',
       icons: [
         {
-          src: 'vite.svg',
+          src: 'ble_button.svg',
           sizes: '192x192',
           type: 'image/svg+xml'
         },

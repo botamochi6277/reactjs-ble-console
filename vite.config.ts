@@ -8,16 +8,14 @@ export default defineConfig({
     ? "reactjs-ble-console"
     : "./",
   plugins: [react(),
-
-  // ★★★以下を追加★★★
   VitePWA({
     registerType: 'autoUpdate',
     includeAssets: ['vite.svg'],
     injectRegister: 'auto',
     manifest: {
-      name: 'PWA BLE Apps',
-      short_name: 'WepBLEApps',
-      description: 'PWA WEB BLE',
+      name: 'BLE Console',
+      short_name: 'BLE Console',
+      description: 'BLE Interface with ReactJS and Bluetooth WEB API',
       theme_color: '#2f2f2f',
       icons: [
         {

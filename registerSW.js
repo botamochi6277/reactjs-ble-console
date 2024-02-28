@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/reactjs-ble-console/sw.js', { scope: '/reactjs-ble-console/' })})}

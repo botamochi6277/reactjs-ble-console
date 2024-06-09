@@ -76,3 +76,19 @@ end
 value-->|read|raw_value
 
 ```
+## Installment for development
+
+Clone this repository:
+```terminal
+git clone https://github.com/botamochi6277/reactjs-ble-console.git
+```
+
+Install dependencies:
+```terminal
+bun install 
+```
+
+Run in dev mode:
+```terminal
+bun run dev
+```

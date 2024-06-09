@@ -6,9 +6,13 @@ import { AppBar, Container, Divider, IconButton, Stack, Switch, Theme, Toolbar, 
 import BluetoothIcon from '@mui/icons-material/Bluetooth';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import Grid3x3Icon from '@mui/icons-material/Grid3x3';
-import Grid4x4Icon from '@mui/icons-material/Grid4x4';
 import LightModeIcon from '@mui/icons-material/LightMode';
+
+import {
+    PhoneAndroid as PhoneAndroidIcon,
+    Computer as ComputerIcon
+} from '@mui/icons-material'
+
 
 const MyAppBar = (props: {
     theme: Theme,
@@ -48,13 +52,13 @@ const MyAppBar = (props: {
                         </IconButton>
                         {/*  */}
                         <Stack direction="row" spacing={0} alignItems="center">
-                            <Grid4x4Icon fontSize="small" />
+                            <ComputerIcon fontSize="small" />
                             <Switch
                                 checked={props.is_compact_view}
                                 onChange={props.onToggleAdvancedMode}
                                 color="secondary"
                             />
-                            <Grid3x3Icon fontSize="small" />
+                            <PhoneAndroidIcon fontSize="small" />
                         </Stack>
                         {/*  */}
                         <Stack direction="row" spacing={0} alignItems="center">

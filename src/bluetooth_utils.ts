@@ -48,7 +48,7 @@ export const ble_data_formats: BleDataType[] = [
     }
   }, // no getUint64
   {
-    name: 'float32', data_length: 4, hex_code: 0x14, decoder: (v: DataView, offset: number) => `${v.getFloat32(offset, true).toFixed(4)}`, encoder: (v: any) => {
+    name: 'float32', data_length: 4, hex_code: 0x14, decoder: (v: DataView, offset: number) => v.getFloat32(offset, true), encoder: (v: any) => {
       var buffer = new ArrayBuffer(4);// with a size in bytes
       const view = new DataView(buffer);
       view.setFloat32(0, v, true);
@@ -56,7 +56,7 @@ export const ble_data_formats: BleDataType[] = [
     }
   },
   {
-    name: 'float64', data_length: 8, hex_code: 0x15, decoder: (v: DataView, offset: number) => `${v.getFloat64(offset, true).toFixed(4)}`, encoder: (v: any) => {
+    name: 'float64', data_length: 8, hex_code: 0x15, decoder: (v: DataView, offset: number) => v.getFloat64(offset, true), encoder: (v: any) => {
       const buffer = new ArrayBuffer(8);
       const view = new DataView(buffer);
       view.setFloat64(0, v, true);
@@ -115,9 +115,22 @@ export const parseValue = (chr_wrapper: CharacteristicWrapper) => {
 }
 
 
-export function writeValue(chr_wrapper: CharacteristicWrapper, v: any, callback: () => void) {
+export function writeValue(chr_wrapper: CharacteristicWrapper, v: any, callback?: () => void) {
   console.log(`sending ${v} (${chr_wrapper.data_type.encoder(v)}) to ${chr_wrapper.name}`)
   chr_wrapper.characteristic.writeValue(chr_wrapper.data_type.encoder(v)).then(callback);
+}
+
+export function writeAddedValue(chr_wrapper: CharacteristicWrapper,
+  diff: number, callback?: () => void) {
+  const val = parseValue(chr_wrapper);
+  console.debug(`data_type ${chr_wrapper.data_type.name}`);
+  console.debug(`parsed val: ${val}`)
+  console.debug(`val type: ${typeof val}`)
+  if (!val) { return; }// value is null / undefined
+  if (typeof val === 'number') {
+    chr_wrapper.characteristic.writeValue(chr_wrapper.data_type.encoder(val + diff)).then(callback);
+    return;
+  }
 }
 
 

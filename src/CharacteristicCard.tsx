@@ -5,16 +5,10 @@ import {
     Button, Card,
     CardActions,
     CardHeader,
-    FormControl,
     FormGroup,
     IconButton,
-    InputAdornment,
-    InputLabel,
-    MenuItem,
-    Select,
     SelectChangeEvent,
     Stack,
-    TextField
 } from '@mui/material';
 
 import {
@@ -43,66 +37,12 @@ import {
 import { DataDimensionsIcon } from "./DataDimensionsIcon";
 import { NumerationSystemSelect } from "./NumerationSystemSelect";
 import ResponsiveButton from './ResponsiveButton';
-import { ble_data_formats, writeValue } from "./bluetooth_utils";
-
-function BLETypeSelect(props: {
-    value: string,
-    onChange: (ev: SelectChangeEvent) => void,
-    name: string
-}) {
-    const menus = ble_data_formats.map((b) => <MenuItem value={b.name} key={b.name}>{b.name}</MenuItem>)
-
-    return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 40 }}>
-            <InputLabel
-                id={`ble-data-type-select-label-${props.name}`}>
-                data type
-            </InputLabel>
-            <Select
-                value={props.value}
-                label="data type"
-                labelId={`ble-data-type-select-label-${props.name}`}
-                onChange={props.onChange}
-                inputProps={{
-                    name: 'data type',
-                    id: `ble-data-type-select-${props.name}`,
-                }}
-            >
-                {menus}
-            </Select>
-        </FormControl>
-    );
-}
+import { ble_data_formats, writeValue, writeAddedValue } from "./bluetooth_utils";
+import CharacteristicValueTypeSelect from './CharacteristicValueTypeSelect';
+import ValueUpDownButtons from './ValueUpDownButtons';
+import CharacteristicValueField from './CharacteristicValueField';
 
 
-function ValueField(props: {
-    value: string,
-    readonly: boolean,
-    data_type: BleDataType,
-    unit: string,
-    prefix: string
-    onChange: ((ev: ChangeEvent) => void) | undefined,
-    name: string,
-    start_adornment: string
-}) {
-    const unit_str = `${props.prefix}${props.unit}`;
-    return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 40 }} >
-            <TextField
-                id={`input-with-sx-${props.name}`}
-                label={props.readonly ? "read only " : `value`}
-                variant="standard"
-                color={props.readonly ? "secondary" : "primary"}
-                onChange={props.onChange}
-                InputProps={{
-                    readOnly: props.readonly,
-                    style: { textAlignLast: (["utf8", "utf16"].includes(props.data_type.name) ? "inherit" : "end") },
-                    startAdornment: <InputAdornment position="start">{props.start_adornment}</InputAdornment>,
-                    endAdornment: <InputAdornment position="end">{unit_str}</InputAdornment>
-                }} value={props.value} />
-        </FormControl>
-    );
-}
 
 const CharacteristicCard = (props: {
     wrapper: CharacteristicWrapper,
@@ -178,7 +118,7 @@ const CharacteristicCard = (props: {
 
                 } else {
                     // float
-                    setTextFieldVal(new_value.toString())
+                    setTextFieldVal(new_value.toFixed(4))
                 }
             }
         },
@@ -288,7 +228,7 @@ const CharacteristicCard = (props: {
                 >
                     {props.is_compact_view ? null :
                         <>
-                            <BLETypeSelect
+                            <CharacteristicValueTypeSelect
                                 onChange={props.changeBleType}
                                 value={props.wrapper.data_type.name}
                                 name={props.wrapper.name} />
@@ -305,7 +245,7 @@ const CharacteristicCard = (props: {
                             /></>
                     }
 
-                    <ValueField
+                    <CharacteristicValueField
                         value={text_field_value}
                         data_type={props.wrapper.data_type}
                         unit={props.wrapper.unit}
@@ -315,19 +255,27 @@ const CharacteristicCard = (props: {
                         name={props.wrapper.name}
                         start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.wrapper.data_type.name) ? numeration_sys.prefix : ""} />
                 </FormGroup>
-                {
+                {/* {
                     (properties.write && props.is_compact_view) ? <ResponsiveButton
                         icon={<PublishIcon />}
                         label='Publish'
                         onClick={publishVal}
-                    /> : null}
-                {/* <Button
-                    startIcon={<PublishOutlined />}
-                    variant="contained"
-                    sx={{ display: properties.write ? 'flex' : 'none' }}
-                    onClick={publishVal}
-                >
-                    Publish</Button> */}
+                    /> : null} */}
+
+                {
+                    (properties.write && props.is_compact_view) ? <ValueUpDownButtons
+                        onClickUp={() => {
+                            writeAddedValue(
+                                props.wrapper, 1, props.readValueHandle
+                            )
+                        }}
+                        onClickDown={() => {
+                            writeAddedValue(
+                                props.wrapper, -1, props.readValueHandle
+                            )
+                        }} /> : null
+                }
+
             </CardActions>
 
             {/* color */}

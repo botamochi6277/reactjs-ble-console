@@ -22,13 +22,23 @@ import {
     matchIsValidColor
 } from 'mui-color-input';
 
-import { tinycolor } from '@ctrl/tinycolor'; // installed w/ mui-color-input
+import { TinyColor } from '@ctrl/tinycolor'; // installed w/ mui-color-input
 
 // icons
-import { Publish as PublishIcon, Sync as SyncIcon } from '@mui/icons-material';
-import AbcIcon from '@mui/icons-material/Abc';
-import EditIcon from '@mui/icons-material/Edit';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+// solid icons
+import {
+    Publish as PublishIcon,
+    Download as DownloadIcon,
+    Abc as AbcIcon,
+    Edit as EditIcon,
+    Notifications as NotificationsIcon
+} from '@mui/icons-material';
+
+// outlined icons
+import {
+    NotificationsActiveOutlined as NotificationsActiveOutlinedIcon,
+} from '@mui/icons-material';
+
 // house-made
 import { DataDimensionsIcon } from "./DataDimensionsIcon";
 import { NumerationSystemSelect } from "./NumerationSystemSelect";
@@ -200,7 +210,7 @@ const CharacteristicCard = (props: {
         if (is_color) {
             console.log(color);
             // console.log(color.v);
-            const tmp_color = tinycolor(color);
+            const tmp_color = new TinyColor(color);
             if (props.wrapper.unit === "#") {
                 const hex_color = tmp_color.toHex();
                 writeValue(props.wrapper, parseInt(hex_color, 16), props.readValueHandle);
@@ -255,14 +265,14 @@ const CharacteristicCard = (props: {
                                 sx={{ display: properties.read ? 'flex' : 'none' }}
                                 onClick={() => { props.readValueHandle() }}
                                 color="primary">
-                                <SyncIcon />
+                                <DownloadIcon />
                             </IconButton>
                             <IconButton
                                 color={is_subscribing ? "success" : "primary"}
                                 sx={{ display: properties.notify ? 'flex' : 'none' }}
                                 onClick={onChangeSubscription}
                             >
-                                <NotificationsIcon />
+                                {is_subscribing ? <NotificationsActiveOutlinedIcon /> : <NotificationsIcon />}
                             </IconButton>
                         </Stack> : null
                 }
@@ -312,7 +322,7 @@ const CharacteristicCard = (props: {
                         onClick={publishVal}
                     /> : null}
                 {/* <Button
-                    startIcon={<PublishIcon />}
+                    startIcon={<PublishOutlined />}
                     variant="contained"
                     sx={{ display: properties.write ? 'flex' : 'none' }}
                     onClick={publishVal}
@@ -339,19 +349,19 @@ const CharacteristicCard = (props: {
 
             <CardActions sx={{ display: props.is_compact_view ? "none" : "flex" }}>
                 {properties.read ? <ResponsiveButton
-                    icon={<SyncIcon />}
-                    label='Sync'
+                    icon={<DownloadIcon />}
+                    label='Read'
                     onClick={props.readValueHandle}
                 /> : null}
 
                 {properties.write ? <ResponsiveButton
                     icon={<PublishIcon />}
-                    label='Publish'
+                    label='Write'
                     onClick={publishVal}
                 /> : null}
 
                 {properties.notify ? <ResponsiveButton
-                    icon={<NotificationsIcon />}
+                    icon={is_subscribing ? <NotificationsActiveOutlinedIcon /> : <NotificationsIcon />}
                     label={is_subscribing ? 'Stop' : 'Subscribe'}
                     color={is_subscribing ? "success" : "primary"}
                     onClick={onChangeSubscription}

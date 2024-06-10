@@ -123,10 +123,7 @@ export function writeValue(chr_wrapper: CharacteristicWrapper, v: any, callback?
 export function writeAddedValue(chr_wrapper: CharacteristicWrapper,
   diff: number, callback?: () => void) {
   const val = parseValue(chr_wrapper);
-  console.debug(`data_type ${chr_wrapper.data_type.name}`);
-  console.debug(`parsed val: ${val}`)
-  console.debug(`val type: ${typeof val}`)
-  if (!val) { return; }// value is null / undefined
+  if (val == null) { return; }// value is null / undefined
   if (typeof val === 'number') {
     chr_wrapper.characteristic.writeValue(chr_wrapper.data_type.encoder(val + diff)).then(callback);
     return;

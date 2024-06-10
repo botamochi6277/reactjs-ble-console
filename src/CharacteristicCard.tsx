@@ -37,7 +37,7 @@ import {
 import { DataDimensionsIcon } from "./DataDimensionsIcon";
 import { NumerationSystemSelect } from "./NumerationSystemSelect";
 import ResponsiveButton from './ResponsiveButton';
-import { ble_data_formats, writeValue, writeAddedValue } from "./bluetooth_utils";
+import { writeValue, writeAddedValue } from "./bluetooth_utils";
 import CharacteristicValueTypeSelect from './CharacteristicValueTypeSelect';
 import ValueUpDownButtons from './ValueUpDownButtons';
 import CharacteristicValueField from './CharacteristicValueField';
@@ -175,8 +175,7 @@ const CharacteristicCard = (props: {
 
         // number
         if (["float32", "float64"].includes(props.wrapper.data_type.name)) {
-            // integer
-            // console.debug(`field value: ${text_field_value}, parsed: ${parseFloat(text_field_value)}`)
+            // float
             writeValue(props.wrapper, parseFloat(text_field_value), props.readValueHandle);
             return;
         } else {
@@ -186,6 +185,23 @@ const CharacteristicCard = (props: {
             return;
         }
     }
+
+    const publishUpDownVal = (direction: string = 'up') => {
+        let diff = 0.0;
+        if (direction === 'up') {
+            diff = 1.0;
+        }
+        if (direction === 'down') {
+            diff = -1.0;
+        }
+        if (["float32", "float64"].includes(props.wrapper.data_type.name)) {
+            // float
+            diff *= 0.1;
+        }
+        writeAddedValue(
+            props.wrapper, diff, props.readValueHandle
+        )
+    };
 
     return (
         <Card variant='outlined'>
@@ -255,24 +271,13 @@ const CharacteristicCard = (props: {
                         name={props.wrapper.name}
                         start_adornment={["uint8", "uint16", "uint32", "uint64"].includes(props.wrapper.data_type.name) ? numeration_sys.prefix : ""} />
                 </FormGroup>
-                {/* {
-                    (properties.write && props.is_compact_view) ? <ResponsiveButton
-                        icon={<PublishIcon />}
-                        label='Publish'
-                        onClick={publishVal}
-                    /> : null} */}
-
                 {
                     (properties.write && props.is_compact_view) ? <ValueUpDownButtons
                         onClickUp={() => {
-                            writeAddedValue(
-                                props.wrapper, 1, props.readValueHandle
-                            )
+                            publishUpDownVal('up')
                         }}
                         onClickDown={() => {
-                            writeAddedValue(
-                                props.wrapper, -1, props.readValueHandle
-                            )
+                            publishUpDownVal('down')
                         }} /> : null
                 }
 
@@ -287,7 +292,7 @@ const CharacteristicCard = (props: {
                     fullWidth
                 />
                 <Button
-                    startIcon={<EditIcon />}
+                    startIcon={<PublishIcon />}
                     variant="contained"
                     sx={{ display: properties.write ? 'flex' : 'none' }}
                     onClick={publishVal}

@@ -39,7 +39,10 @@ const MyAppBar = (props: {
                 <Toolbar disableGutters>
                     {/* <BluetoothIcon sx={{ display: { md: "flex" }, mr: 1 }} /> */}
                     <IconButton disabled>
-                        <Avatar src="/ble_button.svg" alt="app icon" />
+                        <Avatar
+                            src={`${import.meta.env.BASE_URL}ble_button.svg`}
+                            alt="app icon"
+                        />
                     </IconButton>
                     <Typography
                         variant="h6"

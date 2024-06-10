@@ -24,7 +24,6 @@ import {
     Publish as PublishIcon,
     Download as DownloadIcon,
     Abc as AbcIcon,
-    Edit as EditIcon,
     Notifications as NotificationsIcon
 } from '@mui/icons-material';
 

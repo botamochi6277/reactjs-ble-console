@@ -2,15 +2,22 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 
-
+import {
+    KeyboardArrowUp as KeyboardArrowUpIcon,
+    KeyboardArrowDown as KeyboardArrowDownIcon
+} from "@mui/icons-material";
 
 const ValueUpDownButtons = (props: {
     onClickUp: React.MouseEventHandler<HTMLButtonElement>,
     onClickDown: React.MouseEventHandler<HTMLButtonElement>
 }) => {
     const buttons = [
-        <Button key="up" onClick={props.onClickUp}>Up</Button>,
-        <Button key="down" onClick={props.onClickDown}>Down</Button>,
+        <Button
+            key="up" startIcon={<KeyboardArrowUpIcon />}
+            onClick={props.onClickUp} sx={{ justifyContent: "start" }}>Up</Button>,
+        <Button
+            key="down" startIcon={<KeyboardArrowDownIcon />}
+            onClick={props.onClickDown} sx={{ justifyContent: "start" }}>Down</Button>,
     ];
     return (
         <ButtonGroup
